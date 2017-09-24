@@ -64,7 +64,7 @@ the wiki for more details and examples.
 
 ### Configuration
 
-The devGaido project folder is organized in the following manner:
+The IdeaBox project folder is organized in the following manner:
 
 ```
 /ideabox - Application root folder containing global configuration
