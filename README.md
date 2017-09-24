@@ -67,7 +67,7 @@ the wiki for more details and examples.
 The devGaido project folder is organized in the following manner:
 
 ```
-/devgaido - Application root folder containing global configuration
+/ideabox - Application root folder containing global configuration
             and settings files.
   /src - Application source files
     /client - Frontend application source
