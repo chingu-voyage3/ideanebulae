@@ -98,4 +98,3 @@ The IdeaBox project folder is organized in the following manner:
 [MIT](https://tldrlegal.com/license/mit-license)
 
 [ideabox-url]: https://github.com/Chingu-cohorts/Voyage2-bears-27
-
