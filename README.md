@@ -1,21 +1,26 @@
 # IdeaBox
 
-IdeaBox makes it easy for Web Devs to propose ideas and  get feedback from their peers. In the modern world of
-Web Development many team members work remotely, often spread across many different geographic locations and
-timezones. Not working in the same locations as their peers makes communication hard and can foster a sense of 
-isolation. 
+IdeaBox makes it easy for Web Devs to propose ideas and  get feedback from
+their peers. In the modern world of Web Development many team members work
+remotely, often spread across many different geographic locations and
+timezones. Not working in the same locations as their peers makes communication
+hard and can foster a sense of isolation. 
 
-Although tools such as instant messaging, email, and teleconferencing address everyday interactions within a team
-they are not always the best tool for sharing and reviewing ideas. Instant messaging and email are to fragmented 
-and discussions on a given topic are interspersed between other discussions making it difficult to follow a topic 
-over time. Furthermore, neither provide adequate security to keep commercial idea secure from prying eyes. 
-Teleconferencing is useful for discussion, but not every idea warrants using the team's time for
-yet-another-meeting.
+Although tools such as instant messaging, email, and teleconferencing address
+everyday interactions within a team they are not always the best tool for
+sharing and reviewing ideas. Instant messaging and email are to fragmented 
+and discussions on a given topic are interspersed between other discussions
+making it difficult to follow a topic over time. Furthermore, neither provide
+adequate security to keep commercial idea secure from prying eyes. Teleconferencing
+is useful for discussion, but not every idea warrants using the team's time
+for yet-another-meeting.
 
-IdeaBox seeks to address these gaps by provided Web Devs with the ability to propose ideas, designate an appropriate 
-level of security and confidentiality, and to get critical feedback and suggestions on thier ideas from their peers.
-Furthermore, IdeaBox supports flexible searching so that over time it is a suitable starting point to determine
-whether an idea has already been proposed. 
+IdeaBox seeks to address these gaps by provided Web Devs with the ability
+to propose ideas, designate an appropriate level of security and
+confidentiality, and to get critical feedback and suggestions on thier ideas
+from their peers. Furthermore, IdeaBox supports flexible searching so that
+over time it is a suitable starting point to determine whether an idea has
+already been proposed. 
 
 You can find IdeaBox at [www.tbd.com](http://www.tbd.com).
 
@@ -31,8 +36,8 @@ You can find IdeaBox at [www.tbd.com](http://www.tbd.com).
 
 ### Built With
 
-The main libraries used in the development of IdeaBox are Vue, Postgress, and Stylus. For a complete list 
-of libraries consult the `package.json` file.
+The main libraries used in the development of IdeaBox are Vue, Postgress,
+and Stylus. For a complete list of libraries consult the `package.json` file.
 
 ### Git Branches
 
