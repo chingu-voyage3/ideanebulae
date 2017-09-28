@@ -72,3 +72,7 @@ dist/
 *.ntvs*
 *.njsproj
 *.sln
+
+# Yarn and NPM locks
+package-lock.json
+yarn.lock
