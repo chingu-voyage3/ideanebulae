@@ -46,7 +46,7 @@ file.
 | [Karma](https://karma-runner.github.io )       | Test Runner                  |
 | [Mocha](https://mochajs.org)                   | Test Framework               |
 | [Nightwatch](https://nightwatchjs.org)         | Browser Testing Framework    |
-| [Postgres](https://node-postgres.com )         | Server DBMS                  |
+| [Mongo](https://mongodb.com )                  | Server DBMS                  |
 | [Stylus](https://stylus-lang.com )             | CSS preprocessor             |
 | [Vue](https://vuejs.org)                       | Frontend framework           |
 | [Vue-Router](https://router.vuejs.org)         | Renderer                     |
