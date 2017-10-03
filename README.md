@@ -1,6 +1,6 @@
-# IdeaBox
+# IdeaNebulae
 
-IdeaBox makes it easy for Web Devs to propose ideas and  get feedback from
+IdeaNebulae makes it easy for Web Devs to propose ideas and  get feedback from
 their peers. In the modern world of Web Development many team members work
 remotely, often spread across many different geographic locations and
 timezones. Not working in the same locations as their peers makes communication
@@ -15,14 +15,14 @@ adequate security to keep commercial idea secure from prying eyes. Teleconferenc
 is useful for discussion, but not every idea warrants using the team's time
 for yet-another-meeting.
 
-IdeaBox seeks to address these gaps by provided Web Devs with the ability
+IdeaNebulae seeks to address these gaps by provided Web Devs with the ability
 to propose ideas, designate an appropriate level of security and
 confidentiality, and to get critical feedback and suggestions on thier ideas
-from their peers. Furthermore, IdeaBox supports flexible searching so that
+from their peers. Furthermore, IdeaNebulae supports flexible searching so that
 over time it is a suitable starting point to determine whether an idea has
 already been proposed. 
 
-You can find IdeaBox at [www.tbd.com](http://www.tbd.com).
+You can find IdeaNebulae at [www.tbd.com](http://www.tbd.com).
 
 [Features](#features) | [Development](#development) | [Runtime](#runtime) | [Authors](#authors) |
 [License](#license) | [Release Notes](releasenotes.md)
@@ -36,8 +36,21 @@ You can find IdeaBox at [www.tbd.com](http://www.tbd.com).
 
 ### Built With
 
-The main libraries used in the development of IdeaBox are Vue, Postgress,
-and Stylus. For a complete list of libraries consult the `package.json` file.
+The main libraries used in the development of IdeaNebulae are shown in the
+following table. For a complete list of libraries consult the `package.json`
+file.
+
+| Library                                        | Purpose                      | 
+|:-----------------------------------------------|:-----------------------------|
+| [Airbnb](https://github.com/airbnb/javascript) | Javascript dev. standards    |
+| [Karma](https://karma-runner.github.io )       | Test Runner                  |
+| [Mocha](https://mochajs.org)                   | Test Framework               |
+| [Nightwatch](https://nightwatchjs.org)         | Browser Testing Framework    |
+| [Postgres](https://node-postgres.com )         | Server DBMS                  |
+| [Stylus](https://stylus-lang.com )             | CSS preprocessor             |
+| [Vue](https://vuejs.org)                       | Frontend framework           |
+| [Vue-Router](https://router.vuejs.org)         | Renderer                     |
+| [Vuex](https://vuex.vuejs.org)                 | State mgt. pattern + library |
 
 ### Git Branches
 
@@ -69,24 +82,21 @@ the wiki for more details and examples.
 
 ### Configuration
 
-The IdeaBox project folder is organized in the following manner:
+The IdeaNebulae project folder is organized in the following manner:
 
-```
-/ideabox - Application root folder containing global configuration
-            and settings files.
-  /src - Application source files
-    /client - Frontend application source
-      /actions - Redux global app action handlers
-      /assets - Client asset files
-      /pages - One subdirectory for each page containing .jsx files
-      /reducers - Redux global app reducer handlers
-      /style - Style sheet files
-    /server - Backend application source
-      /models - Data model files
-      /services - Microservices
-    /test - Mocha tests and validations of JSON files
-      /testdata - Data files designed to exercise the tests and validations
-```
+| Location       | Purpose                               |
+|:---------------|:--------------------------------------|
+| `/build`       | Build files including Webpack files   |
+| /config        | Application configuration             |
+| /src           | Application source files              |
+| ../assets      |   App graphics - svg, png, etc.       |
+| ../components  |   App components (Vue)                |
+| ../router      |   App routes (Vue-router)             |
+| ../store       |   App store (Vuex)                    |
+| /static        | Static files                          |
+| /test          | Test scripts                          |
+| directory root | License, readme, index, and package files |
+
 
 
 ## Runtime
@@ -97,9 +107,10 @@ The IdeaBox project folder is organized in the following manner:
 - [Andres Perez](https://github.com/Oxyrus)
 - [Jim Medlock](https://github.com/jdmedlock)
 - [Parminder Singh](https://github.com/Trion129)
+- [Sarah Schneider](https://github.com/rifkegribenes)
 
 ## License
 
 [MIT](https://tldrlegal.com/license/mit-license)
 
-[ideabox-url]: https://github.com/Chingu-cohorts/Voyage2-bears-27
+[ideanebulae-url]: https://github.com/Chingu-cohorts/Voyage2-bears-27
