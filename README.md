@@ -84,18 +84,18 @@ the wiki for more details and examples.
 
 The IdeaNebulae project folder is organized in the following manner:
 
-| Location       | Purpose                               |
-|:---------------|:--------------------------------------|
-| `/build`       | Build files including Webpack files   |
-| /config        | Application configuration             |
-| /src           | Application source files              |
-| ../assets      |   App graphics - svg, png, etc.       |
-| ../components  |   App components (Vue)                |
-| ../router      |   App routes (Vue-router)             |
-| ../store       |   App store (Vuex)                    |
-| /static        | Static files                          |
-| /test          | Test scripts                          |
-| directory root | License, readme, index, and package files |
+| Location         | Purpose                               |
+|:-----------------|:--------------------------------------|
+| `/build`         | Build files including Webpack files   |
+| `/config`        | Application configuration             |
+| `/src`           | Application source files              |
+| `../assets`      |   App graphics - svg, png, etc.       |
+| `../components`  |   App components (Vue)                |
+| `../router`      |   App routes (Vue-router)             |
+| `../store`       |   App store (Vuex)                    |
+| `/static`        | Static files                          |
+| `/test`          | Test scripts                          |
+| `directory root` | License, readme, index, and package files |
 
 
 
