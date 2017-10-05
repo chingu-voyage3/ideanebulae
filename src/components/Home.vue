@@ -27,16 +27,17 @@
       <h2>Ideas posted till now... <strong>12345</strong></h2>
       <button>start ideation</button>
     </section>
+
   </div>
 </template>
 
 <script>
-
 export default {
   name: 'Home',
 };
 </script>
 
 <style lang="stylus" scoped>
-
+#features
+  background: #000
 </style>
