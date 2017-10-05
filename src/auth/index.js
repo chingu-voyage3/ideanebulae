@@ -10,9 +10,9 @@ const ACCESS_TOKEN_KEY = 'access_token';
 
 const CLIENT_ID = '';
 const CLIENT_DOMAIN = '';
-const REDIRECT = 'callback-url';
-const SCOPE = '';
-const AUDIENCE = 'audience_attr';
+const REDIRECT = 'http://localhost:8080/callback';
+const SCOPE = 'openid';
+const AUDIENCE = '';
 
 const auth = new auth0.WebAuth({
   clientID: CLIENT_ID,
@@ -34,7 +34,9 @@ export function login() {
 
 // Helper to extract the access token and id token
 function getParameterByName(name) {
-  const match = RegExp(`[#&] ${name} =([^&]*)`).exec(window.location.hash);
+  // eslint-disable-next-line
+  let match = RegExp('[#&]' + name + '=([^&]*)').exec(window.location.hash);
+  // const match = RegExp(`[#&] ${name} =([^&]*)`).exec(window.location.hash);
   return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
 }
 

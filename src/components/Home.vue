@@ -38,6 +38,4 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-#features
-  background: #000
 </style>

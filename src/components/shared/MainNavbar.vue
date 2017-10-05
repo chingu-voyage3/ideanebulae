@@ -24,7 +24,7 @@ export default {
     isLoggedIn() {
       return isLoggedIn();
     },
-  }
+  },
 };
 </script>
 
