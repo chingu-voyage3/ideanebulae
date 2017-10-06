@@ -1,9 +1,12 @@
 <template>
-  <div>
+  <div class="container">
 
     <header>
-      <h1>Idea Nebulae</h1>
-      <p>where ideas are born</p>
+      <h1 class="sr-only">Idea Nebulae</h1>
+      <div class="splash__branding">
+        <img class="splash__logo" src="../assets/idea-nebulae-logo.svg" alt=""/>
+        <div class="splash__tagline">where ideas are born</div>
+      </div>
       <button>start ideation</button>
     </header>
 
@@ -38,4 +41,26 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+
+.splash
+
+  &__logo
+    width 60%
+    height auto
+    margin auto
+
+  &__branding
+    display flex
+    flex-direction column
+    text-align center
+
+  &__tagline
+    text-transform uppercase
+    font-weight 200
+    font-size 2em
+    letter-spacing 4px
+    margin-top 40px
+
+
+
 </style>
