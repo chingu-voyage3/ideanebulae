@@ -1,4 +1,5 @@
 var path = require('path')
+var webpack = require('webpack')
 var utils = require('./utils')
 var config = require('../config')
 var vueLoaderConfig = require('./vue-loader.conf')
@@ -6,6 +7,8 @@ var vueLoaderConfig = require('./vue-loader.conf')
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
+
+const stylus_var = resolve('./styles/var.styl')
 
 module.exports = {
   entry: {
@@ -23,6 +26,7 @@ module.exports = {
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
+      stylus_var,
     }
   },
   module: {
@@ -70,6 +74,18 @@ module.exports = {
           name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
         }
       }
-    ]
-  }
+    ],
+  },
+  /*
+  plugins: [
+    new webpack.LoaderOptionsPlugin({
+      options: {
+        stylus: {
+          use: [require('nib')()],
+          import: ['~/nib/lib/nib/style.styl']
+        }
+      }
+    })
+  ]
+  */
 }
