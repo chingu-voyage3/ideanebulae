@@ -1,15 +1,30 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Hello from '@/components/Hello';
+// import { requireAuth } from '@/auth';
+import Home from '@/components/Home';
+import Callback from '@/components/Callback';
 
 Vue.use(Router);
+
+// requireAuth can be used like this:
+// {
+//   path: '/ideas',
+//   name: 'IdeasList',
+//   beforeEnter: requireAuth,
+// }
 
 export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Hello',
-      component: Hello,
+      name: 'Home',
+      component: Home,
+    },
+    {
+      path: '/callback',
+      name: 'Callback',
+      component: Callback,
     },
   ],
+  mode: 'history',
 });
