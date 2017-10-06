@@ -38,4 +38,11 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+@import '~stylus_var'
+
+#features
+  background: $green
+
+#idea-count
+  background: $red
 </style>
