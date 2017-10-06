@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container splash">
 
     <header>
       <h1 class="sr-only">Idea Nebulae</h1>
@@ -43,6 +43,7 @@ export default {
 <style lang="stylus" scoped>
 
 .splash
+  margin-top 10vh
 
   &__logo
     width 60%
@@ -57,9 +58,10 @@ export default {
   &__tagline
     text-transform uppercase
     font-weight 200
-    font-size 2em
+    font-size 3.5vw
     letter-spacing 4px
-    margin-top 40px
+    margin-top 4vw
+    color $purple
 
 
 
