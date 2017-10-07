@@ -19,13 +19,18 @@ export default {
 };
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang="stylus">
+
+// global vars
+
+@import "./style/global.styl";
+
+// this isn't working -- it imports style declarations but not variables
+// so for now i'm declaring vars in each component...
+// there has to be a better way to do this but not sure how??
+
+$dkblue = #3023AE
+$purple = #7c48c2
+$pink = #C86DD7
+
 </style>
