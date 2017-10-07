@@ -21,72 +21,16 @@ export default {
 
 <style lang="stylus">
 
-// global app styles
+// global vars
 
-#app {
-  font-family: 'Titillium Web', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: $gray_text;
-  letter-spacing: 1px;
-  line-height: 1.5em;
-}
+@import "./style/global.styl";
 
-.container
-  width 100%
-  max-width 1200px
-  margin auto
+// this isn't working -- it imports style declarations but not variables
+// so for now i'm declaring vars in each component...
+// there has to be a better way to do this but not sure how??
 
-.purple-gradient
-  background $purple
-  background linear-gradient(-134deg, $dkblue 0%, $pink 100%)
-
-// visible to screenreader only
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0,0,0,0);
-    border: 0;
-}
-
-// use when you need to wrap an interactive element in a <button> element to enable keypress behavior and WAI-ARIA roles but don't want default browser button styling
-
-.aria-button {
-  -webkit-appearance: none;
-  appearance: none;
-  border: none;
-  background: transparent;
-  color: inherit;
-
-  &:hover, &:active, &:focus {
-    -webkit-appearance: none;
-    appearance: none;
-    border: none;
-    background: transparent;
-    outline: none;
-    color: inherit;
-  }
-  &__link {
-    text-align: left;
-    font-family: inherit;
-    font-weight: inherit;
-    font-size: inherit;
-    width: 100%;
-    padding-bottom: 5px;
-    margin-bottom: 10px;
-
-    &:hover, &:active {
-      border-bottom: 1px dotted;
-      cursor: pointer;
-
-    }
-
-  }
-}
-
+$dkblue = #3023AE
+$purple = #7c48c2
+$pink = #C86DD7
 
 </style>
