@@ -8,6 +8,8 @@ function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
 
+const stylus_var = resolve('./styles/var.styl')
+
 module.exports = {
   entry: {
     app: './src/main.js'
@@ -24,6 +26,7 @@ module.exports = {
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
+      stylus_var,
     }
   },
   module: {
@@ -73,13 +76,4 @@ module.exports = {
       }
     ]
   },
-  plugins: [
-  new webpack.LoaderOptionsPlugin({
-    options: {
-      stylus: {
-        import: ['@/style/global.styl')]
-      }
-    }
-  })
-]
 }

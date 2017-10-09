@@ -82,7 +82,9 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+@import '~stylus_var'
 
+/*
 $purple = #7c48c2
 $dkblue = #3023AE
 $medblue = #4b83dc
@@ -90,6 +92,7 @@ $aqua = #00cbf7
 $sky = #3877ce
 $ltred = #ee4f5c
 $dkred = #9a041a
+*/
 
 // colors should be global variables
 // but i can't get them to import correctly from the global file
