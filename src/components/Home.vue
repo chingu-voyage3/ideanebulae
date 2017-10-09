@@ -18,7 +18,7 @@
           @mouseenter="(e)=>{flip(e)}"
           @mouseleave="(e)=>{unflip(e)}">
           <div class="side front">
-            <div class="splash__feature-text">Get<br/>Feedback</div>
+            <div class="splash__feature-text">Get <br class="splash__br"/>Feedback</div>
             <img class="splash__card-img" src="../assets/feedback.svg" alt=""/>
           </div>
           <div class="side back">
@@ -31,7 +31,7 @@
           @mouseenter="(e)=>{flip(e)}"
           @mouseleave="(e)=>{unflip(e)}">
           <div class="side front">
-            <div class="splash__feature-text">Share<br/>Securely</div>
+            <div class="splash__feature-text">Share <br class="splash__br"/>Securely</div>
             <img class="splash__card-img--sm" src="../assets/shield.svg" alt=""/>
           </div>
           <div class="side back">
@@ -44,7 +44,7 @@
           @mouseenter="(e)=>{flip(e)}"
           @mouseleave="(e)=>{unflip(e)}">
           <div class="side front">
-            <div class="splash__feature-text">Collaborate<br/>&amp; Launch</div>
+            <div class="splash__feature-text">Collaborate <br class="splash__br"/>&amp; Launch</div>
             <img class="splash__card-img--med" src="../assets/rocket.svg" alt=""/>
           </div>
           <div class="side back">
@@ -57,7 +57,7 @@
     </section>
 
     <section id="idea-count" class="splash__counter">
-      <div class="splash__number">140,257</div>
+      <span class="splash__number">140,257</span>
       <div class="splash__counter-text">Ideas born so far</div>
       <button class="btn btn__primary splash__button splash__button--btm">What's <strong>your</strong> idea?</button>
     </section>
@@ -84,29 +84,16 @@ export default {
 <style lang="stylus" scoped>
 @import '~stylus_var'
 
-/*
-$purple = #7c48c2
-$dkblue = #3023AE
-$medblue = #4b83dc
-$aqua = #00cbf7
-$sky = #3877ce
-$ltred = #ee4f5c
-$dkred = #9a041a
-*/
-
-// colors should be global variables
-// but i can't get them to import correctly from the global file
-
 .splash
 
   &__header
-    height 100vh
+    height calc(100vh - 84px)
     display flex
     flex-direction column
     justify-content center
 
   &__logo
-    width 60%
+    width 80%
     height auto
     margin auto
 
@@ -119,10 +106,15 @@ $dkred = #9a041a
   &__tagline
     text-transform uppercase
     font-weight 200
-    font-size 3.5vw
-    letter-spacing 4px
+    letter-spacing 3.5px
     margin-top 4vw
     color $purple
+
+    @media (min-width: 600px)
+      font-size 35px
+
+    @media (min-width: 1000px)
+      font-size 45px
 
   &__button-wrap
     display flex
@@ -139,8 +131,6 @@ $dkred = #9a041a
       padding 1.2vw 3.2vw
       border-radius 6vw
 
-      // check on big screens
-
     @media (min-width: 1200px)
       font-size 30px
       padding 12px 36px
@@ -151,8 +141,11 @@ $dkred = #9a041a
     display flex
     flex-direction column
     justify-content center
-    margin 20px
-    height 100vh
+    margin 30vh 20px
+
+    @media (min-width: 620px)
+      height 100vh
+      margin 20px
 
   &__counter
     text-align center
@@ -161,13 +154,22 @@ $dkred = #9a041a
   &__card
     text-align center
     margin 20px
-    height 30vw
-    width 33%
+    height auto
+    max-height 460px
     position relative
+    width 100%
+
+    @media (min-width: 620px)
+      width 33%
 
   &__card-wrap
     display flex
     justify-content center
+    flex-wrap wrap
+
+    @media (min-width: 620px)
+      flex-wrap nowrap
+
 
   &__feature-text
     text-align center
@@ -180,6 +182,15 @@ $dkred = #9a041a
     background linear-gradient(-134deg, $aqua 0%, $sky 100%)
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+
+    @media (min-width: 620px)
+      font-size 2em
+
+  &__br
+    display none
+
+    @media (min-width: 620px)
+      display inline-block
 
   &__card-img
     width 55%
@@ -197,12 +208,19 @@ $dkred = #9a041a
   &__back--head
     color white
     margin-bottom 20px
-    font-size 1.3em
+    font-size 2em
     letter-spacing 1px
+
+    @media (min-width: 620px)
+      font-size 1.3em
 
   &__back--body
     color white
     margin-top 20px
+    font-size 1.3em
+
+    @media (min-width: 620px)
+      font-size 1em
 
   &__number
     margin 10vh auto 20px auto
@@ -212,12 +230,13 @@ $dkred = #9a041a
     background $purple
     background linear-gradient(-134deg, $dkblue 0%, $pink 100%)
     background -webkit-linear-gradient(-134deg, $dkblue 0%, $pink 100%)
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text
+    -webkit-text-fill-color: transparent
 
   &__counter-text
     color $purple
-    font-size: 1.5em;
+    font-size: 1.5em
+    margin-top: 20px
 
 
 
