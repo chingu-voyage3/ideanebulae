@@ -1,9 +1,9 @@
 <template>
-  <nav>
-    <ul>
-      <li v-show="!isLoggedIn()" @click="handleLogin()">Login</li>
-      <li v-show="isLoggedIn()" @click="handleLogout()">Logout</li>
-    </ul>
+  <nav class="nav">
+    <div class="nav__menu">
+      <button class="btn btn__primary splash__button nav__item" v-show="!isLoggedIn()" @click="handleLogin()">Login</button>
+      <button class="btn btn__primary splash__button nav__item" v-show="isLoggedIn()" @click="handleLogout()">Logout</button>
+    </div>
   </nav>
 </template>
 
@@ -28,6 +28,19 @@ export default {
 };
 </script>
 
-<style language="stylus" scoped>
+<style lang="stylus" scoped>
+@import '~stylus_var'
+
+.nav
+
+  &__menu
+    width 100%
+    display flex
+    justify-content flex-end
+    list-style-type none
+    padding 20px
+
+  &__item
+    text-transform uppercase
 
 </style>
