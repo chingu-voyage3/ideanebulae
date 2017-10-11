@@ -22,7 +22,7 @@ var autoOpenBrowser = !!config.dev.autoOpenBrowser
 // https://github.com/chimurai/http-proxy-middleware
 var proxyTable = config.dev.proxyTable
 
-var app = express()
+var app = require('../server/index.js')
 var compiler = webpack(webpackConfig)
 
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
@@ -62,8 +62,8 @@ app.use(devMiddleware)
 app.use(hotMiddleware)
 
 // serve pure static assets
-var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
-app.use(staticPath, express.static('./static'))
+// var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
+// app.use(staticPath, express.static('./static'))
 
 var uri = 'http://localhost:' + port
 
