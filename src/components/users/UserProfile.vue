@@ -34,9 +34,11 @@
     name: 'UserProfile',
     data() {
       return {
-        userId: 'xenon',
-        userName: 'Jill Toscadera',
-        userQualifications: ' ',
+        id: '37ncc7ynnchlnyn634',
+        userName: 'xenon',
+        Name: 'Jill Toscadera',
+        avatarUrl: 'http://www.ywcabrand.org/atf/cf/%7Bc3201f87-9e48-4580-84fa-429e77844aa1%7D/BLP0062303.JPG',
+        userQualifications: '',
       };
     },
     methods: {
@@ -82,7 +84,7 @@
     font-size 1.5em
 
 
-input { 
+input {
   width: 100%;
   height: 400px;
   box-sizing: border-box;
@@ -105,7 +107,7 @@ input {
   grid-column: 1;
 }
 
-.r1c2 { 
+.r1c2 {
   grid-row: 1;
   grid-column: 2;
 }
