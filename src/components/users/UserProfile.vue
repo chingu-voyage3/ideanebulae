@@ -6,17 +6,17 @@
 
     <section>
       <div id="UserProfile" class="grid">
-        <h2 class="profile__text r1c1">User ID:</h2>
-        <h2 class="profile__text r1c2">{{ userId }}</h2>
+        <div class="profile__head r1c1">User ID:</div>
+        <div class="profile__text r1c2">{{ userId }}</div>
       </div>
       <div class="grid">
-        <h2 class="profile__text r1c1">User Name:</h2>
-        <h2 class="profile__text r1c2">{{userName}}</h2>
+        <div class="profile__head r1c1">User Name:</div>
+        <div class="profile__text r1c2">{{userName}}</div>
       </div>
       <div class="grid">
-        <h2 class="profile__text r1c1">Qualifications:</h2>
+        <div class="profile__text r1c1">Qualifications:</div>
         <div class="profile__text r1c24">
-          <input v-model="userQualifications" type="text" placeholder="Describe your qualifications"></input>
+          <input v-model="userQualifications" class="input__align" type="text" placeholder="Describe your qualifications"></input>
         </div>
       </div>
       <div class="grid">
@@ -72,14 +72,26 @@
     &--btm
         margin-top 1vh
 
+  &__head
+    color $medblue
+    font-size 1.5em
+    letter-spacing 1px
+
   &__text
     color $medblue
+    font-size 1.5em
+
 
 input { 
   width: 100%;
   height: 400px;
   box-sizing: border-box;
 }
+
+.input__align {
+    text-align: left;
+    padding: 1em .5em 400px;
+  }
 
 .grid {
   display: grid;
