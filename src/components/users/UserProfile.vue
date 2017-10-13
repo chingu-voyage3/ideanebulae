@@ -6,16 +6,16 @@
 
     <section>
       <div id="UserProfile" class="grid">
-        <h2 class="r1c1">User ID:</h2>
-        <h2 class="r1c2">{{ userId }}</h2>
+        <h2 class="profile__text r1c1">User ID:</h2>
+        <h2 class="profile__text r1c2">{{ userId }}</h2>
       </div>
       <div class="grid">
-        <h2 class="r1c1">User Name:</h2>
-        <h2 class="r1c2">{{userName}}</h2>
+        <h2 class="profile__text r1c1">User Name:</h2>
+        <h2 class="profile__text r1c2">{{userName}}</h2>
       </div>
       <div class="grid">
-        <h2 class="r1c1">Qualifications:</h2>
-        <div class="r1c24">
+        <h2 class="profile__text r1c1">Qualifications:</h2>
+        <div class="profile__text r1c24">
           <input v-model="userQualifications" type="text" placeholder="Describe your qualifications"></input>
         </div>
       </div>
@@ -51,6 +51,7 @@
 </script>
 
 <style lang="stylus" scoped>
+@import '~stylus_var'
 
 .profile
 
@@ -59,6 +60,7 @@
     display flex
     flex-direction column
     justify-content center
+    color $purple
 
   &__button-wrap
     display flex
@@ -70,11 +72,8 @@
     &--btm
         margin-top 1vh
 
-.h1
-  color: black;
-  
-.h2
-  color: black;
+  &__text
+    color $medblue
 
 input { 
   width: 100%;
