@@ -39,6 +39,7 @@
             ref="qualifications"
             @change="(e)=>{adjustTextArea(e.target)}"
             class="profile__textarea"
+            maxlength="1024"
             placeholder="Describe your qualifications">
           </textarea>
           <div class="profile__button-wrap">
