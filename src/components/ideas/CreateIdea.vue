@@ -28,7 +28,7 @@
           
           <div class="createidea__addlink">
             <div v-show="errors.has('newlink')">Invalid link</div>
-            <input name="newlink" v-validate="'url'" data-vv-delay="1000" type="text" v-model="linkText" @keyup.enter="addLink">
+            <input name="newlink" v-validate="'required|url'" data-vv-delay="1000" type="text" v-model="linkText" @keyup.enter="addLink">
             <button class="createidea__addlink__button"
             @click="addLink"> + </button>
           </div>
@@ -68,14 +68,16 @@ export default {
   },
   methods: {
     addLink() {
-      const newVal = this.linkText.trim();
+      let newVal = this.linkText.trim();
       this.$validator.validate('newlink', newVal)
       .then((result) => {
         if (result) {
-          if (newVal.length !== 0) {
-            this.links.push(newVal);
-            this.linkText = '';
+          if (!/^http[s]?:\/\/.+/.test(newVal)) {
+            newVal = `https://${newVal}`;
           }
+
+          this.links.push(newVal);
+          this.linkText = '';
         }
       });
     },
