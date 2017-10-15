@@ -17,12 +17,31 @@
           <textarea id="createidea__desc" type="text" name="description" cols="80" rows="13" maxlength="1000" v-model="ideaDesc"></textarea>
         </div>
 
+        <div class="createidea__form__tags">
+          <label for="createidea__tags">Tags</label>
+          <div class="createidea__info" v-if="tags.length == 0">No tags added yet</div>
+          <div id="createidea__tags" class="create__form__tag" v-for="(tag, index) in tags">
+            <div class="createidea__link">
+              <div class="tag">{{tag}}</div>
+              <button id="remove__link" @click="removeTag(index)"> &#10006; </button>
+            </div>
+          </div>
+
+          <div class="createidea__addtag">
+            <label for="newTag">Add Tag</label>
+            <input name="newTag" type="text" v-model="tagText" @keyup.enter="addTag">
+            <button class="createidea__addlink__button"
+            @click="addTag"> + </button>
+          </div>
+        </div>
+
         <div class="createidea__form__element">
           <label for="createidea__links">Links to more info</label>
+          <div class="createidea__info" v-if="links.length == 0">No links added yet</div>
           <div id="createidea__links" class="create__form__link" v-for="(link, index) in links">
-            <div :id="'link-'+index" class="createidea__link">
+            <div class="createidea__link">
               <a :href="link">{{link}}</a>
-              <button id="remove__link" @click="removeLink(index)"> X </button>
+              <button id="remove__link" @click="removeLink(index)"> &#10006; </button>
             </div>
           </div>
           
@@ -38,7 +57,7 @@
         <div class="createidea__form__element">
           <label for="createidea__type">Type</label>
           <div id="createidea__type" @mouseover="upHere = 0" @mouseleave="upHere = -1">
-            <input type="radio" name="ideatype" v-validate="'required|in:1,2'" value="0" v-model="ideaType">
+            <input type="radio" name="ideatype" v-validate="'required'" value="0" v-model="ideaType">
             <div class="type__title">Public</div>
             <div class="type__desc" v-if="upHere == 0">Anyone can read and give feedback</div>
           </div>
@@ -74,9 +93,11 @@ export default {
       ideaTitle: '',
       ideaDesc: '',
       linkText: '',
+      tagText: '',
       ideaType: '0',
       upHere: '-1',
       addLinkError: false,
+      tags: [],
       links: [
         'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
       ],
@@ -97,8 +118,18 @@ export default {
         }
       });
     },
+    addTag() {
+      const newVal = this.tagText.trim();
+      if (newVal.length !== 0) {
+        this.tags.push(newVal);
+        this.tagText = '';
+      }
+    },
     removeLink(index) {
       this.links.splice(index, 1);
+    },
+    removeTag(index) {
+      this.tags.splice(index, 1);
     },
     submitIdea() {
       const payload = {
