@@ -9,7 +9,7 @@
         
         <div class="createidea__form__element">
           <label for="createidea__title">Title</label>
-          <input id="createidea__title" type="text" name="title" v-model="ideaTitle" autofocus>
+          <input id="createidea__title" maxlength="100" type="text" name="title" v-model="ideaTitle" autofocus>
         </div>
 
         <div class="createidea__form__element">
@@ -36,16 +36,29 @@
 
         <div class="createidea__form__element">
           <label for="createidea__type">Type</label>
-          <select name="type" id="createidea__type">
-            <option value="">Public</option>
-            <option value="">
-              <div class="type__title">Private</div>
-              <div class="type__desc">Only visible to people that have link</div>
-            </option>
-            <option value="">Custom <span></span></option>
-          </select>
+          <div id="createidea__type" @mouseover="upHere = 0" @mouseleave="upHere = -1">
+            <input type="radio" name="ideatype" v-validate="'required|in:1,2'" value="0" v-model="ideaType">
+            <div class="type__title">Public</div>
+            <div class="type__desc" v-if="upHere == 0">Anyone can read and give feedback</div>
+          </div>
+          <div id="createidea__type" @mouseover="upHere = 1" @mouseleave="upHere = -1" >
+            <input type="radio" name="ideatype" value="1" v-model="ideaType">
+            <div class="type__title">Private</div>
+            <div class="type__desc" v-if="upHere == 1">Only visible to people that agree to the license</div>
+          </div>
+          <div id="createidea__type" @mouseover="upHere = 2" @mouseleave="upHere = -1" >
+            <input type="radio" name="ideatype" value="2" v-model="ideaType">
+            <div class="type__title">Custom</div>
+            <div class="type__desc" v-if="upHere == 2">Customise the license and choose the people that see the idea</div>
+          </div>
         </div>
+      </div>
 
+      <div class="createidea__cancel__button">
+        <a href="/dashboard">Cancel</a>
+      </div>
+      <div class="createidea__submit__button">
+        <button @click="submitIdea">Submit</button>
       </div>
     </section>
   </div>
@@ -60,6 +73,8 @@ export default {
       ideaTitle: '',
       ideaDesc: '',
       linkText: '',
+      ideaType: '0',
+      upHere: '-1',
       addLinkError: false,
       links: [
         'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
@@ -83,6 +98,16 @@ export default {
     },
     removeLink(index) {
       this.links.splice(index, 1);
+    },
+    submitIdea() {
+      const payload = {
+        ideaTitle: this.ideaTitle,
+        ideaDesc: this.ideaDesc,
+        links: this.links,
+      };
+
+      console.log(payload);
+      //  TODO Submit to server
     },
   },
 };
