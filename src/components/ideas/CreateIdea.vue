@@ -3,8 +3,10 @@
     <header class="create__header">
       <h1 class="create__title">Create Idea</h1>
     </header>
+    
     <section class="create__form__wrapper">
       <div class="create__form__group">
+        
         <div class="createidea__form__element">
           <label for="createidea__title">Title</label>
           <input id="createidea__title" type="text" name="title" v-model="ideaTitle" autofocus>
@@ -20,12 +22,13 @@
           <div id="createidea__links" class="create__form__link" v-for="(link, index) in links">
             <div :id="'link-'+index" class="createidea__link">
               <a :href="link">{{link}}</a>
-              <button id="remove__link"> X </button>
+              <button id="remove__link" @click="removeLink(index)"> X </button>
             </div>
           </div>
+          
           <div class="createidea__addlink">
-            <div v-if="addLinkError">Invalid link</div>
-            <input id="createidea__newlink" type="text" v-model="linkText">
+            <div v-show="errors.has('newlink')">Invalid link</div>
+            <input name="newlink" v-validate="'url'" data-vv-delay="1000" type="text" v-model="linkText" @keyup.enter="addLink">
             <button class="createidea__addlink__button"
             @click="addLink"> + </button>
           </div>
@@ -66,13 +69,18 @@ export default {
   methods: {
     addLink() {
       const newVal = this.linkText.trim();
-      if (newVal.length !== 0) {
-        this.links.push(newVal);
-        this.linkText = '';
-        this.addLinkError = false;
-      } else {
-        this.addLinkError = true;
-      }
+      this.$validator.validate('newlink', newVal)
+      .then((result) => {
+        if (result) {
+          if (newVal.length !== 0) {
+            this.links.push(newVal);
+            this.linkText = '';
+          }
+        }
+      });
+    },
+    removeLink(index) {
+      this.links.splice(index, 1);
     },
   },
 };
