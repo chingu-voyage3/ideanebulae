@@ -28,6 +28,7 @@
           
           <div class="createidea__addlink">
             <div v-show="errors.has('newlink')">Invalid link</div>
+            <label for="newlink">Add link</label>
             <input name="newlink" v-validate="'required|url'" data-vv-delay="1000" type="text" v-model="linkText" @keyup.enter="addLink">
             <button class="createidea__addlink__button"
             @click="addLink"> + </button>
