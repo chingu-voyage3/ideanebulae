@@ -137,9 +137,6 @@ export default {
         ideaDesc: this.ideaDesc,
         links: this.links,
       };
-
-      console.log(payload);
-      //  TODO Submit to server
     },
   },
 };
