@@ -38,26 +38,30 @@
 
           <div class="create__addtag">
             <label class="create__label" for="newTag">Add Tag</label>
-            <input class="create__input" name="newTag" type="text" v-model="tagText" @keyup.enter="addTag" @keyup.188="addTag" @keyup.tab="addTag">
+            <div class="create__input-wrap">
+              <input class="create__input" name="newTag" type="text" v-model="tagText" @keyup.enter="addTag" @keyup.188="addTag" @keyup.tab="addTag" placeholder="Add tags to help other users find your idea">
+              <button class="create__add-button"
+            @click="addTag"> + </button>
+            </div>
           </div>
         </div>
 
         <div class="create__form-element">
-          <label class="create__label" for="create__links">Links to more info</label>
-          <div class="create__info" v-if="links.length == 0">No links added yet</div>
           <div id="create__links" class="create__form__link" v-for="(link, index) in links">
             <div class="create__link">
               <a :href="link">{{link}}</a>
-              <button id="remove__link" @click="removeLink(index)"> &#10006; </button>
+              <button class="create__remove-link" id="remove__link" @click="removeLink(index)"> &times; </button>
             </div>
           </div>
 
           <div class="create__addlink">
             <div v-show="errors.has('newlink')">Invalid link</div>
             <label class="create__label" for="newlink">Add link</label>
-            <input class="create__input" name="newlink" v-validate="'required|url'" data-vv-delay="1000" type="text" v-model="linkText" @keyup.enter="addLink">
-            <button class="create__addlink-button"
+            <div class="create__input-wrap">
+              <input class="create__input" name="newlink" v-validate="'required|url'" data-vv-delay="1000" type="text" v-model="linkText" @keyup.enter="addLink" placeholder="Links to more information about your idea">
+              <button class="create__add-button"
             @click="addLink"> + </button>
+            </div>
           </div>
         </div>
 
@@ -157,20 +161,22 @@ export default {
 .create
 
   &__form-wrapper
-    border 1px solid $purple
-    padding 40px
     width 100%
     max-width 600px
     margin auto
+    padding 40px 10px
+    @media (min-width: 600px)
+      padding 40px
+      border 1px solid $purple
 
   &__header
     text-align center
     color $purple
-    margin-bottom 60px
     font-size 1.5em
     line-height 1.2em
-      @media (min-width: 600px)
-        font-size 36px
+    @media (min-width: 600px)
+      font-size 36px
+      margin-bottom 60px
 
     & h1
       font-weight 200 !important
@@ -182,10 +188,46 @@ export default {
     font-weight 700
     display block
 
+  &__input-wrap
+    width 100%
+    display flex
+    margin-bottom 10px
+
+  &__add-button
+    width 40px
+    margin-left 10px
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    text-align: center;
+    font-family: inherit;
+    font-weight: inherit;
+    font-size: inherit;
+    padding 6px 12px
+    border 1px solid $purple
+    letter-spacing 1.5px
+    color $purple
+    position: relative;
+    overflow: hidden;
+    transition all 300ms ease-in-out
+
+    &:hover, &:active, &:focus
+      -webkit-appearance: none;
+      appearance: none;
+      color: inherit;
+      background $purple
+      background linear-gradient(-134deg, $dkblue 0%, $pink 100%)
+      color white
+      border 1px solid $purple
+      transition all 300ms ease-in-out
+      -webkit-box-shadow: 2px 2px 10px 0 rgba(110, 28, 233, 0.8);
+      -moz-box-shadow: 2px 2px 10px 0 rgba(110, 28, 233, 0.8);
+      box-shadow: 2px 2px 10px 0 rgba(110, 28, 233, 0.8);
+
+
   &__input
     padding 10px
     width 100%
-    margin-bottom 10px
     font-size 1em
     border 1px solid $purple
 
@@ -268,11 +310,21 @@ export default {
       cursor: pointer;
       border-bottom-left-radius: 2px;
       border-top-left-radius: 2px;
-      border-right: 1px solid $ltblue;
       border-right: 1px solid rgba(0, 126, 255, 0.24);
       padding: 1px 5px 3px;
 
       &:hover
         // color: red;
+
+  &__remove-link
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-size: 1em;
+    border: 1px solid rgba(0, 126, 255, 0.24);
+    padding: 0 4px 2px;
+
 
 </style>
