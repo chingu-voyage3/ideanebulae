@@ -132,13 +132,13 @@ export default {
       this.tags.splice(index, 1);
     },
     submitIdea() {
-      // TODO: Remove this eslint disable once a reference to 'payload' has been resolved
-      // eslint-disable-next-line no-unused-vars
+      /* Uncomment once API implementation is complete.
       const payload = {
         ideaTitle: this.ideaTitle,
         ideaDesc: this.ideaDesc,
         links: this.links,
       };
+      */
     },
   },
 };
