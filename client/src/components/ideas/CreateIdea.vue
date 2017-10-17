@@ -18,18 +18,27 @@
         </div>
 
         <div class="create__form-tags">
-          <div id="create__tags" class="create__form-tag" v-for="(tag, index) in tags">
-            <div class="create__link">
-              <div class="tag">{{tag}}</div>
-              <button id="remove__link" @click="removeTag(index)"> &#10006; </button>
-            </div>
+          <div class="create__tag-wrap">
+            <span class="create__form-tag" v-for="(tag, index) in tags">
+              <span class="create__tag" >
+                <span class="create__tag__icon" aria-hidden="true">
+                  <button
+                    class="create__tag__button"
+                    @click="removeTag(index)">
+                      &times;
+                  </button>
+                </span>
+                <span class="create__tag__label" role="option" aria-selected="true">
+                    {{tag}}
+                  <span class="tag-aria-only">&nbsp;</span>
+                </span>
+              </span>
+            </span>
           </div>
 
           <div class="create__addtag">
             <label class="create__label" for="newTag">Add Tag</label>
-            <input class="create__input" name="newTag" type="text" v-model="tagText" @keyup.enter="addTag">
-            <button class="create__addlink-button"
-            @click="addTag"> + </button>
+            <input class="create__input" name="newTag" type="text" v-model="tagText" @keyup.enter="addTag" @keyup.188="addTag" @keyup.tab="addTag">
           </div>
         </div>
 
@@ -116,7 +125,10 @@ export default {
       });
     },
     addTag() {
-      const newVal = this.tagText.trim();
+      let newVal = this.tagText.trim();
+      if (newVal[newVal.length - 1] === ',') {
+        newVal = newVal.slice(0, -1);
+      }
       if (newVal.length !== 0) {
         this.tags.push(newVal);
         this.tagText = '';
@@ -209,5 +221,58 @@ export default {
 
       &:last-child
         margin-left 20px
+
+  &__form-tags
+
+
+  &__tag-wrap
+    margin-bottom 20px
+
+
+  &__tag
+    color: $gray_text;
+    display: inline-block;
+    font-size: 0.9em;
+    line-height: 1.4;
+    background-color: $ltblue;
+    background-color: rgba(255, 255, 255, 0.24);
+    border-radius: 2px;
+    border: 1px solid $gray_text;
+    border: 1px solid rgba(84, 84, 84, 0.24);
+    margin-right: 10px;
+    margin-top: 5px;
+    vertical-align: top;
+
+    &:hover
+      border: 1px solid $gray_bkgrd;
+      border: 1px solid rgba(84, 84, 84, 0.6);
+
+
+    &__label
+      border-bottom-right-radius: 2px;
+      border-top-right-radius: 2px;
+      cursor: default;
+      padding: 1px 5px 4px 5px;
+      display: inline-block;
+      vertical-align: middle;
+
+    &__button
+      -webkit-appearance: none;
+      appearance: none;
+      border: none;
+      background: transparent;
+      color: inherit;
+
+    &__icon
+      display: inline-block;
+      cursor: pointer;
+      border-bottom-left-radius: 2px;
+      border-top-left-radius: 2px;
+      border-right: 1px solid $ltblue;
+      border-right: 1px solid rgba(0, 126, 255, 0.24);
+      padding: 1px 5px 3px;
+
+      &:hover
+        // color: red;
 
 </style>
