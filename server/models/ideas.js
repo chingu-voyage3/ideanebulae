@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const ideaSchema = new Schema({
   creator_id: { type: String, required: true, unique: true },
   title: { type: String, required: true, unique: false },
-  type: { type: String, required: true, unique: false },
+  type: { type: String, enum: ['public', 'private', 'commercial',], required: true, unique: false },
   description: { type: String, required: true, unique: false },
   documents: { 
     url_description: { type: String, required: true, unique: false },
