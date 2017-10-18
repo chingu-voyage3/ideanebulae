@@ -68,20 +68,23 @@
         <div class="create__form-element">
           <label class="create__label" for="create__type">Type</label>
           <div class="create__radio-group">
-            <div class="create__type" @mouseover="upHere = 0" @mouseleave="upHere = -1">
+            <div class="create__radio create__option" @mouseover="upHere = 0" @mouseleave="upHere = -1">
               <input type="radio" name="ideatype" v-validate="'required'" value="0" v-model="ideaType">
-              <div class="create__type-title">Public</div>
-              <div class="create__type-desc" v-if="upHere == 0">Anyone can read and give feedback</div>
+              <div class="create__type-title tooltip">Public
+                <span class="create__type-desc tooltiptext" v-if="upHere == 0">Anyone can read and give feedback</span>
+              </div>
             </div>
-            <div class="create__type" @mouseover="upHere = 1" @mouseleave="upHere = -1" >
+            <div class="create__radio create__option" @mouseover="upHere = 1" @mouseleave="upHere = -1" >
               <input type="radio" name="ideatype" value="1" v-model="ideaType">
-              <div class="create__type-title">Private</div>
-              <div class="create__type-desc" v-if="upHere == 1">Only visible to people who agree to the license</div>
+              <div class="create__type-title tooltip">Private
+                <span class="create__type-desc tooltiptext" v-if="upHere == 1">Only visible to people who agree to the license</span>
+              </div>
             </div>
-            <div class="create__type" @mouseover="upHere = 2" @mouseleave="upHere = -1" >
+            <div class="create__radio create__option" @mouseover="upHere = 2" @mouseleave="upHere = -1" >
               <input type="radio" name="ideatype" value="2" v-model="ideaType">
-              <div class="create__type-title">Custom</div>
-              <div class="create__type-desc" v-if="upHere == 2">Customise the license and choose the people that see the idea</div>
+              <div class="create__type-title tooltip">Custom
+                <span class="create__type-desc tooltiptext" v-if="upHere == 2">Customise the license and choose who can see the idea</span>
+              </div>
             </div>
           </div>
         </div>
@@ -246,6 +249,9 @@ export default {
     display inline-block
     width 33%
 
+  &__link
+    margin 10px 0
+
   &__radio-group
     display flex
     width 100%
@@ -276,18 +282,15 @@ export default {
     display: inline-block;
     font-size: 0.9em;
     line-height: 1.4;
-    background-color: $ltblue;
-    background-color: rgba(255, 255, 255, 0.24);
+    background-color: transparent;
     border-radius: 2px;
-    border: 1px solid $gray_text;
-    border: 1px solid rgba(84, 84, 84, 0.24);
+    border: 1px solid rgba(0, 126, 255, 0.24);
     margin-right: 10px;
     margin-top: 5px;
     vertical-align: top;
 
     &:hover
       border: 1px solid $gray_bkgrd;
-      border: 1px solid rgba(84, 84, 84, 0.6);
 
 
     &__label
@@ -325,6 +328,145 @@ export default {
     font-size: 1em;
     border: 1px solid rgba(0, 126, 255, 0.24);
     padding: 0 4px 2px;
+    margin-left 10px
+
+    &:hover
+      border: 1px solid $gray_bkgrd;
+
+  &__option
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      -ms-appearance: none;
+      -o-appearance: none;
+      appearance: none;
+      position: relative;
+      top: 4px;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 20px;
+      width: 20px;
+      transition: all 0.15s ease-out 0s;
+      border: 2px solid $purple
+      color: $purple
+      cursor: pointer;
+      display: block;
+      margin-right: 0.5rem;
+      outline: none;
+      position: relative;
+      z-index: 10;
+
+      & input
+        z-index: -1
+        opacity: 0
+        width 100%
+        display flex
+        height 20px
+        position relative
+
+
+      &:hover
+        background: $pink;
+
+      &:checked
+        background: $pink;
+
+      &::before
+        height: 12px;
+        width: 12px;
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        content: '';
+        display: inline-block;
+        border-radius: 100%;
+        background-color: white;
+
+        &:focus
+          border-radius: 50%;
+
+      &::after
+        background: #40e0d0;
+        content: '';
+        display: block;
+        position: relative;
+        z-index: 100;
+
+  &__type-title
+    text-align center
+    width 100%
+    position absolute
+    top -24px
+    left 30px
+
+  &__type-desc
+    width 100%
+    min-width 60vw
+    margin-left 60px
+    padding-left 10px
+    font-size .8em
+
+
+  &__radio-group
+    padding: 10px 0;
+    display flex
+    flex-direction column
+    width 100%
+
+  &__radio
+    margin: 0 5px 15px 0;
+    padding: 1px;
+    border-radius: 50%;
+    display block
+    text-align center
+
+    &::after
+      border-radius: 50%;
+
+    &:focus
+      border-radius: 50%;
+
+  &__radio-label
+    color: $gray_text;
+    padding: 0 15px 0 0;
+
+  &__radio-wrap
+    display: inline-block;
+
+.tooltip {
+    position: relative;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 100%;
+    background-color $purple
+    color: white;
+    border: 1px solid $purple
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 110%;
+    text-align: center
+    padding 10px
+    line-height 1em
+}
+
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent $purple transparent transparent;
+}
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
 
 
 </style>
