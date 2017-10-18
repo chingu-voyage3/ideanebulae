@@ -29,7 +29,6 @@ export default {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  outline: 0;
 }
 
 #app {
@@ -74,7 +73,7 @@ export default {
 
 // global button styles
 
-.btn {
+.btn
   -webkit-appearance: none;
   appearance: none;
   border: none;
@@ -82,16 +81,16 @@ export default {
   color: inherit;
 
 
-  &:hover, &:active, &:focus {
+  &:hover, &:active, &:focus
     -webkit-appearance: none;
     appearance: none;
     border: none;
     background: transparent;
-    outline: none;
     color: inherit;
+    border-radius 40px !important
 
-  }
-  &__primary {
+
+  &__primary
     text-align: center;
     font-family: inherit;
     font-weight: inherit;
@@ -106,7 +105,7 @@ export default {
     transition all 300ms ease-in-out
 
 
-    &:hover, &:active {
+    &:hover, &:active
       background $purple
       background linear-gradient(-134deg, $dkblue 0%, $pink 100%)
       color white
@@ -115,9 +114,17 @@ export default {
       -webkit-box-shadow: 2px 2px 10px 0 rgba(110, 28, 233, 0.8);
       -moz-box-shadow: 2px 2px 10px 0 rgba(110, 28, 233, 0.8);
       box-shadow: 2px 2px 10px 0 rgba(110, 28, 233, 0.8);
-    }
 
-    &:after {
+
+    &:focus
+      outline 0
+      border 1px solid $purple
+      -webkit-box-shadow: 0 0 6px 0 rgba(110, 28, 233, 0.8);
+      -moz-box-shadow: 0 0 6px 0 rgba(110, 28, 233, 0.8);
+      box-shadow: 0 0 6px 0 rgba(110, 28, 233, 0.8);
+
+
+    &:after
       content: '';
       position: absolute;
       top: 50%;
@@ -129,26 +136,23 @@ export default {
       border-radius: 100%;
       transform: scale(1, 1) translate(-50%);
       transform-origin: 50% 50%;
-    }
 
-    @keyframes ripple {
-      0% {
+
+    @keyframes ripple
+      0%
         transform: scale(0, 0);
         opacity: 1;
-      }
-      20% {
+
+      20%
         transform: scale(25, 25);
         opacity: 1;
-      }
-      100% {
+
+      100%
         opacity: 0;
         transform: scale(40, 40);
-      }
-    }
 
-    &:focus:not(:active)::after {
+
+    &:focus:not(:active)::after
       animation: ripple 1s ease-out;
-    }
-  }
-}
+
 </style>
