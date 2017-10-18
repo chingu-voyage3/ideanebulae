@@ -68,19 +68,19 @@
         <div class="create__form-element">
           <label class="create__label" for="create__type">Type</label>
           <div class="create__radio-group">
-            <div class="create__radio create__option" @mouseover="upHere = 0" @mouseleave="upHere = -1">
+            <div class="create__radio create__option" v-bind:class="{ active: ideaType === 0 }" @mouseover="upHere = 0" @mouseleave="upHere = -1" @click="typeToggle(0)">
               <input type="radio" name="ideatype" v-validate="'required'" value="0" v-model="ideaType">
               <div class="create__type-title tooltip">Public
                 <span class="create__type-desc tooltiptext" v-if="upHere == 0">Anyone can read and give feedback</span>
               </div>
             </div>
-            <div class="create__radio create__option" @mouseover="upHere = 1" @mouseleave="upHere = -1" >
+            <div class="create__radio create__option" v-bind:class="{ active: ideaType === 1 }" @mouseover="upHere = 1" @mouseleave="upHere = -1" @click="typeToggle(1)">
               <input type="radio" name="ideatype" value="1" v-model="ideaType">
               <div class="create__type-title tooltip">Private
                 <span class="create__type-desc tooltiptext" v-if="upHere == 1">Only visible to people who agree to the license</span>
               </div>
             </div>
-            <div class="create__radio create__option" @mouseover="upHere = 2" @mouseleave="upHere = -1" >
+            <div class="create__radio create__option" v-bind:class="{ active: ideaType === 2 }" @mouseover="upHere = 2" @mouseleave="upHere = -1" @click="typeToggle(2)">
               <input type="radio" name="ideatype" value="2" v-model="ideaType">
               <div class="create__type-title tooltip">Custom
                 <span class="create__type-desc tooltiptext" v-if="upHere == 2">Customise the license and choose who can see the idea</span>
@@ -146,6 +146,10 @@ export default {
     },
     removeTag(index) {
       this.tags.splice(index, 1);
+    },
+    typeToggle(type) {
+      console.log(type);
+      this.ideaType = type;
     },
     submitIdea() {
       // const payload = {
@@ -234,6 +238,11 @@ export default {
     font-size 1em
     border 1px solid $purple
 
+    &:focus
+      -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+      -moz-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+      box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+
   &__textarea
     width 100%
     padding 10px
@@ -244,6 +253,11 @@ export default {
     line-height: 1.5em
     border 1px solid $purple
     margin-bottom 10px
+
+    &:focus
+      -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+      -moz-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+      box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
 
   &__type
     display inline-block
@@ -352,7 +366,6 @@ export default {
       cursor: pointer;
       display: block;
       margin-right: 0.5rem;
-      outline: none;
       position: relative;
       z-index: 10;
 
@@ -401,10 +414,12 @@ export default {
 
   &__type-desc
     width 100%
-    min-width 60vw
+    min-width 150px
     margin-left 60px
     padding-left 10px
     font-size .8em
+    @media (min-width: 600px)
+      min-width 400px
 
 
   &__radio-group
@@ -439,18 +454,16 @@ export default {
 
 .tooltip .tooltiptext {
     visibility: hidden;
-    width: 100%;
+    width: 60%;
     background-color $purple
     color: white;
     border: 1px solid $purple
-    border-radius: 6px;
-    padding: 5px 0;
     position: absolute;
     z-index: 1;
     top: -5px;
     left: 110%;
     text-align: center
-    padding 10px
+    padding 9px 10px 11px 10px
     line-height 1em
 }
 
@@ -467,6 +480,17 @@ export default {
 .tooltip:hover .tooltiptext {
     visibility: visible;
 }
+
+.active::before
+  height: 12px;
+  width: 12px;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  content: '';
+  display: inline-block;
+  border-radius: 100%;
+  background-color: purple;
 
 
 </style>
