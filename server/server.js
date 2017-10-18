@@ -44,5 +44,21 @@ app.get('/api/private', authCheck, (req, res) => {
   res.json(message);
 });
 
+/**
+ * API Path: Retrieve a users profile from the database. The user id 
+ * identifying the user whose profile is to be returned is embedded in the
+ * request
+ * 
+ * @param Object req HTML Request object
+ * @param Object res HTML Response object
+ * @returns Object userProfile An object containting the user profile
+ * information or null if no profile was found
+ */
+app.get('/api/profile/:userId(*)', (req, res) => {
+  const userId = request.params.userId;
+  // TODO: Retrieve user profile information
+  // res.json(userProfile);
+});
+
 app.listen(7000);
 console.log('The server is running on port 7000');
