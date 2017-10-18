@@ -1,3 +1,5 @@
+import { getUserProfile } from './services/userProfile';
+
 const express = require('express');
 const app = express();
 const jwt = require('express-jwt');
@@ -45,19 +47,19 @@ app.get('/api/private', authCheck, (req, res) => {
 });
 
 /**
- * API Path: Retrieve a users profile from the database. The user id 
+ * @description API Path: Retrieve a users profile from the database. The user id 
  * identifying the user whose profile is to be returned is embedded in the
  * request
- * 
  * @param Object req HTML Request object
  * @param Object res HTML Response object
  * @returns Object userProfile An object containting the user profile
  * information or null if no profile was found
  */
 app.get('/api/profile/:userId(*)', (req, res) => {
+  console.log(`server -> /api/profile GOT HERE`);
   const userId = request.params.userId;
-  // TODO: Retrieve user profile information
-  // res.json(userProfile);
+  const userProfile = getUserProfile(userId);
+  res.json(userProfile);
 });
 
 app.listen(7000);
