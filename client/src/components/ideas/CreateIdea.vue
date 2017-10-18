@@ -152,11 +152,13 @@ export default {
       this.ideaType = type;
     },
     submitIdea() {
-      // const payload = {
-      //   ideaTitle: this.ideaTitle,
-      //   ideaDesc: this.ideaDesc,
-      //   links: this.links,
-      // };
+      /* Uncomment once API implementation is complete.
+      const payload = {
+        ideaTitle: this.ideaTitle,
+        ideaDesc: this.ideaDesc,
+        links: this.links,
+      };
+      */
     },
   },
 };
