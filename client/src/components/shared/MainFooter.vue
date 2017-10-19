@@ -1,7 +1,7 @@
 <template>
   <footer class="footer">
   	<div class="footer__text">
-  	Made with &hearts; by Chingu Coders (Team name?)
+  	Made with &hearts; by Chingu Coders
   	</div>
   	<div class="footer__icon">
   		<a href="https://github.com/chingu-coders/Voyage2-Bears-27" target="_blank" rel="noopener noreferrer" title="github">
