@@ -53,6 +53,15 @@
 </template>
 
 <script>
+  // eslint disable
+  import http from '../../api/index';
+
+http.get('/profile/?userId=jdmedlock').then((response) => {
+    console.log(`response: ${response.data}`);
+}).catch((err) => {
+    console.log(err);
+});
+
   export default {
     name: 'UserProfile',
     data() {
