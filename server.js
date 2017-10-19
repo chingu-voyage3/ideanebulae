@@ -55,6 +55,7 @@ app.get('/api/private', authCheck, (req, res) => {
  * @returns Object userProfile An object containting the user profile
  * information or null if no profile was found
  */
+console.log(`server -> Prior to app.get`);
 app.get('/api/profile/:userId(*)', (req, res) => {
   console.log(`server -> /api/profile GOT HERE`);
   const userId = request.params.userId;
