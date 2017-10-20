@@ -5,8 +5,8 @@ import { getAccessToken } from '@/auth';
 // along with every single request
 /* eslint-disable */
 const http = new axios.create({
-  baseURL: 'http://localhost/api',
-  timeout: 1000,
+  baseURL: 'http://localhost:7000/api',
+  timeout: 5000,
   headers: {
     Authorization: `Bearer ${getAccessToken()}`,
   },

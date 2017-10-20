@@ -53,6 +53,9 @@
 </template>
 
 <script>
+  // eslint disable
+  import http from '../../api/index';
+
   export default {
     name: 'UserProfile',
     data() {
@@ -88,6 +91,14 @@
     },
     mounted() {
       this.adjustTextArea(document.getElementById('qualifications'));
+      http.get('/profile/?userId=jdmedlock').then((response) => {
+        this.userName = response.data.user_id;
+        this.name = response.data.user_name;
+        this.avatarUrl = response.data.avatar_url;
+        this.userQualifications = response.data.qualifications;
+      }).catch((err) => {
+        console.log(err);
+      });
     },
   };
 </script>
