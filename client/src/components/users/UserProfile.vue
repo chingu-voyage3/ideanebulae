@@ -91,9 +91,11 @@
     },
     mounted() {
       this.adjustTextArea(document.getElementById('qualifications'));
-      console.log('UserProfile - prior to API call');
       http.get('/profile/?userId=jdmedlock').then((response) => {
-        console.log(`response: ${JSON.stringify(response.data)}`);
+        this.userName = response.data.user_id;
+        this.name = response.data.user_name;
+        this.avatarUrl = response.data.avatar_url;
+        this.userQualifications = response.data.qualifications;
       }).catch((err) => {
         console.log(err);
       });

@@ -56,10 +56,14 @@ app.get('/api/private', authCheck, (req, res) => {
  * information or null if no profile was found
  */
 app.get('/api/profile/:userId(*)', (req, res) => {
-  console.log(`req.params.userId: ${req.params.userId}`);
   const userId = req.params.userId;
-  const userProfile = getUserProfile('jdmedlock');
-  res.json(userProfile);
+  getUserProfile('jdmedlock')
+  .then((userProfile) => {
+    res.json(userProfile);
+  })
+  .catch((error) => {
+    console.log(`server.app.get('/api/profile/: Unable to retrieve user profile ${error}`);
+  });
 });
 
 app.listen(7000);

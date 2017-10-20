@@ -8,9 +8,9 @@ const userSchema = new Schema({
   security_id: { type: String, required: true, unique: true },
   avatar_url: { type: String, required: true, unique: false },
   qualifications: { type: String, required: false, unique: false },
-});
+}, { collection: 'users' });
 
 // Create a model for the schema
-const Users = mongoose.model('Users', userSchema);
+const Users = mongoose.model('users', userSchema);
 
 module.exports = Users;
