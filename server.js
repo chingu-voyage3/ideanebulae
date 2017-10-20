@@ -50,9 +50,9 @@ app.get('/api/private', authCheck, (req, res) => {
  * @description API Path: Retrieve a users profile from the database. The user id 
  * identifying the user whose profile is to be returned is embedded in the
  * request
- * @param Object req HTML Request object
- * @param Object res HTML Response object
- * @returns Object userProfile An object containting the user profile
+ * @param {Object} req HTML Request object
+ * @param {Object} res HTML Response object
+ * @returns {Object} userProfile An object containing the user profile
  * information or null if no profile was found
  */
 app.get('/api/profile/:userId(*)', (req, res) => {
@@ -63,6 +63,63 @@ app.get('/api/profile/:userId(*)', (req, res) => {
   })
   .catch((error) => {
     console.log(`server.app.get('/api/profile/: Unable to retrieve user profile ${error}`);
+  });
+});
+
+/**
+ * @description API Path: Add users profile in the database. The 
+ * profile data object is embedded in the request.
+ * @param {Object} req HTML Request object
+ * @param {Object} res HTML Response object
+ * @returns {Object} An object containing information about the final 
+ * status of the request.
+ */
+app.post('/api/profile/:userProfile', (req, res) => {
+  const userId = req.params.userProfile;
+  addUserProfile()
+  .then((requestStatus) => {
+    res.json(requestStatus);
+  })
+  .catch((error) => {
+    console.log(`server.app.post('/api/profile/: Unable to add user profile ${error}`);
+  });
+});
+
+/**
+ * @description API Path: Update a users profile in the database. The 
+ * profile data object is embedded in the request.
+ * @param {Object} req HTML Request object
+ * @param {Object} res HTML Response object
+ * @returns {Object} An object containing information about the final 
+ * status of the request.
+ */
+app.put('/api/profile/:userProfile', (req, res) => {
+  const userId = req.params.userProfile;
+  updateUserProfile()
+  .then((requestStatus) => {
+    res.json(requestStatus);
+  })
+  .catch((error) => {
+    console.log(`server.app.put('/api/profile/: Unable to add user profile ${error}`);
+  });
+});
+
+/**
+ * @description API Path: Delete a users profile in the database. The 
+ * profile data object is embedded in the request.
+ * @param {Object} req HTML Request object
+ * @param {Object} res HTML Response object
+ * @returns {Object} An object containing information about the final 
+ * status of the request.
+ */
+app.delete('/api/profile/:userId', (req, res) => {
+  const userId = req.params.userProfile;
+  deleteUserProfile()
+  .then((requestStatus) => {
+    res.json(requestStatus);
+  })
+  .catch((error) => {
+    console.log(`server.app.put('/api/profile/: Unable to delete user profile ${error}`);
   });
 });
 
