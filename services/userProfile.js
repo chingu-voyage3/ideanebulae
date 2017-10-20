@@ -1,6 +1,6 @@
+import config from './mongoose.config';
 import mongoose from 'mongoose';
 import Users from '../models/Users';
-import { closeConnection, getConnection, openConnection } from './db';
 
 /**
  * User Service
@@ -11,20 +11,26 @@ import { closeConnection, getConnection, openConnection } from './db';
 /**
  * @description Retrieve the information for a specified user.
  * @param {String} userId - User id specifying which users information is to be retrieved.
- * @returns {String[]} userAttributs - Array of key/value pairs which describe the user.
+ * @returns {Promise} promise - A Promise that when resolved will contain the User Profile 
+ * JSON object..
  */
 const getUserProfile = (userId) => {
-  console.log(`getUserProfile -> userId:${userId}`);
-  openConnection()
-  .then(() => {
-    mongoose.Promise = global.Promise;
-    const query = Users.findOne({})
+  mongoose.Promise = global.Promise;
+  const promise = new Promise((resolve, reject) => {
+    mongoose.connect(config.db.mongoURI, {useMongoClient: true,})
+    .then(() => {
+      const query = Users.findOne({})
       .where('user_id').equals(userId);
-    query.exec()
+      query.exec()
       .then((profile) => {
-        console.log(`profile.user_name: ${profile}`);
+        resolve(profile);
+      })
+      .catch((error) => {
+        reject(`UserProfile.getUserProfile: Mongoose connect failure - ${error}`);
       });
+    });
   });
+  return promise;
 }; 
 
 export { getUserProfile };
