@@ -56,12 +56,6 @@
   // eslint disable
   import http from '../../api/index';
 
-http.get('/profile/?userId=jdmedlock').then((response) => {
-    console.log(`response: ${response.data}`);
-}).catch((err) => {
-    console.log(err);
-});
-
   export default {
     name: 'UserProfile',
     data() {
@@ -97,6 +91,12 @@ http.get('/profile/?userId=jdmedlock').then((response) => {
     },
     mounted() {
       this.adjustTextArea(document.getElementById('qualifications'));
+      console.log('UserProfile - prior to API call');
+      http.get('/profile/?userId=jdmedlock').then((response) => {
+        console.log(`response: ${JSON.stringify(response.data)}`);
+      }).catch((err) => {
+        console.log(err);
+      });
     },
   };
 </script>

@@ -1,5 +1,6 @@
-import User from '../models/users.js';
-import { closeConnection, getConnection } from './db';
+import mongoose from 'mongoose';
+import Users from '../models/Users';
+import { closeConnection, getConnection, openConnection } from './db';
 
 /**
  * User Service
@@ -13,38 +14,17 @@ import { closeConnection, getConnection } from './db';
  * @returns {String[]} userAttributs - Array of key/value pairs which describe the user.
  */
 const getUserProfile = (userId) => {
-  const query = `{ user_id: { $eq: ${userId} } }`;
-  console.log(`getUserProfile -> query:${query}`);
-  get((_db) => {
-    _db.collection('Users').find(query)
-      .toArray((err, docs) => {
-        // TODO: Clean up error handling logic to throw a proper error
-        if (err) {
-          console.log('DB Find Error', err);
-        }
-        if (docs && docs.length > 0) {
-          return cb(docs);
-        }
-        return cb(null);
-      });
-  });}; 
-
-/**
- * @description 
- * @param {any} query 
- * @param {function} cb - Callback function to be invoked once the connection has been established
- */
-const find = (query, cb) => {
-  get((_db) => {
-    _db.collection('users').find(query)
-      .toArray((err, docs) => {
-        if (err) console.log('DB Find Error', err); // eslint-disable-line no-console
-        if (docs && docs.length > 0) {
-          return cb(docs);
-        }
-        return cb(null);
+  console.log(`getUserProfile -> userId:${userId}`);
+  openConnection()
+  .then(() => {
+    mongoose.Promise = global.Promise;
+    const query = Users.findOne({})
+      .where('user_id').equals(userId);
+    query.exec()
+      .then((profile) => {
+        console.log(`profile.user_name: ${profile}`);
       });
   });
-};
+}; 
 
 export { getUserProfile };
