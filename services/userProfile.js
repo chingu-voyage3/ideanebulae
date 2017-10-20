@@ -35,7 +35,7 @@ const deleteUserProfile = (userId) => {
         const requestState = { 
           action: 'deleteUserProfile',
           parm: userId,
-          finalState: 'success',
+          finalState: '',
         }
         requestState.finalState = err ? 'failed' : 'success';
         resolve(requestState); 
