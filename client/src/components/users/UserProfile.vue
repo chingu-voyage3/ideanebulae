@@ -97,7 +97,8 @@
         this.avatarUrl = response.data.avatar_url;
         this.userQualifications = response.data.qualifications;
       }).catch((err) => {
-        console.log(err);
+        // eslint-disable-next-line
+        console.error(err);
       });
     },
   };

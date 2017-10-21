@@ -19,7 +19,7 @@
 
         <div class="create__form-tags">
           <div class="create__tag-wrap">
-            <span class="create__form-tag" v-for="(tag, index) in tags">
+            <span class="create__form-tag" v-for="(tag, index) in tags" v-bind:key="index">
               <span class="create__tag" >
                 <span class="create__tag__icon" aria-hidden="true">
                   <button
@@ -47,7 +47,7 @@
         </div>
 
         <div class="create__form-element">
-          <div id="create__links" class="create__form__link" v-for="(link, index) in links">
+          <div id="create__links" class="create__form__link" v-for="(link, index) in links" v-bind:key="index">
             <div class="create__link">
               <a :href="link">{{link}}</a>
               <button class="create__remove-link" id="remove__link" @click="removeLink(index)"> &times; </button>
@@ -148,7 +148,6 @@ export default {
       this.tags.splice(index, 1);
     },
     typeToggle(type) {
-      console.log(type);
       this.ideaType = type;
     },
     submitIdea() {
