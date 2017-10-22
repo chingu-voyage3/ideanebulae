@@ -38,6 +38,21 @@ router.route('/profile/:userId(*)')
       .catch(err => res.send(err));
   });
 
+// Update the data for a given user
+router.route('/profile/:userId(*)')  
+  .post((req, res) => {
+    console.log(`server/router/index.js - userid:${req.params.userId} userProfile:${req.body}`);
+    User.createOrUpdateUser(req.body)
+      .then(() => {
+        console.log('User profile created/updated');
+        res.json('User profile created/updated');
+      })
+      .catch(err => {
+        console.error(err);
+        res.send(err);
+      });
+  });
+
 router.route('/ideas')
   .get((req, res) => {
     Idea.listIdeas()

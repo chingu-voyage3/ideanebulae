@@ -8,4 +8,14 @@ export default class userMethods {
   static async findUser(userId) {
     return await this.findOne({'user_id': userId});
   }
+
+  // Update a user if it exists, otherwise inserts it
+  static async createOrUpdateUser(userId, userProfile) {
+    return await this.findOneAndUpdate(
+      {'user_id': userId},
+      userProfile,
+      { upsert: true }
+    );
+  }
+  
 }
