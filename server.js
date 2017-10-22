@@ -1,4 +1,4 @@
-import { getUserProfile } from './services/userProfile';
+import { getUserProfile, updateUserProfile } from './services/userProfile';
 
 const express = require('express');
 const app = express();
@@ -74,7 +74,7 @@ app.get('/api/profile/:userId(*)', (req, res) => {
  * @returns {Object} An object containing information about the final 
  * status of the request.
  */
-app.post('/api/profile/:userProfile', (req, res) => {
+app.post('/api/profile/:userProfile(*)', (req, res) => {
   const userId = req.params.userProfile;
   addUserProfile()
   .then((requestStatus) => {
@@ -93,10 +93,12 @@ app.post('/api/profile/:userProfile', (req, res) => {
  * @returns {Object} An object containing information about the final 
  * status of the request.
  */
-app.put('/api/profile/:userProfile', (req, res) => {
-  const userId = req.params.userProfile;
-  updateUserProfile()
+app.put('/api/profile/:userProfile(*)', (req, res) => {
+  const userProfile = req.params.userProfile;
+  console.log(`/api/profile/:userProfile(*): ${JSON.stringify(req.params.userProfile)}`);
+  updateUserProfile(userProfile)
   .then((requestStatus) => {
+    console.log(`/api/profile/:userProfile(*): requestStatus ${requestStatus}`);    
     res.json(requestStatus);
   })
   .catch((error) => {
@@ -112,14 +114,15 @@ app.put('/api/profile/:userProfile', (req, res) => {
  * @returns {Object} An object containing information about the final 
  * status of the request.
  */
-app.delete('/api/profile/:userId', (req, res) => {
+app.delete('/api/profile/:userId(*)', (req, res) => {
   const userId = req.params.userProfile;
   deleteUserProfile()
-  .then((requestStatus) => {
-    res.json(requestStatus);
+  .then((apiState) => {
+    res.json(apiState);
   })
-  .catch((error) => {
+  .catch((apiState) => {
     console.log(`server.app.put('/api/profile/: Unable to delete user profile ${error}`);
+    res.json(apiState);
   });
 });
 

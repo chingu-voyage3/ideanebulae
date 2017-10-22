@@ -23,26 +23,22 @@ const addUserProfile = (userProfile) => {
  * @description Delete the profile information for a specified user.
  * @param {String} userId - User id specifying which users information is to be
  * deleted.
- * @returns {Object} promise - A promise which when resolved will contain
- * information about the final state of the request.
+ * @returns {Object} promise - A promise which when resolved will be null if
+ * the request was successful otherwise it will contain an Error object which
+ * describes the fault.
  */
 const deleteUserProfile = (userId) => {
   mongoose.Promise = global.Promise;
   const promise = new Promise((resolve, reject) => {
     mongoose.connect(config.db.mongoURI, {useMongoClient: true,})
     .then(() => {
-      User.findOneAndRemove({ username: `${userId}` }, function(err) {
-        const requestState = { 
-          action: 'deleteUserProfile',
-          parm: userId,
-          finalState: '',
-        }
-        requestState.finalState = err ? 'failed' : 'success';
-        resolve(requestState); 
+      User.findOneAndRemove({ username: `${userId}` }, (err) => {
+        const result = err ? err : null;
+        resolve(result); 
       })       
     })
     .catch((error) => {
-      reject(`UserProfile.deleteUserProfile: Mongoose connect failure - ${error}`);
+      resolve(error);
     });
   });
   return promise;
@@ -53,7 +49,8 @@ const deleteUserProfile = (userId) => {
  * @param {String} userId - User id specifying which users information is to be
  * retrieved.
  * @returns {Promise} promise - A Promise that when resolved will contain the
- * User Profile JSON object.
+ * User Profile JSON object if the request was successful otherwise it will 
+ * contain an Error object which describes the fault.
  */
 const getUserProfile = (userId) => {
   mongoose.Promise = global.Promise;
@@ -67,7 +64,7 @@ const getUserProfile = (userId) => {
         resolve(profile);
       })
       .catch((error) => {
-        reject(`UserProfile.getUserProfile: Mongoose connect failure - ${error}`);
+        resolve(error);
       });
     });
   });
@@ -82,7 +79,22 @@ const getUserProfile = (userId) => {
  * information about the final state of the request.
  */
 const updateUserProfile = (userProfile) => {
-  // TODO: Complete this function
-};
+  console.log(`updateUserProfile: userProfile: ${userProfile}`);
+  mongoose.Promise = global.Promise;
+  const promise = new Promise((resolve, reject) => {
+    mongoose.connect(config.db.mongoURI, {useMongoClient: true,})
+    .then(() => {
+      const query = Users.findOneAndUpdate({}, userProfile, { upsert: false })
+      .then((result) => {
+        console.log(`updateUserProfile: result: ${result}`);
+        resolve(result);
+      })
+      .catch((error) => {
+        console.log(`updateUserProfile: error: ${error}`);
+        resolve(error);
+      });
+    });
+  });
+  return promise;};
 
 export { addUserProfile, deleteUserProfile, getUserProfile, updateUserProfile };
