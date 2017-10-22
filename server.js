@@ -1,4 +1,4 @@
-import { getUserProfile, updateUserProfile } from './services/userProfile';
+import { getUserProfile, updateUserProfile } from './models/methods/userProfile';
 
 const express = require('express');
 const app = express();
@@ -95,7 +95,7 @@ app.post('/api/profile/:userProfile(*)', (req, res) => {
  */
 app.put('/api/profile/:userProfile(*)', (req, res) => {
   const userProfile = req.params.userProfile;
-  console.log(`/api/profile/:userProfile(*): ${JSON.stringify(req.params.userProfile)}`);
+  console.log(`/api/profile/:userProfile(*): ${req.params.userProfile}`);
   updateUserProfile(userProfile)
   .then((requestStatus) => {
     console.log(`/api/profile/:userProfile(*): requestStatus ${requestStatus}`);    
