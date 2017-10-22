@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import ideaMethods from './methods/ideaMethods';
 
 // Create the schema for the Ideas collection
 const ideaSchema = new Schema({
@@ -81,6 +82,7 @@ const ideaSchema = new Schema({
 });
 
 // Create a model for the schema
+ideaSchema.loadClass(ideaMethods);
 const Idea = mongoose.model('Idea', ideaSchema);
 
 export default Idea;
