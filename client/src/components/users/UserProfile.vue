@@ -1,7 +1,7 @@
 <template>
   <div class="container profile">
     <header class="profile__header">
-      <h1>{{userName}}&rsquo;s profile</h1>
+      <h1>{{userId}}&rsquo;s profile</h1>
     </header>
 
     <section>
@@ -13,16 +13,16 @@
                 <div
                   class="profile__image"
                   role="image"
-                  :style="{ backgroundImage: `url(${avatarUrl})` }"
-                  :aria-label="name"></div>
+                  :style="{ backgroundImage: `url(${userAvatarUrl})` }"
+                  :aria-label="userName"></div>
               </div>
             </div>
           </div>
           <div class="profile__card-top profile__text-wrap">
             <div class="profile__name">
-              {{name}}</div>
-            <div class="profile__username">
               {{userName}}</div>
+            <div class="profile__username">
+              {{userId}}</div>
           </div>
           </div>
           <div class="profile__qualifications">
@@ -60,16 +60,30 @@
     name: 'UserProfile',
     data() {
       return {
-        userName: 'isisAnchalee',
-        name: 'Isis Anchalee',
-        avatarUrl: 'https://ghc.anitab.org/wp-content/uploads/sites/2/2015/10/Isis_Anchalee.jpg',
-        userQualifications: 'Software Engineer at Hustle. Building scalable text message based communication tools for political campaigns/organizations like Planned Parenthood, Bernie Sanders, Michelle Obama, Hillary Clinton, etc. Advisory Board Member at Women Who Code, a 501(c)3 nonprofit whose mission lends itself to women around the world – connecting them to technology and to one another. Former Software Engineer at Uber, OneLogin.',
+        userId: '',
+        userName: '',
+        userAvatarUrl: '',
+        userQualifications: '',
         edit: false,
       };
     },
     methods: {
       saveQualifications() {
         this.toggleEdit();
+        const userProfile = {
+          userId: this.userId,
+          userName: this.userName,
+          userAvatarURL: this.userAvatarURL,
+          userQualifications: this.userQualifications,
+        };
+        console.log(`userProfile: ${JSON.stringify(userProfile)}`);
+        http.put(`/profile/?userProfile=${JSON.stringify(userProfile)}`).then((response) => {
+          if (response === null) {
+            // TODO: Issue update successful message
+          } else {
+            // TODO: Issue error message
+          }
+        });
       },
       cancelQualifications() {
         this.toggleEdit();
@@ -92,9 +106,9 @@
     mounted() {
       this.adjustTextArea(document.getElementById('qualifications'));
       http.get('/profile/?userId=jdmedlock').then((response) => {
-        this.userName = response.data.user_id;
-        this.name = response.data.user_name;
-        this.avatarUrl = response.data.avatar_url;
+        this.userId = response.data.user_id;
+        this.userName = response.data.user_name;
+        this.userAvatarUrl = response.data.avatar_url;
         this.userQualifications = response.data.qualifications;
       }).catch((err) => {
         console.log(err);
