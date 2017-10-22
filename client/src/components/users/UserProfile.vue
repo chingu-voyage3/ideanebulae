@@ -77,7 +77,7 @@
           userQualifications: this.userQualifications,
         };
         console.log(`userProfile: ${JSON.stringify(userProfile)}`);
-        http.put(`/profile/?userProfile=${JSON.stringify(userProfile)}`).then((response) => {
+        http.get(`/profile/?userProfile=${userProfile}`).then((response) => {
           if (response === null) {
             // TODO: Issue update successful message
           } else {

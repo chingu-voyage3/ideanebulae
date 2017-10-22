@@ -1,6 +1,6 @@
-import config from './mongoose.config';
 import mongoose from 'mongoose';
-import Users from '../models/Users';
+import config from '../../services/mongoose.config';
+import Users from '../users.js';
 
 /**
  * User Service
