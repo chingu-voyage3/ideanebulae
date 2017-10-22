@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import userMethods from './methods/userMethods';
 
 // Create the schema for the User collection
 const userSchema = new Schema({
@@ -34,6 +35,7 @@ const userSchema = new Schema({
 }, { collection: 'users' });
 
 // Create a model for the schema
+userSchema.loadClass(userMethods);
 const User = mongoose.model('User', userSchema);
 
 export default User;
