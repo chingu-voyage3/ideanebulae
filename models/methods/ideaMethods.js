@@ -5,20 +5,22 @@ export default class ideaMethods {
   }
 
   // Finds an idea using the ObjectID
-  static async findIdea (ideaID) {
+  static async findIdea(ideaID) {
     return await this.findById(ideaID);
   }
 
   // Saves an idea to the collection
   static async saveIdea(body) {
-    let { creator_id, title, type, description } = body;
-    let idea = new Idea();
+    let { creator_id, title, type, description, documents, agreement } = body;
+    let idea = new this();
 
     idea.creator_id = creator_id;
     idea.title = title;
     idea.type = type;
     idea.description = description;
+    idea.documents = documents;
+    idea.agreement = agreement;
 
-    return await this.save();
+    return await idea.save();
   }
 }

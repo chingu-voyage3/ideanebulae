@@ -40,14 +40,20 @@ router.route('/profile/:userId(*)')
 
 router.route('/ideas')
   .get((req, res) => {
-    listIdeas()
+    Idea.listIdeas()
       .then(ideas => res.json(ideas))
       .catch(err => res.send(err));
   })
   .post((req, res) => {
-    saveIdea(req.body)
-      .then(() => res.json('Idea created'))
-      .catch(err => res.send(err));
+    Idea.saveIdea(req.body)
+      .then(() => {
+        console.log('Idea created');
+        res.json('Idea created');
+      })
+      .catch(err => {
+        console.error(err);
+        res.send(err);
+      });
   })
 
 export default router;
