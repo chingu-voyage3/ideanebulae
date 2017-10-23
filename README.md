@@ -80,6 +80,20 @@ the wiki for more details and examples.
 | yarn analyzesize  | Analyze bundle sizes              |
 | yarn test         | Initiate tests and validations    |
 
+Note that before starting the server the following environment variables should be
+defined:
+
+| Variable Name  | Description                          |
+|:---------------|:-------------------------------------|
+| DBUSERID       | The user id of the MongoDB instance containing the application data |
+| DBPASSWD       | The associated password for the database user id |
+
+For example:
+```
+   export DBUSERID=userid
+   export DBPASSWD=password
+```
+
 ### Configuration
 
 The IdeaNebulae project folder is organized in the following manner:
