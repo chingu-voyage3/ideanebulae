@@ -33,15 +33,14 @@ router.route('/users')
 // based on the userId param
 router.route('/profile/:userId(*)')
   .get((req, res) => {
-    User.findUser(req.params.userId)
+    User.findUser(req.query.userId)
       .then(user => res.json(user))
       .catch(err => res.send(err));
   });
 
 // Update the data for a given user
-router.route('/profile/:userId(*)')  
-  .post((req, res) => {
-    console.log(`server/router/index.js - userid:${req.params.userId} userProfile:${req.body}`);
+router.route('/profile/:userProfile(*)')  
+  .put((req, res) => {
     User.createOrUpdateUser(req.body)
       .then(() => {
         console.log('User profile created/updated');
