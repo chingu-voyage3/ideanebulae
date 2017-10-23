@@ -6,13 +6,16 @@ export default class userMethods {
 
   // Finds an user using the id
   static async findUser(userId) {
+    console.log(`Made it to findUser - userId:${userId}`);
     return await this.findOne({'user_id': userId});
   }
 
   // Update a user if it exists, otherwise inserts it
-  static async createOrUpdateUser(userId, userProfile) {
+  static async createOrUpdateUser(userProfile) {
+    console.log(`Made it to createOrUpdateUser. userProfile.userId: ${userProfile.userId}`);
+    console.log(userProfile);
     return await this.findOneAndUpdate(
-      {'user_id': userId},
+      {'user_id': userProfile.userId},
       userProfile,
       { upsert: true }
     );
