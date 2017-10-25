@@ -1,13 +1,13 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import counter from './modules/counter';
+import profile from './modules/profile';
 
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
   modules: {
-    counter,
+    profile,
   },
 });
 

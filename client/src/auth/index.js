@@ -9,10 +9,10 @@ const ID_TOKEN_KEY = 'id_token';
 const ACCESS_TOKEN_KEY = 'access_token';
 
 const CLIENT_ID = '';
-const CLIENT_DOMAIN = '';
+const CLIENT_DOMAIN = 'ideanebulae.auth0.com';
 const REDIRECT = 'http://localhost:8080/callback';
-const SCOPE = 'openid';
-const AUDIENCE = '';
+const SCOPE = 'openid profile';
+const AUDIENCE = 'https://ideanebulae.auth0.com/api/v2/';
 
 const auth = new auth0.WebAuth({
   clientID: CLIENT_ID,
@@ -93,4 +93,27 @@ export function requireAuth(to, from, next) {
   } else {
     next();
   }
+}
+
+// eslint-disable-next-line
+export function getUserProfile() {
+  const accessToken = getAccessToken();
+
+  if (accessToken) {
+    return new Promise((resolve, reject) => {
+      auth.client.userInfo(accessToken, (err, profile) => {
+        // There was an error fetching the user profile
+        // reject with the error
+        if (err) {
+          reject(err);
+        }
+        // We were able to fetch the user profile, resolve using it
+        resolve(profile);
+      });
+    });
+  }
+
+  // There's no access token therefore we can't fetch the user
+  // profile, return null then
+  return null;
 }
