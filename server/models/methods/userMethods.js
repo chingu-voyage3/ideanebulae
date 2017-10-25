@@ -11,14 +11,11 @@ export default class userMethods {
 
   // Update a user if it exists, otherwise inserts it
   static async createOrUpdateUser(currId, profileData) {
-    console.log(`Made it to createOrUpdateUser.\n...currId: ${currId}\n...profileData: ${profileData}`);
-    let user = new this();
-    user.qualifications = profileData.qualifications;
-    delete this._id;
+    const userUpdates = JSON.parse(profileData);
     return await this.findOneAndUpdate(
       { user_id: currId },
-      user,
-      { upsert: false, new: true, runValidators: true }
+      userUpdates,
+      { upsert: true, new: true, runValidators: true }
     ).exec();
   }
 }
