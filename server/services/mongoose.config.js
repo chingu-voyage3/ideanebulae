@@ -5,4 +5,6 @@ config.db.host = `${process.env.DBUSERID}:${process.env.DBPASSWD}@ds011732.mlab.
 config.db.name = 'ideanebulae';
 config.db.mongoURI = `mongodb://${config.db.host}/${config.db.name}`;
 
-module.exports = config;
+console.log(`mongoURI: ${config.db.mongoURI}`);
+
+export default config;
