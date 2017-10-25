@@ -39,11 +39,13 @@ router.route('/profile/:userId(*)')
   });
 
 // Update the data for a given user
-router.route('/profile/:userProfile(*)')  
+router.route('/profile/:currId(*):userProfile(*)')  
   .put((req, res) => {
-    User.createOrUpdateUser(req.body)
-      .then(() => {
-        console.log('User profile created/updated');
+    console.log(`Made it to route.\n...currId: ${req.query.currId}\n...userProfile: ${req.query.userProfile}`);
+    
+    User.createOrUpdateUser(req.query.currId, req.query.userProfile)
+      .then((doc) => {
+        console.log('User profile created/updated\n...', doc);
         res.json('User profile created/updated');
       })
       .catch(err => {

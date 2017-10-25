@@ -71,13 +71,10 @@
       saveQualifications() {
         this.toggleEdit();
         const userProfile = {
-          userId: this.userId,
-          userName: this.userName,
-          userAvatarURL: this.userAvatarURL,
-          userQualifications: this.userQualifications,
+          qualifications: this.userQualifications,
         };
-        console.log(`userProfile: ${JSON.stringify(userProfile)}`);
-        http.put(`/profile/?userProfile=${userProfile}`).then((response) => {
+        http.put(`/profile/?currId=${this.userId}&userProfile=${JSON.stringify(userProfile)}`)
+        .then((response) => {
           if (response === null) {
             // TODO: Issue update successful message
           } else {
