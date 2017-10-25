@@ -1,6 +1,7 @@
 <template>
   <nav class="nav">
     <div class="nav__menu">
+      <button class="btn btn__primary splash__button nav__item" v-show="isLoggedIn()">{{ loggedUserNickname }}</button>
       <button class="btn btn__primary splash__button nav__item" v-show="!isLoggedIn()" @click="handleLogin()">Login</button>
       <button class="btn btn__primary splash__button nav__item" v-show="isLoggedIn()" @click="handleLogout()">Logout</button>
     </div>
@@ -12,6 +13,13 @@ import { isLoggedIn, login, logout } from '@/auth';
 
 export default {
   name: 'MainNavbar',
+
+  computed: {
+    loggedUserNickname() {
+      return this.$store.state.profile.nickname;
+    },
+  },
+
   methods: {
     handleLogin() {
       login();
