@@ -88,10 +88,20 @@ defined:
 | DBUSERID       | The user id of the MongoDB instance containing the application data |
 | DBPASSWD       | The associated password for the database user id |
 
-For example:
+This is accomplished by including the following in the `.env` files located in
+the root of the client and server directories. The `.env` files must never be
+uploaded to GitHub since they contain application sensitive information such
+as user id's and passwords for service accounts.
+
+The `/server/.env` file must contain the following: 
 ```
-   export DBUSERID=userid
-   export DBPASSWD=password
+DBUSERID=userid
+DBPASSWD=password
+```
+
+and the `/client/.env` file must contain these environment variables:
+```
+TBD
 ```
 
 ### Configuration
