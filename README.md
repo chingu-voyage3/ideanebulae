@@ -95,13 +95,19 @@ as user id's and passwords for service accounts.
 
 The `/server/.env` file must contain the following: 
 ```
+# MongoDB Authentication 
 DBUSERID=userid
 DBPASSWD=password
 ```
 
 and the `/client/.env` file must contain these environment variables:
 ```
-TBD
+# Auth0 Authentication
+CLIENTID=client-secret
+CLIENTDOMAIN=auth0-client-url
+REDIRECT=auth0-callback-url
+SCOPE=auth0-return-data
+AUDIENCE=auth0-api-url
 ```
 
 ### Configuration
