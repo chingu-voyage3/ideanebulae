@@ -85,13 +85,30 @@ defined:
 
 | Variable Name  | Description                          |
 |:---------------|:-------------------------------------|
-| DBUSERID       | The user id of the MongoDB instance containing the application data |
-| DBPASSWD       | The associated password for the database user id |
+| DBUSERID       | User id of the MongoDB instance containing the application data |
+| DBPASSWD       | Associated password for the database user id |
+| CLIENTID       | Auth0 client secret |
+| CLIENTDOMAIN   | Auth0 client URL |
+| REDIRECT       | Application callback URL |
+| SCOPE          | Data items to be returned for authenticated users |
+| AUDIENCE       | URL of the Auth0 API |
 
-For example:
+This is accomplished by including the following in the `.env` files located in
+the root of the server directory. The `.env` file must never be
+uploaded to GitHub since it contains application sensitive information such
+as user id's and passwords for service accounts.
+
+The `/server/.env` file must contain the following: 
 ```
-   export DBUSERID=userid
-   export DBPASSWD=password
+# MongoDB Authentication 
+DBUSERID=userid
+DBPASSWD=password
+# Auth0 Authentication
+CLIENTID=client-secret
+CLIENTDOMAIN=auth0-client-url
+REDIRECT=auth0-callback-url
+SCOPE=auth0-return-data
+AUDIENCE=auth0-api-url
 ```
 
 ### Configuration
