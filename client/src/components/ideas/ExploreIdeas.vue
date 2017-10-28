@@ -36,17 +36,17 @@
 
         <div class="explore__form-keywords">
           <div class="explore__keyword-wrap">
-            <span class="explore__form-keyword" v-for="(keyword, index) in searchTags" v-bind:key="index">
+            <span class="explore__form-keyword" v-for="(keyword, index) in searchKeywords" v-bind:key="index">
               <span class="explore__keyword" >
                 <span class="explore__keyword__icon" aria-hidden="true">
                   <button
                     class="explore__keyword__button"
-                    @click="removeTag(index)">
+                    @click="removeKeyword(index)">
                       &times;
                   </button>
                 </span>
                 <span class="explore__keyword__label" role="option" aria-selected="true">
-                    {{tag}}
+                    {{keyword}}
                   <span class="keyword-aria-only">&nbsp;</span>
                 </span>
               </span>
@@ -55,15 +55,15 @@
 
           <label class="explore__label" for="explore__keywords">Keywords</label>
           <div class="explore__input-wrap">
-            <input class="explore__input" name="newKeyword" type="text" v-model="keywordText" @keyup.enter="addTag" @keyup.188="addKeyword" @keyup.tab="addKeyword" placeholder="Add keyword to your search">
+            <input class="explore__input" name="newKeyword" type="text" v-model="newKeyword" @keyup.enter="addKeyword" @keyup.188="addKeyword" @keyup.tab="addKeyword" placeholder="Add keyword to your search">
             <button class="explore__add-button"
-              @click="addTag"> + </button>
+              @click="addKeyword"> + </button>
           </div>
         </div>
       </div>
 
       <div class="explore__button-wrap">
-        <a class="btn btn__primary profile__button explore__button--btm" href="/dashboard">Clear</a>
+        <a class="btn btn__primary profile__button explore__button--btm" @click="clearSearchTerms">Clear</a>
         <button class="btn btn__primary profile__button explore__button--btm" @click="searchIdeas">Search</button>
       </div>
     </section>
@@ -87,10 +87,16 @@ export default {
       ],
       selectedTag: '',
       searchTags: [],
-      ideaKeywords: [],
+      newKeyword: '',
+      searchKeywords: [],
     };
   },
   methods: {
+    addKeyword() {
+      console.log(`New keyword: ${this.newKeyword}`);
+      this.searchKeywords.push(this.newKeyword);
+      this.newKeyword = '';
+    },
     addTag() {
       let newVal = this.tagText.trim();
       if (newVal[newVal.length - 1] === ',') {
@@ -101,11 +107,19 @@ export default {
         this.tagText = '';
       }
     },
+    clearSearchTerms() {
+      this.selectedTag = '';
+      this.searchTags = [];
+      this.newKeyword = '';
+      this.searchKeywords = [];
+    },
+    removeKeyword(index) {
+      this.searchKeywords.splice(index, 1);
+    },
     removeTag(index) {
       this.searchTags.splice(index, 1);
     },
     tagIsSelected() {
-      console.log(`selectedTag: ${this.selectedTag}`);
       this.searchTags.push(this.selectedTag);
     },
     typeToggle(type) {
@@ -220,12 +234,8 @@ export default {
     display inline-block
     width 33%
 
-  &__link
+  &__keyword
     margin 10px 0
-
-  &__radio-group
-    display flex
-    width 100%
 
   &__button-wrap
     display flex
@@ -248,7 +258,8 @@ export default {
     margin-bottom 20px
 
 
-  &__tag
+  &__tag,
+  &__keyword
     color: $gray_text;
     display: inline-block;
     font-size: 0.9em;
@@ -290,7 +301,7 @@ export default {
       &:hover
         // color: red;
 
-  &__remove-link
+  &__remove-keyword
     -webkit-appearance: none;
     appearance: none;
     background: transparent;
@@ -377,33 +388,6 @@ export default {
     font-size .8em
     @media (min-width: 600px)
       min-width 400px
-
-
-  &__radio-group
-    padding: 10px 0;
-    display flex
-    flex-direction column
-    width 100%
-
-  &__radio
-    margin: 0 5px 15px 0;
-    padding: 1px;
-    border-radius: 50%;
-    display block
-    text-align center
-
-    &::after
-      border-radius: 50%;
-
-    &:focus
-      border-radius: 50%;
-
-  &__radio-label
-    color: $gray_text;
-    padding: 0 15px 0 0;
-
-  &__radio-wrap
-    display: inline-block;
 
 .tooltip {
     position: relative;
