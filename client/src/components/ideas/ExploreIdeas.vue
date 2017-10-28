@@ -57,7 +57,7 @@
 
           <label class="explore__label" for="explore__keywords">Keywords</label>
           <div class="explore__input-wrap">
-            <input class="explore__input" name="newKeyword" type="text" v-model="newKeyword" @keyup.enter="addKeyword" @keyup.188="addKeyword" @keyup.tab="addKeyword" placeholder="Add keyword to your search">
+            <input class="explore__input" name="newKeywords" type="text" v-model="newKeywords" @keyup.enter="addKeyword" @keyup.188="addKeyword" @keyup.tab="addKeyword" placeholder="Add keyword to your search">
             <button class="explore__add-button"
               @click="addKeyword"> + </button>
           </div>
@@ -86,25 +86,34 @@ export default {
   data() {
     return {
       // TODO: Replace hardcoded test values with API call to retrieve all tags
-      ideaTags: [
-        'test1',
-        'test2',
-      ],
+      ideaTags: [],
       selectedTag: '',
       searchTags: [],
-      newKeyword: '',
+      newKeywords: '',
       searchKeywords: [],
     };
   },
   methods: {
     addKeyword() {
-      this.searchKeywords.push(this.newKeyword);
-      this.newKeyword = '';
+      let newVal = this.newKeywords.trim();
+      if (newVal[newVal.length - 1] === ',') {
+        newVal = newVal.slice(0, -1);
+      }
+      if (newVal.length !== 0) {
+        // Add the new keyword to the array only if it hasn't been previously added
+        const searchResult = this.searchKeywords.find(currentKeyword =>
+          currentKeyword === newVal.trim(),
+        );
+        if (searchResult === undefined) {
+          this.searchKeywords.push(newVal.trim());
+        }
+        this.newKeywords = '';
+      }
     },
     clearSearchTerms() {
       this.selectedTag = '';
       this.searchTags = [];
-      this.newKeyword = '';
+      this.newKeywords = '';
       this.searchKeywords = [];
     },
     removeKeyword(index) {
