@@ -3,22 +3,26 @@ import userMethods from './methods/userMethods';
 
 // Create the schema for the User collection
 const userSchema = new Schema({
+  _id: {
+    type: Schema.Types.ObjectId,
+  },
+
   user_id: {
     type: String,
     required: true,
     unique: true
   },
 
-  user_name: {
-    type: String,
-    required: true,
-    unique: false
-  },
-
-  security_id: {
+  username: {
     type: String,
     required: true,
     unique: true
+  },
+
+  name: {
+    type: String,
+    required: true,
+    unique: false,
   },
 
   avatar_url: {
@@ -32,7 +36,7 @@ const userSchema = new Schema({
     required: false,
     unique: false
   },
-}, { collection: 'users' });
+});
 
 // Create a model for the schema
 userSchema.loadClass(userMethods);
