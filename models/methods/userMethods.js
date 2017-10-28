@@ -5,16 +5,22 @@ export default class userMethods {
   }
 
   // Finds an user using the id
-  static async findUser(userId) {
-    return await this.findOne({'user_id': userId});
+  static async findUser(username) {
+    return await this.findOne({'username': username});
   }
 
   // Update a user if it exists, otherwise inserts it
-  static async createOrUpdateUser(currId, profileData) {
-    const userUpdates = JSON.parse(profileData);
+  static async createOrUpdateUser(username, profileData) {
+    const profile = {
+      user_id: profileData.sub,
+      username: profileData.nickname,
+      name: profileData.name,
+      avatar_url: profileData.picture,
+    };
+
     return await this.findOneAndUpdate(
-      { user_id: currId },
-      userUpdates,
+      { username: username },
+      profile,
       { upsert: true, new: true, runValidators: true }
     ).exec();
   }
