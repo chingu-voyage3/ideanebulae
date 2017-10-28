@@ -70,4 +70,13 @@ router.route('/ideas')
       });
   })
 
+router.route('/ideas/getAllTags')
+  .get((req, res) => {
+    Idea.getAllTags()
+      .then(ideaTags => {
+        res.json(ideaTags)
+      })
+      .catch(err => res.send(err));
+  });
+
 export default router;

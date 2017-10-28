@@ -1,4 +1,11 @@
 export default class ideaMethods {
+  // Get all unique tags referenced in all idea documents
+  static async getAllTags() {
+    return await this.find({})
+    .distinct('tags')
+    .exec();
+  }
+
   // List all the ideas in the ideas collection
   static async listIdeas() {
     return await this.find();
