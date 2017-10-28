@@ -4,9 +4,10 @@
       <h1 class="explore__title">Explore Ideas</h1>
     </header>
 
-    <!-- Filter Search Results by tags and/or keywords -->
     <section class="explore__form-wrapper">
       <div class="explore__form-element">
+
+        <!-- Capture tags to search for -->
         <div class="explore__form-tags">
           <div class="explore__tag-wrap">
             <span class="explore__form-tag" v-for="(tag, index) in searchTags" v-bind:key="index">
@@ -34,6 +35,7 @@
           </select>
         </div>
 
+        <!-- Capture keywords to search for -->
         <div class="explore__form-keywords">
           <div class="explore__keyword-wrap">
             <span class="explore__form-keyword" v-for="(keyword, index) in searchKeywords" v-bind:key="index">
@@ -62,6 +64,7 @@
         </div>
       </div>
 
+      <!-- Process search form buttons -->
       <div class="explore__button-wrap">
         <a class="btn btn__primary profile__button explore__button--btm" @click="clearSearchTerms">Clear</a>
         <button class="btn btn__primary profile__button explore__button--btm" @click="searchIdeas">Search</button>
@@ -76,6 +79,8 @@
 </template>
 
 <script>
+import http from '../../api/index';
+
 export default {
   name: 'ExploreIdeas',
   data() {
@@ -93,19 +98,8 @@ export default {
   },
   methods: {
     addKeyword() {
-      console.log(`New keyword: ${this.newKeyword}`);
       this.searchKeywords.push(this.newKeyword);
       this.newKeyword = '';
-    },
-    addTag() {
-      let newVal = this.tagText.trim();
-      if (newVal[newVal.length - 1] === ',') {
-        newVal = newVal.slice(0, -1);
-      }
-      if (newVal.length !== 0) {
-        this.tags.push(newVal);
-        this.tagText = '';
-      }
     },
     clearSearchTerms() {
       this.selectedTag = '';
@@ -128,6 +122,14 @@ export default {
     searchIdeas() {
       // TODO: Add search functionality
     },
+  },
+  mounted() {
+    http.get('/ideas/getAllTags').then((response) => {
+      this.ideaTags = response.data;
+    }).catch((err) => {
+      // eslint-disable-next-line
+      console.error(err);
+    });
   },
 };
 
