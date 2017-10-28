@@ -31,27 +31,43 @@ router.route('/users')
 
 // Gets the data of an user
 // based on the userId param
-router.route('/profile/:userId(*)')
+router.get('/profile/:username(*)', (req, res) => {
+  User.findUser(req.query.username)
+  .then(user => res.json(user))
+  .catch(err => res.send(err));
+});
+
+router.put('/profile/:username(*)', authCheck, (req, res) => {
+  User.createOrUpdateUser(req.query.username, req.body.profile)
+  .then((doc) => {
+    res.json('User profile created/updated');
+  })
+  .catch((err) => {
+    console.error(`An error ocurred: ${err}`);
+    res.json(err);
+  })
+});
+
+/*
+router.route('/profile/:username(*)')
   .get((req, res) => {
-    User.findUser(req.query.userId)
+    User.findUser(req.query.username)
       .then(user => res.json(user))
       .catch(err => res.send(err));
-  });
-
-// Update the data for a given user
-router.route('/profile/:currId(*):userProfile(*)')  
-  .put((req, res) => {    
-    User.createOrUpdateUser(req.query.currId, req.query.userProfile)
+  })
+  .put((req, res) => {
+    User.createOrUpdateUser(req.query.username, req.body.profile)
       .then((doc) => {
-        console.log('User profile created/updated\n...', doc);
         res.json('User profile created/updated');
       })
-      .catch(err => {
-        console.error(err);
-        res.send(err);
-      });
+      .catch((err) => {
+        console.error(`An error ocurred: ${err}`);
+        res.json(err);
+      })
   });
+*/
 
+// Routes for the ideas endpoint
 router.route('/ideas')
   .get((req, res) => {
     Idea.listIdeas()
