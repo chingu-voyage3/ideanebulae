@@ -4,6 +4,74 @@
       <h1 class="explore__title">Explore Ideas</h1>
     </header>
 
+    <!-- Filter Search Results by tags and/or keywords -->
+    <section class="explore__form-wrapper">
+      <div class="explore__form-element">
+        <div class="explore__form-tags">
+          <div class="explore__tag-wrap">
+            <span class="explore__form-tag" v-for="(tag, index) in searchTags" v-bind:key="index">
+              <span class="explore__tag" >
+                <span class="explore__tag__icon" aria-hidden="true">
+                  <button
+                    class="explore__tag__button"
+                    @click="removeTag(index)">
+                      &times;
+                  </button>
+                </span>
+                <span class="explore__tag__label" role="option" aria-selected="true">
+                    {{tag}}
+                  <span class="tag-aria-only">&nbsp;</span>
+                </span>
+              </span>
+            </span>
+          </div>
+
+          <label class="explore__label" for="explore__tags">Tags</label>
+          <select v-model="selectedTag" v-on:change="tagIsSelected">
+            <option v-for="tag in ideaTags" v-bind:key="tag" v-bind:value="tag">
+              {{ tag }}
+            </option>
+          </select>
+        </div>
+
+        <div class="explore__form-keywords">
+          <div class="explore__keyword-wrap">
+            <span class="explore__form-keyword" v-for="(keyword, index) in searchTags" v-bind:key="index">
+              <span class="explore__keyword" >
+                <span class="explore__keyword__icon" aria-hidden="true">
+                  <button
+                    class="explore__keyword__button"
+                    @click="removeTag(index)">
+                      &times;
+                  </button>
+                </span>
+                <span class="explore__keyword__label" role="option" aria-selected="true">
+                    {{tag}}
+                  <span class="keyword-aria-only">&nbsp;</span>
+                </span>
+              </span>
+            </span>
+          </div>
+
+          <label class="explore__label" for="explore__keywords">Keywords</label>
+          <div class="explore__input-wrap">
+            <input class="explore__input" name="newKeyword" type="text" v-model="keywordText" @keyup.enter="addTag" @keyup.188="addKeyword" @keyup.tab="addKeyword" placeholder="Add keyword to your search">
+            <button class="explore__add-button"
+              @click="addTag"> + </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="explore__button-wrap">
+        <a class="btn btn__primary profile__button explore__button--btm" href="/dashboard">Clear</a>
+        <button class="btn btn__primary profile__button explore__button--btm" @click="searchIdeas">Search</button>
+      </div>
+    </section>
+
+    <!-- Filtered Search Results -->
+    <section class="create__form-wrapper">
+    </section>
+
   </div>
 </template>
 
@@ -12,16 +80,40 @@ export default {
   name: 'ExploreIdeas',
   data() {
     return {
-      ideaTitle: '',
-      ideaDesc: '',
-      linkText: '',
-      tagText: '',
-      ideaType: '0',
-      upHere: '-1',
-      addLinkError: false,
-      tags: [],
-      keywords: [],
+      // TODO: Replace hardcoded test values with API call to retrieve all tags
+      ideaTags: [
+        'test1',
+        'test2',
+      ],
+      selectedTag: '',
+      searchTags: [],
+      ideaKeywords: [],
     };
+  },
+  methods: {
+    addTag() {
+      let newVal = this.tagText.trim();
+      if (newVal[newVal.length - 1] === ',') {
+        newVal = newVal.slice(0, -1);
+      }
+      if (newVal.length !== 0) {
+        this.tags.push(newVal);
+        this.tagText = '';
+      }
+    },
+    removeTag(index) {
+      this.searchTags.splice(index, 1);
+    },
+    tagIsSelected() {
+      console.log(`selectedTag: ${this.selectedTag}`);
+      this.searchTags.push(this.selectedTag);
+    },
+    typeToggle(type) {
+      this.ideaType = type;
+    },
+    searchIdeas() {
+      // TODO: Add search functionality
+    },
   },
 };
 
