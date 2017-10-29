@@ -33,12 +33,15 @@ router.route('/users')
 // based on the userId param
 router.get('/profile/:username(*)', (req, res) => {
   User.findUser(req.query.username)
-  .then(user => res.json(user))
+  .then(user => {
+    res.json(user);
+  })
   .catch(err => res.send(err));
 });
 
-router.put('/profile/:username(*)', authCheck, (req, res) => {
-  User.createOrUpdateUser(req.query.username, req.body.profile)
+//router.put('/profile/:username(*)', authCheck, (req, res) => {
+router.put('/profile/:username(*)', (req, res) => {
+  User.createOrUpdateUser(req.params.username, req.body.profile)
   .then((doc) => {
     res.json('User profile created/updated');
   })
