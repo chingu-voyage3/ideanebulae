@@ -102,7 +102,7 @@
     },
     mounted() {
       this.adjustTextArea(document.getElementById('qualifications'));
-      http.get('/profile/?userId=jdmedlock').then((response) => {
+      http.get('/profile/?username=jdmedlock').then((response) => {
         this.userId = response.data.user_id;
         this.userName = response.data.user_name;
         this.userAvatarUrl = response.data.avatar_url;
