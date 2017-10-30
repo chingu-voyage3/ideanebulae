@@ -1,5 +1,5 @@
 <template>
-  <div class="container create">
+  <div class="container explore">
     <header class="explore__header">
       <h1 class="explore__title">Explore Ideas</h1>
     </header>
@@ -10,7 +10,7 @@
         <!-- Capture tags to search for -->
         <div class="explore__form-tags">
           <div class="explore__tag-wrap">
-            <span class="explore__form-tag" v-for="(tag, index) in searchTags" v-bind:key="index">
+            <span class="explore__form-tag" v-for="(tag, index) in searchForTags" v-bind:key="index">
               <span class="explore__tag" >
                 <span class="explore__tag__icon" aria-hidden="true">
                   <button
@@ -38,7 +38,7 @@
         <!-- Capture keywords to search for -->
         <div class="explore__form-keywords">
           <div class="explore__keyword-wrap">
-            <span class="explore__form-keyword" v-for="(keyword, index) in searchKeywords" v-bind:key="index">
+            <span class="explore__form-keyword" v-for="(keyword, index) in searchForKeywords" v-bind:key="index">
               <span class="explore__keyword" >
                 <span class="explore__keyword__icon" aria-hidden="true">
                   <button
@@ -72,7 +72,23 @@
     </section>
 
     <!-- Filtered Search Results -->
-    <section class="create__form-wrapper">
+    <section class="explore">
+      <div class="container explore">
+        <table>
+          <tr>
+            <th>Idea</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Reviewed</th
+          </tr>
+          <tr v-for="idea in ideas" v-bind:key="idea.title">
+            <td>{{idea.title}}</td>
+            <td>{{idea.type}}</td>
+            <td>&nbsp;</td>
+            <td>{{idea.title}}</td>
+          </tr>
+        </table>
+      </div>
     </section>
 
   </div>
@@ -85,12 +101,14 @@ export default {
   name: 'ExploreIdeas',
   data() {
     return {
-      // TODO: Replace hardcoded test values with API call to retrieve all tags
+      // Search term form variables
       ideaTags: [],
       selectedTag: '',
-      searchTags: [],
+      searchForTags: [],
       newKeywords: '',
-      searchKeywords: [],
+      searchForKeywords: [],
+      // Results display variables
+      ideas: [],
     };
   },
   methods: {
@@ -101,38 +119,46 @@ export default {
       }
       if (newVal.length !== 0) {
         // Add the new keyword to the array only if it hasn't been previously added
-        const searchResult = this.searchKeywords.find(currentKeyword =>
+        const searchResult = this.searchForKeywords.find(currentKeyword =>
           currentKeyword === newVal.trim(),
         );
         if (searchResult === undefined) {
-          this.searchKeywords.push(newVal.trim());
+          this.searchForKeywords.push(newVal.trim());
         }
         this.newKeywords = '';
       }
     },
     clearSearchTerms() {
       this.selectedTag = '';
-      this.searchTags = [];
+      this.searchForTags = [];
       this.newKeywords = '';
-      this.searchKeywords = [];
+      this.searchForKeywords = [];
     },
     removeKeyword(index) {
-      this.searchKeywords.splice(index, 1);
+      this.searchForKeywords.splice(index, 1);
     },
     removeTag(index) {
-      this.searchTags.splice(index, 1);
+      this.searchForTags.splice(index, 1);
     },
     tagIsSelected() {
-      this.searchTags.push(this.selectedTag);
+      this.searchForTags.push(this.selectedTag);
     },
     typeToggle(type) {
       this.ideaType = type;
     },
     searchIdeas() {
-      // TODO: Add search functionality
+      http.get(`/ideas/search/?searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
+      .then((response) => {
+        this.ideas = response.data;
+        console.log('ideas: ', this.ideas);
+      }).catch((err) => {
+        // eslint-disable-next-line
+        console.error(err);
+      });
     },
   },
   mounted() {
+    // Retrieve all unique tags referenced across all ideas
     http.get('/ideas/getAllTags').then((response) => {
       this.ideaTags = response.data;
     }).catch((err) => {

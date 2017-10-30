@@ -89,6 +89,19 @@ router.route('/ideas')
       });
   })
 
+router.route('/ideas/search/:searchForTags(*):searchForKeywords(*)')
+  .get((req, res) => {
+    console.log('Reached /ideas/search');
+    console.log('...searchForKeywords: ', req.query.searchForKeywords);
+    console.log('...req:', req.query.toString());
+    Idea.searchIdeas(req.query.searchForTags, req.query.searchForKeywords)
+      .then(ideas => {
+        console.log('Returned ideas: ', ideas);
+        res.json(ideas)
+      })
+      .catch(err => res.send(err));
+  });
+  
 router.route('/ideas/getAllTags')
   .get((req, res) => {
     Idea.getAllTags()
