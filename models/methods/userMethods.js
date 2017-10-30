@@ -1,5 +1,3 @@
-import User from '../user';
-
 export default class userMethods {
   // Returns a list of all the users in the database
   static async listUsers() {

@@ -1,4 +1,10 @@
+import Idea from '../idea';
 export default class ideaMethods {
+  // Finds an idea using the ObjectID
+  static async findIdea(ideaID) {
+    return await this.findById(ideaID);
+  }
+
   // Get all unique tags referenced in all idea documents
   static async getAllTags() {
     return await this.find({})
@@ -9,11 +15,6 @@ export default class ideaMethods {
   // List all the ideas in the ideas collection
   static async listIdeas() {
     return await this.find();
-  }
-
-  // Finds an idea using the ObjectID
-  static async findIdea(ideaID) {
-    return await this.findById(ideaID);
   }
 
   // Saves an idea to the collection
@@ -30,4 +31,30 @@ export default class ideaMethods {
 
     return await idea.save();
   }
+
+  /**
+   * @description Find ideas based on a list of tags and keywords. Each idea to be returned
+   * to the caller must be categorized with at least one tag or contain at least one keyword
+   * in either the title or description field. 
+   * @param {String[]} tags An array of unique tags
+   * @param {String[]} keywords An array of unique keywords
+   * @returns {Object[]} An array of ideas, each described by its title, type, status,
+   * and status date
+   * @memberof ideaMethods
+   */
+  static async searchIdeas(searchForTags, searchForKeywords) {
+    console.log('Reached searchIdeas');
+    console.log('searchForTags: ', searchForTags);
+    console.log('searchForKeywords: ', searchForKeywords);
+    return await Idea.find({
+      $text : { $search : searchForKeywords.toString() }
+    })
+    .exec();
+  /*
+    .where('tags')
+    .in([searchForTags])
+    .exec();
+  */
+  }
+  
 }
