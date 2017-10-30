@@ -7,7 +7,8 @@
 </template>
 
 <script>
-import { getUserProfile } from '@/auth';
+import http from '@/api';
+import { getUserProfile, getAccessToken } from '@/auth';
 import MainNavbar from './components/shared/MainNavbar';
 import MainFooter from './components/shared/MainFooter';
 
@@ -19,17 +20,30 @@ export default {
   },
 
   mounted() {
-    getUserProfile()
-      .then((profile) => {
-        // Dispatch an action to set the current user profile data
-        // to the payload we received
-        this.$store.dispatch('SET_PROFILE_DATA', profile);
-      })
-      .catch((err) => {
-        // ToDo: Handle error in a more gracefully way
-        // eslint-disable-next-line
-        console.error(err);
-      });
+    if (getAccessToken()) {
+      getUserProfile()
+        .then((profile) => {
+          // Dispatch an action to set the current user profile data
+          // to the payload we received
+          this.$store.dispatch('SET_PROFILE_DATA', profile);
+          http.put(`/profile/${profile.sub}`, {
+            profile,
+          })
+          .then((res) => {
+            // eslint-disable-next-line
+            console.log(res);
+          })
+          .catch((err) => {
+            // eslint-disable-next-line
+            console.error(err);
+          });
+        })
+        .catch((err) => {
+          // ToDo: Handle error in a more gracefully way
+          // eslint-disable-next-line
+          console.error(err);
+        });
+    }
   },
 };
 </script>

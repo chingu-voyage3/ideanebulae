@@ -1,3 +1,5 @@
+import User from '../user';
+
 export default class userMethods {
   // Returns a list of all the users in the database
   static async listUsers() {
@@ -5,17 +7,23 @@ export default class userMethods {
   }
 
   // Finds an user using the id
-  static async findUser(userId) {
-    return await this.findOne({'user_id': userId});
+  static async findUser(username) {
+    return await this.findOne({username: username});
   }
 
-  // Update a user if it exists, otherwise inserts it
-  static async createOrUpdateUser(currId, profileData) {
-    const userUpdates = JSON.parse(profileData);
-    return await this.findOneAndUpdate(
-      { user_id: currId },
-      userUpdates,
+  // Update a user if it exists, otherwise insert it
+  static async createOrUpdateUser(userId, profileData) {
+    const profile = {
+      user_id: profileData.sub,
+      username: profileData.nickname,
+      name: profileData.name,
+      avatar_url: profileData.picture,
+    };
+
+    return await this.updateOne(
+      { user_id: userId },
+      profile,
       { upsert: true, new: true, runValidators: true }
-    ).exec();
+    );
   }
 }
