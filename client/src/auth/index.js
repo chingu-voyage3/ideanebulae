@@ -8,7 +8,7 @@ import { isTokenExpired } from './utils';
 const ID_TOKEN_KEY = 'id_token';
 const ACCESS_TOKEN_KEY = 'access_token';
 
-const CLIENT_ID = '54kq1Kx1717k52deTJ55CUHzaq77fJQy';
+const CLIENT_ID = '';
 const CLIENT_DOMAIN = 'ideanebulae.auth0.com';
 const REDIRECT = 'http://localhost:8080/callback';
 const SCOPE = 'openid profile';
