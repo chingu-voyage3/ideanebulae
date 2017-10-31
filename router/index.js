@@ -51,25 +51,6 @@ router.put('/profile/:username(*)', (req, res) => {
   })
 });
 
-/*
-router.route('/profile/:username(*)')
-  .get((req, res) => {
-    User.findUser(req.query.username)
-      .then(user => res.json(user))
-      .catch(err => res.send(err));
-  })
-  .put((req, res) => {
-    User.createOrUpdateUser(req.query.username, req.body.profile)
-      .then((doc) => {
-        res.json('User profile created/updated');
-      })
-      .catch((err) => {
-        console.error(`An error ocurred: ${err}`);
-        res.json(err);
-      })
-  });
-*/
-
 // Routes for the ideas endpoint
 router.route('/ideas')
   .get((req, res) => {
@@ -91,12 +72,8 @@ router.route('/ideas')
 
 router.route('/ideas/search/:searchForTags(*):searchForKeywords(*)')
   .get((req, res) => {
-    console.log('Reached /ideas/search');
-    console.log('...searchForKeywords: ', req.query.searchForKeywords);
-    console.log('...req:', req.query.toString());
     Idea.searchIdeas(req.query.searchForTags, req.query.searchForKeywords)
       .then(ideas => {
-        console.log('Returned ideas: ', ideas);
         res.json(ideas)
       })
       .catch(err => res.send(err));

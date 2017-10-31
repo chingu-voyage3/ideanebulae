@@ -43,18 +43,13 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async searchIdeas(searchForTags, searchForKeywords) {
-    console.log('Reached searchIdeas');
-    console.log('searchForTags: ', searchForTags);
-    console.log('searchForKeywords: ', searchForKeywords);
-    return await Idea.find({
-      $text : { $search : searchForKeywords.toString() }
-    })
+    return await this.find({
+      $or: [
+        {$text : {$search : searchForKeywords.toString()}},
+        {'tags': {'$in': searchForTags.split(',')}}
+      ]
+    }, 'title type reviews')
     .exec();
-  /*
-    .where('tags')
-    .in([searchForTags])
-    .exec();
-  */
   }
   
 }
