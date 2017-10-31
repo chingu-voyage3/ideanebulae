@@ -79,13 +79,13 @@
             <th>Idea</th>
             <th>Type</th>
             <th>Status</th>
-            <th>Reviewed</th
+            <th>Status Date</th
           </tr>
           <tr v-for="idea in ideas" v-bind:key="idea.title">
             <td>{{idea.title}}</td>
             <td>{{idea.type}}</td>
             <td>&nbsp;</td>
-            <td>{{idea.title}}</td>
+            <td>&nbsp;</td>
           </tr>
         </table>
       </div>
@@ -150,7 +150,7 @@ export default {
       http.get(`/ideas/search/?searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
       .then((response) => {
         this.ideas = response.data;
-        console.log('ideas: ', this.ideas);
+        console.log('Returned ideas object: ', this.ideas);
       }).catch((err) => {
         // eslint-disable-next-line
         console.error(err);
