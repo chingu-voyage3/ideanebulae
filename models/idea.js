@@ -79,8 +79,20 @@ const ideaSchema = new Schema({
       unique: false
     },
   }],
+},{
+  toObject: { virtuals: true },
+  toJSON: { virtuals: true }
 });
 
+ideaSchema.virtual('status').get(function() {
+  // TODO: Add real status calculation based on embedded reviewers object
+  return 'some-status';
+});
+
+ideaSchema.virtual('status_dt').get(function() {
+  // TODO: Add real status calculation based on embedded reviewers object
+  return 'mm-dd-yyyy';
+});
 // Create a model for the schema
 ideaSchema.loadClass(ideaMethods);
 const Idea = mongoose.model('Idea', ideaSchema);
