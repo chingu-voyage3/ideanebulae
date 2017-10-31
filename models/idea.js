@@ -101,34 +101,27 @@ const ideaSchema = new Schema({
  */
 ideaSchema.virtual('status')
 .get(function() {
-  console.log('Entered getStatus. this.reviews: ',this.reviews, ' this.created_ts: ',this.created_ts);  
-  if (this.reviews === undefined) {
+  if (this.reviews.length === 0) {
     return 'Created';
   }
-  /*
-  if (this.reviews.review_comments.length === 0) {
+  if (this.reviews[this.reviews.length-1].review_comments.length === 0) {
     return 'Assigned';
   }
-  */
   return 'Reviewed';
 });
 
 ideaSchema.virtual('status_dt')
 .get(function() {
-  console.log('Entered getStatus_dt. this.creator_id: ',this.creator_id, ' this.created_ts: ',this.created_ts);
-  /*
-  if (this.reviews === undefined) {
+  if (this.reviews.length === 0) {
     return this.created.ts;
   }
-  const lastElementPos = reviews.length-1;
-  console.log('lastElementPos: ', lastElementPos);
-  if (this.reviews.review_comments.length === 0) {
-    return reviews[lastElementPos].assigned_ts;
+  const lastElementPos = this.reviews.length-1;
+  if (this.reviews[lastElementPos].review_comments.length === 0) {
+    return this.reviews[lastElementPos].assigned_ts;
   }
-  return reviews[lastElementPos].updated_ts;
-  */
-  return this.created_ts;
+  return this.reviews[lastElementPos].updated_ts;
 });
+
 // Create a model for the schema
 ideaSchema.loadClass(ideaMethods);
 const Idea = mongoose.model('Idea', ideaSchema);
