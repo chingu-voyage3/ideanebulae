@@ -1,4 +1,3 @@
-import Idea from '../idea';
 export default class ideaMethods {
   // Finds an idea using the ObjectID
   static async findIdea(ideaID) {
@@ -48,7 +47,7 @@ export default class ideaMethods {
         {$text : {$search : searchForKeywords}},
         {tags: {$in: searchForTags.split(',')}}
       ]
-    }, 'title type status status_dt')
+    })
     .exec();
   }
   
