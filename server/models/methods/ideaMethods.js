@@ -36,8 +36,8 @@ export default class ideaMethods {
    * @description Find ideas based on a list of tags and keywords. Each idea to be returned
    * to the caller must be categorized with at least one tag or contain at least one keyword
    * in either the title or description field. 
-   * @param {String[]} tags An array of unique tags
-   * @param {String[]} keywords An array of unique keywords
+   * @param {String} tags A list of comma-separated unique tags
+   * @param {String} keywords A list of comma-separated of unique keywords
    * @returns {Object[]} An array of ideas, each described by its title, type, status,
    * and status date
    * @memberof ideaMethods
@@ -45,10 +45,10 @@ export default class ideaMethods {
   static async searchIdeas(searchForTags, searchForKeywords) {
     return await this.find({
       $or: [
-        {$text : {$search : searchForKeywords.toString()}},
-        {'tags': {'$in': searchForTags.split(',')}}
+        {$text : {$search : searchForKeywords}},
+        {tags: {$in: searchForTags.split(',')}}
       ]
-    }, 'title type reviews')
+    }, 'title type status status_dt')
     .exec();
   }
   

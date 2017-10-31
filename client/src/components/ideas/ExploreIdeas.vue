@@ -84,8 +84,8 @@
           <tr v-for="idea in ideas" v-bind:key="idea.title">
             <td>{{idea.title}}</td>
             <td>{{idea.type}}</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
+            <td>{{idea.status}}</td>
+            <td>{{idea.status_dt}}</td>
           </tr>
         </table>
       </div>
