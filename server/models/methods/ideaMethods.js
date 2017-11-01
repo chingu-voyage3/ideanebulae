@@ -42,6 +42,9 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async searchIdeas(searchForTags, searchForKeywords) {
+    if (searchForTags.length === 0 && searchForKeywords.length === 0) {
+      return await this.find({}).exec();
+    }
     return await this.find({
       $or: [
         {$text : {$search : searchForKeywords}},
