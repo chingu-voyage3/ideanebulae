@@ -1,12 +1,19 @@
 export default class ideaMethods {
-  // List all the ideas in the ideas collection
-  static async listIdeas() {
-    return await this.find();
-  }
-
   // Finds an idea using the ObjectID
   static async findIdea(ideaID) {
     return await this.findById(ideaID);
+  }
+
+  // Get all unique tags referenced in all idea documents
+  static async getAllTags() {
+    return await this.find({})
+    .distinct('tags')
+    .exec();
+  }
+
+  // List all the ideas in the ideas collection
+  static async listIdeas() {
+    return await this.find();
   }
 
   // Saves an idea to the collection
@@ -23,4 +30,32 @@ export default class ideaMethods {
 
     return await idea.save();
   }
+
+  /**
+   * @description Find ideas based on a list of tags and keywords. Each idea
+   * to be returned to the caller must be categorized with at least one tag or
+   * contain at least one keyword in either the title or description field.
+   * Note that the keyword search requires a full text index on the title and
+   * description fields of the idea collection.
+   * @param {String} tags A list of comma-separated unique tags
+   * @param {String} keywords A list of comma-separated of unique keywords
+   * @returns {Object[]} An array of ideas, each described by its title, type, status,
+   * and status date
+   * @memberof ideaMethods
+   */
+  static async searchIdeas(searchForTags, searchForKeywords) {
+    if (searchForTags.length === 0 && searchForKeywords.length === 0) {
+      // Retrieve all ideas if no tags or keywords were provided since an 
+      // idea must match at least one of the provided tags (see below) 
+      return await this.find({}).exec();
+    }
+    return await this.find({
+      $or: [
+        {$text : {$search : searchForKeywords}},
+        {tags: {$in: searchForTags.split(',')}}
+      ]
+    })
+    .exec();
+  }
+  
 }

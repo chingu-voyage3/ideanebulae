@@ -51,25 +51,6 @@ router.put('/profile/:username(*)', (req, res) => {
   })
 });
 
-/*
-router.route('/profile/:username(*)')
-  .get((req, res) => {
-    User.findUser(req.query.username)
-      .then(user => res.json(user))
-      .catch(err => res.send(err));
-  })
-  .put((req, res) => {
-    User.createOrUpdateUser(req.query.username, req.body.profile)
-      .then((doc) => {
-        res.json('User profile created/updated');
-      })
-      .catch((err) => {
-        console.error(`An error ocurred: ${err}`);
-        res.json(err);
-      })
-  });
-*/
-
 // Routes for the ideas endpoint
 router.route('/ideas')
   .get((req, res) => {
@@ -88,5 +69,23 @@ router.route('/ideas')
         res.send(err);
       });
   })
+
+router.route('/ideas/search/:searchForTags(*):searchForKeywords(*)')
+  .get((req, res) => {
+    Idea.searchIdeas(req.query.searchForTags, req.query.searchForKeywords)
+      .then(ideas => {
+        res.json(ideas)
+      })
+      .catch(err => res.send(err));
+  });
+  
+router.route('/ideas/getAllTags')
+  .get((req, res) => {
+    Idea.getAllTags()
+      .then(ideaTags => {
+        res.json(ideaTags)
+      })
+      .catch(err => res.send(err));
+  });
 
 export default router;
