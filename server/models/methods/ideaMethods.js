@@ -32,9 +32,11 @@ export default class ideaMethods {
   }
 
   /**
-   * @description Find ideas based on a list of tags and keywords. Each idea to be returned
-   * to the caller must be categorized with at least one tag or contain at least one keyword
-   * in either the title or description field. 
+   * @description Find ideas based on a list of tags and keywords. Each idea
+   * to be returned to the caller must be categorized with at least one tag or
+   * contain at least one keyword in either the title or description field.
+   * Note that the keyword search requires a full text index on the title and
+   * description fields of the idea collection.
    * @param {String} tags A list of comma-separated unique tags
    * @param {String} keywords A list of comma-separated of unique keywords
    * @returns {Object[]} An array of ideas, each described by its title, type, status,
@@ -43,6 +45,8 @@ export default class ideaMethods {
    */
   static async searchIdeas(searchForTags, searchForKeywords) {
     if (searchForTags.length === 0 && searchForKeywords.length === 0) {
+      // Retrieve all ideas if no tags or keywords were provided since an 
+      // idea must match at least one of the provided tags (see below) 
       return await this.find({}).exec();
     }
     return await this.find({
