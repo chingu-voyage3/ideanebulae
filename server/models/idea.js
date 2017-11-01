@@ -95,8 +95,7 @@ const ideaSchema = new Schema({
  * @description Produce the idea's current status as a virtual field in the 
  * schema. By design there is no cooresponding setter function so this field should
  * not be used for updates.
- * @returns {String} An array of ideas, each described by its title, type, status,
- * and status date. Values are 'Created', 'Assigned', or 'Reviewed'.
+ * @returns {String} The sttus value: 'Created', 'Assigned', or 'Reviewed'.
  * @memberof ideaSchema
  */
 ideaSchema.virtual('status')
@@ -110,6 +109,13 @@ ideaSchema.virtual('status')
   return 'Reviewed';
 });
 
+/**
+ * @description Produce the date for the idea's current status as a virtual 
+ * field in the schema. By design there is no cooresponding setter function 
+ * so this field should not be used for updates.
+ * @returns {String} The status date in the format 'yyyy-mm-ddThh:mm:ss'
+ * @memberof ideaSchema
+ */
 ideaSchema.virtual('status_dt')
 .get(function() {
   if (this.reviews.length === 0) {
