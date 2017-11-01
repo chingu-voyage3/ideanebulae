@@ -119,7 +119,7 @@ ideaSchema.virtual('status')
 ideaSchema.virtual('status_dt')
 .get(function() {
   if (this.reviews.length === 0) {
-    return this.created.ts;
+    return this.created_ts;
   }
   const lastElementPos = this.reviews.length-1;
   if (this.reviews[lastElementPos].review_comments.length === 0) {
