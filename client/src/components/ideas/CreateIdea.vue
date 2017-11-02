@@ -98,7 +98,8 @@
 </template>
 
 <script>
-// import debounce from 'lodash.debounce';
+import debounce from 'lodash.debounce';
+import localstorage from '@/utils/localstorage';
 
 export default {
   name: 'CreateIdea',
@@ -118,7 +119,14 @@ export default {
     };
   },
   mounted() {
-    this.$watch('$data', this.onSelectedUpdate, { deep: true });
+    const savedState = localstorage.getObject('create-idea-save');
+    if (savedState != null) {
+      Object.assign(this.$data, savedState);
+    }
+    this.$watch('$data',
+      debounce(this.saveIdea, 1500, { trailing: true }),
+      { deep: true },
+    );
   },
   methods: {
     addLink() {
@@ -159,7 +167,11 @@ export default {
     typeToggle(type) {
       this.ideaType = type;
     },
+    saveIdea() {
+      localstorage.setObject('create-idea-save', this.$data);
+    },
     submitIdea() {
+      localStorage.removeItem('create-idea-save');
       /* Uncomment once API implementation is complete.
       const payload = {
         ideaTitle: this.ideaTitle,
