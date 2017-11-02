@@ -58,7 +58,7 @@
             <div v-show="errors.has('newlink')">Invalid link</div>
             <label class="create__label" for="newlink">Add link</label>
             <div class="create__input-wrap">
-              <input class="create__input" name="newlink" v-validate="'required|url'" data-vv-delay="1000" type="text" v-model="linkText" @keyup.enter="addLink" placeholder="Links to more information about your idea">
+              <input class="create__input" name="newlink" v-validate="'url'" data-vv-delay="1000" type="text" v-model="linkText" @keyup.enter="addLink" placeholder="Links to more information about your idea">
               <button class="create__add-button"
             @click="addLink"> + </button>
             </div>
@@ -98,6 +98,7 @@
 </template>
 
 <script>
+// import debounce from 'lodash.debounce';
 
 export default {
   name: 'CreateIdea',
@@ -116,9 +117,17 @@ export default {
       ],
     };
   },
+  mounted() {
+    this.$watch('$data', this.onSelectedUpdate, { deep: true });
+  },
   methods: {
     addLink() {
       let newVal = this.linkText.trim();
+
+      if (newVal.length === 0) {
+        return;
+      }
+
       this.$validator.validate('newlink', newVal)
       .then((result) => {
         if (result) {
