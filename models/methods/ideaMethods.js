@@ -4,6 +4,14 @@ export default class ideaMethods {
     return await this.findById(ideaID);
   }
 
+  static async findIdea(creator_id, title, type) {
+    return await this.findIdea()
+    .where('creator_id').equals(creator_id)
+    .where('title').equals(title)
+    .where('type').equals(type)
+    .exec();
+  }
+
   // Get all unique tags referenced in all idea documents
   static async getAllTags() {
     return await this.find({})

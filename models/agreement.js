@@ -38,7 +38,7 @@ const agreementSchema = new Schema({
     unique: false
   },
 
-  author: { 
+  idea: { 
     type: Schema.Types.ObjectId, 
     ref: 'Idea'
   },
