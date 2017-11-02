@@ -1,7 +1,7 @@
 <template>
   <div class="container profile">
     <header class="profile__header">
-      <h1>{{userId}}&rsquo;s profile</h1>
+      <h1>{{userName}}&rsquo;s profile</h1>
     </header>
 
     <section>
@@ -54,6 +54,7 @@
 
 <script>
   // eslint disable
+  import { getUserProfile, getAccessToken } from '@/auth';
   import http from '../../api/index';
 
   export default {
@@ -102,15 +103,22 @@
     },
     mounted() {
       this.adjustTextArea(document.getElementById('qualifications'));
-      http.get('/profile/?username=jdmedlock').then((response) => {
-        this.userId = response.data.user_id;
-        this.userName = response.data.user_name;
-        this.userAvatarUrl = response.data.avatar_url;
-        this.userQualifications = response.data.qualifications;
-      }).catch((err) => {
-        // eslint-disable-next-line
-        console.error(err);
-      });
+      if (getAccessToken()) {
+        getUserProfile()
+        .then((profile) => {
+          // Dispatch an action to set the current user profile data
+          // to the payload we received
+          http.get(`/profile/?username=${profile.nickname}`).then((response) => {
+            this.userId = response.data.user_id;
+            this.userName = response.data.username;
+            this.userAvatarUrl = response.data.avatar_url;
+            this.userQualifications = response.data.qualifications;
+          }).catch((err) => {
+            // eslint-disable-next-line
+            console.error(err);
+          });
+        });
+      }
     },
   };
 </script>

@@ -150,7 +150,6 @@ export default {
       http.get(`/ideas/search/?searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
       .then((response) => {
         this.ideas = response.data;
-        console.log('Returned ideas object: ', this.ideas);
       }).catch((err) => {
         // eslint-disable-next-line
         console.error(err);
