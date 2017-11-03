@@ -58,7 +58,7 @@
             <div v-show="errors.has('newlink')">Invalid link</div>
             <label class="create__label" for="newlink">Add link</label>
             <div class="create__input-wrap">
-              <input class="create__input" name="newlink" v-validate="'required|url'" data-vv-delay="1000" type="text" v-model="linkText" @keyup.enter="addLink" placeholder="Links to more information about your idea">
+              <input class="create__input" name="newlink" v-validate="'url'" data-vv-delay="1000" type="text" v-model="linkText" @keyup.enter="addLink" placeholder="Links to more information about your idea">
               <button class="create__add-button"
             @click="addLink"> + </button>
             </div>
@@ -98,6 +98,8 @@
 </template>
 
 <script>
+import debounce from 'lodash.debounce';
+import localstorage from '@/utils/localstorage';
 
 export default {
   name: 'CreateIdea',
@@ -116,9 +118,24 @@ export default {
       ],
     };
   },
+  mounted() {
+    const savedState = localstorage.getObject('create-idea-save');
+    if (savedState != null) {
+      Object.assign(this.$data, savedState);
+    }
+    this.$watch('$data',
+      debounce(this.saveIdea, 1500, { trailing: true }),
+      { deep: true },
+    );
+  },
   methods: {
     addLink() {
       let newVal = this.linkText.trim();
+
+      if (newVal.length === 0) {
+        return;
+      }
+
       this.$validator.validate('newlink', newVal)
       .then((result) => {
         if (result) {
@@ -150,7 +167,11 @@ export default {
     typeToggle(type) {
       this.ideaType = type;
     },
+    saveIdea() {
+      localstorage.setObject('create-idea-save', this.$data);
+    },
     submitIdea() {
+      localStorage.removeItem('create-idea-save');
       /* Uncomment once API implementation is complete.
       const payload = {
         ideaTitle: this.ideaTitle,
