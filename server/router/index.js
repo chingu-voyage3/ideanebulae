@@ -70,9 +70,9 @@ router.route('/ideas')
       });
   })
 
-router.route('/ideas/search/:searchForTags(*):searchForKeywords(*)')
+router.route('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)')
   .get((req, res) => {
-    Idea.searchIdeas(req.query.searchForTags, req.query.searchForKeywords)
+    Idea.searchIdeas(req.query.currUser, req.query.searchForTags, req.query.searchForKeywords)
       .then(ideas => {
         res.json(ideas)
       })
