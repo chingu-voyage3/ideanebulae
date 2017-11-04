@@ -95,12 +95,15 @@
 </template>
 
 <script>
+import { getUserProfile, getAccessToken } from '@/auth';
 import http from '../../api/index';
 
 export default {
   name: 'ExploreIdeas',
   data() {
     return {
+      // Environment information
+      currentUserNickname: '',
       // Search term form variables
       ideaTags: [],
       selectedTag: '',
@@ -147,7 +150,7 @@ export default {
       this.ideaType = type;
     },
     searchIdeas() {
-      http.get(`/ideas/search/?searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
+      http.get(`/ideas/search/?currUser=${this.currentUserNickname}&searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
       .then((response) => {
         this.ideas = response.data;
       }).catch((err) => {
@@ -164,6 +167,17 @@ export default {
       // eslint-disable-next-line
       console.error(err);
     });
+    // Retrieve attributes of the currently logged on user
+    if (getAccessToken()) {
+      getUserProfile()
+      .then((profile) => {
+        this.currentUserNickname = profile.nickname;
+      })
+      .catch((err) => {
+          // eslint-disable-next-line
+          console.error(err);
+      });
+    }
   },
 };
 
