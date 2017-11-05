@@ -20,12 +20,13 @@ export default class ideaMethods {
    * @returns  {Promise} The matching idea document
    * @memberof agreementMethods
    */
-  static async findIdea(creator_id, title, type) {
-    return await this.findIdea()
-    .where('creator_id').equals(creator_id)
-    .where('title').equals(title)
-    .where('type').equals(type)
-    .exec();
+  static async findIdea(creatorId, title, type) {
+    console.log(`Reached findIdea - creator_id: ${creatorId} title: ${title} type: ${type}`);
+    return await this.findIdea({
+      creator_id: creatorId,
+      title: title,
+      type: type,
+    });
   }
 
   /**

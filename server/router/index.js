@@ -70,6 +70,17 @@ router.route('/ideas')
       });
   })
 
+router.route('/idea/:creatorId(*):title(*):type(*)')
+  .get((req, res) => {
+    console.log('Reached the /ideas/creatorId... route');
+    console.log(req.query.creatorId, req.query.title, req.query.type);
+    Idea.findIdea(req.query.creatorId, req.query.title, req.query.type)
+      .then(idea => {
+        res.json(idea)
+      })
+      .catch(err => res.send(err));
+  });
+
 router.route('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)')
   .get((req, res) => {
     Idea.searchIdeas(req.query.currUser, req.query.searchForTags, req.query.searchForKeywords)
