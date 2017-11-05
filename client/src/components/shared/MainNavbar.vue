@@ -1,16 +1,18 @@
 <template>
   <nav class="nav">
     <div class="nav__menu">
-      <div class="nav__menu--left">
-        <router-link :to="'/dashboard'" class="btn btn__primary splash__button nav__item nav__item--left">
-          Dashboard
-        </router-link>
-        <router-link :to="'/explore'" class="btn btn__primary splash__button nav__item nav__item--left">
-          Ideas
-        </router-link>
-        <router-link :to="'/create'" class="btn btn__primary splash__button nav__item nav__item--left">
-          New Idea
-        </router-link>
+      <div class="nav__menu--left-wrap">
+        <div class="nav__menu--left" v-show="isLoggedIn()">
+          <router-link :to="'/dashboard'" class="btn btn__primary splash__button nav__item nav__item--left">
+            Dashboard
+          </router-link>
+          <router-link :to="'/explore'" class="btn btn__primary splash__button nav__item nav__item--left">
+            Ideas
+          </router-link>
+          <router-link :to="'/create'" class="btn btn__primary splash__button nav__item nav__item--left">
+            New Idea
+          </router-link>
+        </div>
       </div>
       <div class="nav__menu--right">
         <router-link
@@ -57,6 +59,7 @@ export default {
 
     handleLogout() {
       logout();
+      this.$router.push('/');
     },
 
     isLoggedIn() {
@@ -92,6 +95,9 @@ export default {
       border 0
       text-decoration none
       margin-right 10px
+
+  &__avatar
+    margin-right 20px
 
   &__image-aspect
     width 40px
