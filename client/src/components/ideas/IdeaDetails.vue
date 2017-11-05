@@ -70,10 +70,13 @@
 </template>
 
 <script>
+import http from '../../api/index';
+
 export default {
   name: 'IdeaDetails',
   data() {
     return {
+      ideaCreatorId: '',
       ideaTitle: '',
       ideaDesc: '',
       linkText: '',
@@ -81,13 +84,32 @@ export default {
       ideaType: '0',
       upHere: '-1',
       tags: [],
-      links: [
-        'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-      ],
+      links: [''],
     };
   },
   mounted() {
     // TODO: Add logic to prime page using idea slug
+    console.log(':creatorId - ', this.$route.params.creatorId);
+    console.log(':title - ', this.$route.params.title);
+    console.log(':type - ', this.$route.params.type);
+
+    // Dispatch an action to retrieve the idea
+    http.get(`/idea/?creatorId=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
+    .then((response) => {
+      if (response === null) {
+        // TODO: Issue update successful message
+        console.log('response: ', response);
+      } else {
+        // TODO: Issue error message
+      }
+    })
+    .catch((err) => {
+      console.log('error: ', err);
+    });
+
+    this.ideaCreatorId = this.$route.params.creatorId;
+    this.ideaTitle = this.$route.params.title;
+    this.ideaType = this.$route.params.type;
   },
   methods: {
     editIdea() {
