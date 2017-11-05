@@ -49,7 +49,7 @@
         <div class="create__form-element">
           <div id="create__links" class="create__form__link" v-for="(link, index) in links" v-bind:key="index">
             <div class="create__link">
-              <a :href="link">{{link}}</a>
+              <a class="create__link-text" :href="link">{{link}}</a>
               <button class="create__remove-link" id="remove__link" @click="removeLink(index)"> &times; </button>
             </div>
           </div>
@@ -290,7 +290,7 @@ export default {
     display inline-block
     margin 10px 0
 
-  a
+  &__link-text
     text-decoration none
     color $purple
     border-bottom 1px dotted $purple

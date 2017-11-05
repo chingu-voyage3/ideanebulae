@@ -72,7 +72,9 @@ export default {
 .container
   width 100%
   max-width 1200px
+  padding-top 20px
   margin auto
+  min-height calc(100vh - 150px) // combined height of nav + footer
 
 .purple-gradient
   background $purple
