@@ -22,7 +22,7 @@
             <div class="profile__name">
               {{userName}}</div>
             <div class="profile__username">
-              {{userId}}</div>
+              {{name}}</div>
           </div>
           </div>
           <div class="profile__qualifications">
@@ -62,6 +62,7 @@
     data() {
       return {
         userId: '',
+        name: '',
         userName: '',
         userAvatarUrl: '',
         userQualifications: '',
@@ -109,6 +110,7 @@
           // Dispatch an action to set the current user profile data
           // to the payload we received
           http.get(`/profile/?username=${profile.nickname}`).then((response) => {
+            this.name = response.data.name;
             this.userId = response.data.user_id;
             this.userName = response.data.username;
             this.userAvatarUrl = response.data.avatar_url;

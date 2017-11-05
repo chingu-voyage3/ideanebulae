@@ -1,8 +1,8 @@
 <template>
   <nav class="nav">
     <div class="nav__menu">
-      <a
-        :href="'/profile/' + loggedUserNickname"
+      <router-link
+        :to="'/profile/' + loggedUserNickname"
         class="btn nav__avatar"
         v-show="isLoggedIn()">
         <div class="nav__image-aspect">
@@ -15,7 +15,7 @@
               />
           </div>
         </div>
-      </a>
+      </router-link>
       <button class="btn btn__primary splash__button nav__item" v-show="!isLoggedIn()" @click="handleLogin()">Login</button>
       <button class="btn btn__primary splash__button nav__item" v-show="isLoggedIn()" @click="handleLogout()">Logout</button>
     </div>
