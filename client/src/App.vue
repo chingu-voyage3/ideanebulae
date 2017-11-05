@@ -110,6 +110,7 @@ export default {
   border: none;
   background: transparent;
   color: inherit;
+  cursor: pointer
 
 
   &:hover, &:active, &:focus
