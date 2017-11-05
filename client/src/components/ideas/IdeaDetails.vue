@@ -25,7 +25,7 @@
         <div class="view__form-tags">
           <label class="view__label" for="view__tags">Tags</label>
           <div class="view__tag-wrap" id="view__tags">
-            <span class="view__form-tag" v-for="(tag, index) in tags" v-bind:key="index">
+            <span class="view__form-tag" v-for="(tag, index) in ideaTags" v-bind:key="index">
               <span class="view__tag" >
                 <span class="view__tag__label" role="option" aria-selected="true">
                   {{tag}}
@@ -38,7 +38,7 @@
 
         <div class="view__form-element">
           <label class="view__label" for="view__links">Links</label>
-          <div id="view__links" class="create__form__link" v-for="(link, index) in links" v-bind:key="index">
+          <div id="view__links" class="create__form__link" v-for="(link, index) in ideaLinks" v-bind:key="index">
             <div class="view__link">
               <a :href="link.url">{{link.url_description}}</a>
             </div>
@@ -68,6 +68,12 @@
             </div>
           </div>
         </div>
+
+        <div class="view__form-element">
+          <label class="view__label" for="view__agreement">Agreement</label>
+          <textarea id="view__agreement" name="agreement" class="view__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement" disabled></textarea>
+        </div>
+
       </div>
       <div class="create__button-wrap">
         <button class="btn btn__primary profile__button view__button--btm" @click="editIdea">Edit</button>
@@ -83,25 +89,25 @@ export default {
   name: 'IdeaDetails',
   data() {
     return {
+      idea_id: '',
       ideaCreatorId: '',
       ideaTitle: '',
       ideaDesc: '',
-      linkText: '',
-      tagText: '',
+      ideaTags: [],
+      ideaLinks: [''],
+      ideaAgreement: '',
       ideaType: '0',
       upHere: '-1',
-      tags: [],
-      links: [''],
     };
   },
   mounted() {
     // Retrieve the idea identified by the URL paramaters
     http.get(`/idea/?creatorId=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
     .then((response) => {
-      // TODO: Initialize the data elements
       console.log('response: ', response);
       this.ideaCreatorId = response.data[0].creator_id;
       this.ideaTitle = response.data[0].title;
+      // TODO: Calculate this as a virtual database field in Mongoose
       switch (response.data[0].type) {
         case 'public':
           this.ideaType = 0;
@@ -116,15 +122,16 @@ export default {
           // eslint-disable-next-line no-throw-literal
           throw `Invalid idea type field value: ${response.data[0].type}`;
       }
-      this.ideaDesc = response.data[0].description;
-      this.links = response.data[0].documents;
-      console.log('this.links', this.links);
-      this.tags = response.data[0].tags;
       // eslint-disable-next-line no-underscore-dangle
       this.idea_id = response.data[0]._id;
+      this.ideaDesc = response.data[0].description;
+      this.ideaLinks = response.data[0].documents;
+      this.ideaTags = response.data[0].tags;
+      this.ideaAgreement = response.data[0].agreement;
     })
     .catch((err) => {
-      console.log('error: ', err);
+      // eslint-disable-next-line
+      throw `Failed to retrieve idea: ${err}`;
     });
   },
   methods: {
