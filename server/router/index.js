@@ -72,9 +72,7 @@ router.route('/ideas')
 
 router.route('/idea/:creatorId(*):title(*):type(*)')
   .get((req, res) => {
-    console.log('Reached the /ideas/creatorId... route');
-    console.log(req.query.creatorId, req.query.title, req.query.type);
-    Idea.findIdea(req.query.creatorId, req.query.title, req.query.type)
+    Idea.getIdea(req.query.creatorId, req.query.title, req.query.type)
       .then(idea => {
         res.json(idea)
       })

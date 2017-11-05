@@ -9,12 +9,12 @@
 
         <div class="view__form-element">
           <label class="view__label" for="view__title">Title</label>
-          <input class="view__input" id="view__title" maxlength="100" type="text" name="title" v-model="ideaTitle" placeholder="Title" autofocus>
+          <input class="view__input" id="view__title" maxlength="100" type="text" name="title" v-model="ideaTitle" placeholder="Title" autofocus disabled>
         </div>
 
         <div class="view__form-element">
           <label class="view__label" for="view__desc">Description</label>
-          <textarea id="view__desc" name="description" class="view__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaDesc" placeholder="Description" ></textarea>
+          <textarea id="view__desc" name="description" class="view__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaDesc" placeholder="Description" disabled></textarea>
         </div>
 
         <div class="view__form-tags">
@@ -88,28 +88,34 @@ export default {
     };
   },
   mounted() {
-    // TODO: Add logic to prime page using idea slug
-    console.log(':creatorId - ', this.$route.params.creatorId);
-    console.log(':title - ', this.$route.params.title);
-    console.log(':type - ', this.$route.params.type);
-
-    // Dispatch an action to retrieve the idea
+    // Retrieve the idea identified by the URL paramaters
     http.get(`/idea/?creatorId=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
     .then((response) => {
-      if (response === null) {
-        // TODO: Issue update successful message
-        console.log('response: ', response);
-      } else {
-        // TODO: Issue error message
+      // TODO: Initialize the data elements
+      console.log('response: ', response);
+      this.ideaCreatorId = response.data[0].creatorId;
+      this.ideaTitle = response.data[0].title;
+      switch (response.data[0].type) {
+        case 'public':
+          this.ideaType = 0;
+          break;
+        case 'private':
+          this.ideaType = 1;
+          break;
+        case 'commercial':
+          this.ideaType = 2;
+          break;
+        default:
+          // eslint-disable-next-line no-throw-literal
+          throw `Invalid idea type field value: ${response.data[0].type}`;
       }
+      this.ideaDesc = response.data[0].description;
+      // eslint-disable-next-line no-underscore-dangle
+      this.idea_id = response.data[0]._id;
     })
     .catch((err) => {
       console.log('error: ', err);
     });
-
-    this.ideaCreatorId = this.$route.params.creatorId;
-    this.ideaTitle = this.$route.params.title;
-    this.ideaType = this.$route.params.type;
   },
   methods: {
     editIdea() {
