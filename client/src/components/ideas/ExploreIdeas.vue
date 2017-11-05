@@ -136,6 +136,7 @@ export default {
       this.searchForTags = [];
       this.newKeywords = '';
       this.searchForKeywords = [];
+      this.ideas = [];
     },
     removeKeyword(index) {
       this.searchForKeywords.splice(index, 1);
