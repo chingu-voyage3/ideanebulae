@@ -1,7 +1,19 @@
 <template>
   <nav class="nav">
     <div class="nav__menu">
-      <router-link
+      <div class="nav__menu--left">
+        <router-link :to="'/dashboard'" class="btn btn__primary splash__button nav__item nav__item--left">
+          Dashboard
+        </router-link>
+        <router-link :to="'/explore'" class="btn btn__primary splash__button nav__item nav__item--left">
+          Ideas
+        </router-link>
+        <router-link :to="'/create'" class="btn btn__primary splash__button nav__item nav__item--left">
+          New Idea
+        </router-link>
+      </div>
+      <div class="nav__menu--right">
+        <router-link
         :to="'/profile/' + loggedUserNickname"
         class="btn nav__avatar"
         v-show="isLoggedIn()">
@@ -18,6 +30,7 @@
       </router-link>
       <button class="btn btn__primary splash__button nav__item" v-show="!isLoggedIn()" @click="handleLogin()">Login</button>
       <button class="btn btn__primary splash__button nav__item" v-show="isLoggedIn()" @click="handleLogout()">Logout</button>
+      </div>
     </div>
   </nav>
 </template>
@@ -61,12 +74,24 @@ export default {
   &__menu
     width 100%
     display flex
-    justify-content flex-end
-    list-style-type none
+    justify-content space-between
     padding 20px
+
+    &--left
+      display flex
+      justify-content flex-start
+
+    &--right
+      display flex
+      justify-content flex-end
 
   &__item
     text-transform uppercase
+
+    &--left
+      border 0
+      text-decoration none
+      margin-right 10px
 
   &__image-aspect
     width 40px
