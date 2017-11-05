@@ -8,6 +8,11 @@
       <div class="view__form-group">
 
         <div class="view__form-element">
+          <label class="view__label" for="view__creator">Creator</label>
+          <input class="view__input" id="view__creator" maxlength="100" type="text" name="creator" v-model="ideaCreatorId" placeholder="Creator" autofocus disabled>
+        </div>
+
+        <div class="view__form-element">
           <label class="view__label" for="view__title">Title</label>
           <input class="view__input" id="view__title" maxlength="100" type="text" name="title" v-model="ideaTitle" placeholder="Title" autofocus disabled>
         </div>
@@ -18,7 +23,8 @@
         </div>
 
         <div class="view__form-tags">
-          <div class="view__tag-wrap">
+          <label class="view__label" for="view__tags">Tags</label>
+          <div class="view__tag-wrap" id="view__tags">
             <span class="view__form-tag" v-for="(tag, index) in tags" v-bind:key="index">
               <span class="view__tag" >
                 <span class="view__tag__label" role="option" aria-selected="true">
@@ -31,9 +37,10 @@
         </div>
 
         <div class="view__form-element">
+          <label class="view__label" for="view__links">Links</label>
           <div id="view__links" class="create__form__link" v-for="(link, index) in links" v-bind:key="index">
             <div class="view__link">
-              <a :href="link">{{link}}</a>
+              <a :href="link.url">{{link.url_description}}</a>
             </div>
           </div>
         </div>
@@ -41,20 +48,20 @@
         <div class="view__form-element">
           <label class="view__label" for="create__type">Type</label>
           <div class="view__radio-group">
-            <div class="view__radio view__option" v-bind:class="{ active: ideaType === 0 }" @mouseover="upHere = 0" @mouseleave="upHere = -1" @click="typeToggle(0)">
-              <input type="radio" name="ideatype" v-validate="'required'" value="0" v-model="ideaType">
+            <div class="view__radio view__option" v-bind:class="{ active: ideaType === 0 }" @mouseover="upHere = 0" @mouseleave="upHere = -1">
+              <input type="radio" name="ideatype" v-validate="'required'" value="0" v-model="ideaType" disable>
               <div class="view__type-title tooltip">Public
                 <span class="view__type-desc tooltiptext" v-if="upHere == 0">Anyone can read and give feedback</span>
               </div>
             </div>
-            <div class="view__radio view__option" v-bind:class="{ active: ideaType === 1 }" @mouseover="upHere = 1" @mouseleave="upHere = -1" @click="typeToggle(1)">
-              <input type="radio" name="ideatype" value="1" v-model="ideaType">
+            <div class="view__radio view__option" v-bind:class="{ active: ideaType === 1 }" @mouseover="upHere = 1" @mouseleave="upHere = -1">
+              <input type="radio" name="ideatype" value="1" v-model="ideaType" disable>
               <div class="view__type-title tooltip">Private
                 <span class="view__type-desc tooltiptext" v-if="upHere == 1">Only visible to people who agree to the license</span>
               </div>
             </div>
-            <div class="view__radio view__option" v-bind:class="{ active: ideaType === 2 }" @mouseover="upHere = 2" @mouseleave="upHere = -1" @click="typeToggle(2)">
-              <input type="radio" name="ideatype" value="2" v-model="ideaType">
+            <div class="view__radio view__option" v-bind:class="{ active: ideaType === 2 }" @mouseover="upHere = 2" @mouseleave="upHere = -1">
+              <input type="radio" name="ideatype" value="2" v-model="ideaType" disable>
               <div class="view__type-title tooltip">Custom
                 <span class="view__type-desc tooltiptext" v-if="upHere == 2">Customise the license and choose who can see the idea</span>
               </div>
@@ -93,7 +100,7 @@ export default {
     .then((response) => {
       // TODO: Initialize the data elements
       console.log('response: ', response);
-      this.ideaCreatorId = response.data[0].creatorId;
+      this.ideaCreatorId = response.data[0].creator_id;
       this.ideaTitle = response.data[0].title;
       switch (response.data[0].type) {
         case 'public':
@@ -110,6 +117,9 @@ export default {
           throw `Invalid idea type field value: ${response.data[0].type}`;
       }
       this.ideaDesc = response.data[0].description;
+      this.links = response.data[0].documents;
+      console.log('this.links', this.links);
+      this.tags = response.data[0].tags;
       // eslint-disable-next-line no-underscore-dangle
       this.idea_id = response.data[0]._id;
     })
