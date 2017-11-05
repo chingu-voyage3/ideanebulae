@@ -76,18 +76,20 @@
 
     <!-- Filtered Search Results -->
     <section class="explore__results" v-show="ideas.length">
-        <table>
-          <tr>
-            <th>Idea</th>
-            <th>Type</th>
-            <th>Status</th>
-            <th>Status Date</th
+        <table class="explore__table">
+          <tr class="explore__tr">
+            <th class="explore__th">Idea</th>
+            <th class="explore__th">Type</th>
+            <th class="explore__th">Status</th>
+            <th class="explore__th">Status Date</th>
           </tr>
-          <tr v-for="idea in ideas" v-bind:key="idea.title">
-            <td>{{idea.title}}</td>
-            <td>{{idea.type}}</td>
-            <td>{{idea.status}}</td>
-            <td>{{idea.status_dt}}</td>
+          <tr class="explore__tr" v-for="idea in ideas" v-bind:key="idea.title">
+            <td class="explore__td">
+              <a class="explore__link" href="">{{idea.title}}</a>
+            </td>
+            <td class="explore__td">{{idea.type}}</td>
+            <td class="explore__td">{{idea.status}}</td>
+            <td class="explore__td">{{new Date(idea.status_dt).toLocaleDateString()}}</td>
           </tr>
         </table>
     </section>
@@ -196,6 +198,49 @@ export default {
 
   &__results
     margin-top 20px
+    padding 40px 0 0 0
+    @media (min-width: 600px)
+      border 0
+
+  &__table
+    margin 0 auto
+    width 100%
+
+  &__th
+    padding 10px
+    text-transform uppercase
+    border-bottom 1px dotted $purple
+    &:first-child
+      text-align left
+      padding-left 0
+    &:last-child
+      text-align right
+      padding-right 0
+
+  &__tr
+    padding 10px
+
+  &__td
+    padding 10px
+    border-bottom 1px dotted $purple
+    &:first-child
+      padding-left 0
+    &:nth-child(2),
+    &:nth-child(3)
+      text-align center
+    &:last-child
+      text-align right
+      max-width 25px
+      padding-right 0
+
+  &__link
+    text-decoration none
+    color $purple
+    border-bottom 1px dotted $purple
+    &:hover, &:focus, &:active
+      color $aqua
+      border-bottom 1px dotted $aqua
+      transition color 300ms linear
 
   &__header
     text-align center
@@ -258,6 +303,7 @@ export default {
     width 100%
     font-size 1em
     border 1px solid $purple
+    color $gray_text
 
     &:focus
       -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);

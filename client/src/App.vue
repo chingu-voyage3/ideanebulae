@@ -53,7 +53,7 @@ export default {
 
 // global styles
 
-* {
+*, *::before, *::after {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   margin: 0;
