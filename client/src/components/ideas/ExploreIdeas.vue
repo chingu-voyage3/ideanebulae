@@ -75,8 +75,7 @@
     </section>
 
     <!-- Filtered Search Results -->
-    <section class="explore">
-      <div class="container explore">
+    <section class="explore__results" v-show="ideas.length">
         <table>
           <tr>
             <th>Idea</th>
@@ -91,7 +90,6 @@
             <td>{{idea.status_dt}}</td>
           </tr>
         </table>
-      </div>
     </section>
 
   </div>
@@ -186,7 +184,8 @@ export default {
 
 .explore
 
-  &__form-wrapper
+  &__form-wrapper,
+  &__results
     width 100%
     max-width 600px
     margin auto
@@ -194,6 +193,9 @@ export default {
     @media (min-width: 600px)
       padding 40px
       border 1px solid $purple
+
+  &__results
+    margin-top 20px
 
   &__header
     text-align center
@@ -309,7 +311,7 @@ export default {
   &__button-wrap
     display flex
     justify-content center
-    margin 20px auto
+    margin 20px auto 0 auto
 
   &__button
 
@@ -384,123 +386,6 @@ export default {
     &:hover
       border: 1px solid $gray_bkgrd;
 
-  &__option
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      -ms-appearance: none;
-      -o-appearance: none;
-      appearance: none;
-      position: relative;
-      top: 4px;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      height: 20px;
-      width: 20px;
-      transition: all 0.15s ease-out 0s;
-      border: 2px solid $purple
-      color: $purple
-      cursor: pointer;
-      display: block;
-      margin-right: 0.5rem;
-      position: relative;
-      z-index: 10;
-
-      & input
-        z-index: -1
-        opacity: 0
-        width 100%
-        display flex
-        height 20px
-        position relative
-
-
-      &:hover
-        background: $pink;
-
-      &:checked
-        background: $pink;
-
-      &::before
-        height: 12px;
-        width: 12px;
-        position: absolute;
-        top: 2px;
-        left: 2px;
-        content: '';
-        display: inline-block;
-        border-radius: 100%;
-        background-color: white;
-
-        &:focus
-          border-radius: 50%;
-
-      &::after
-        background: #40e0d0;
-        content: '';
-        display: block;
-        position: relative;
-        z-index: 100;
-
-  &__type-title
-    text-align center
-    width 100%
-    position absolute
-    top -24px
-    left 30px
-
-  &__type-desc
-    width 100%
-    min-width 150px
-    margin-left 60px
-    padding-left 10px
-    font-size .8em
-    @media (min-width: 600px)
-      min-width 400px
-
-.tooltip {
-    position: relative;
-}
-
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 60%;
-    background-color $purple
-    color: white;
-    border: 1px solid $purple
-    position: absolute;
-    z-index: 1;
-    top: -5px;
-    left: 110%;
-    text-align: center
-    padding 9px 10px 11px 10px
-    line-height 1em
-}
-
-.tooltip .tooltiptext::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    right: 100%;
-    margin-top: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: transparent $purple transparent transparent;
-}
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-}
-
-.active::before
-  height: 12px;
-  width: 12px;
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  content: '';
-  display: inline-block;
-  border-radius: 100%;
-  background-color: purple;
 
 </style>
 
