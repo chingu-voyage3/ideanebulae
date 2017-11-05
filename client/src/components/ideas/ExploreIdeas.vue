@@ -28,8 +28,11 @@
           </div>
 
           <label class="explore__label" for="explore__tags">Tags</label>
-          <select v-model="selectedTag" v-on:change="tagIsSelected">
-            <option v-for="tag in ideaTags" v-bind:key="tag" v-bind:value="tag">
+          <select class="explore__select" v-model="selectedTag" v-on:change="tagIsSelected">
+            <option class="explore__select-option" :value="null" disabled>
+              Choose Tag
+            </option>
+            <option class="explore__select-option" v-for="tag in ideaTags" v-bind:key="tag" v-bind:value="tag">
               {{ tag }}
             </option>
           </select>
@@ -103,7 +106,7 @@ export default {
     return {
       // Search term form variables
       ideaTags: [],
-      selectedTag: '',
+      selectedTag: null,
       searchForTags: [],
       newKeywords: '',
       searchForKeywords: [],
@@ -141,7 +144,15 @@ export default {
       this.searchForTags.splice(index, 1);
     },
     tagIsSelected() {
-      this.searchForTags.push(this.selectedTag);
+      const newVal = this.selectedTag.trim();
+      // Add the new tag to the array only if it hasn't been previously added
+      const searchResult = this.searchForTags.find(currentTag =>
+        currentTag === newVal.trim(),
+      );
+      if (searchResult === undefined) {
+        this.searchForTags.push(newVal.trim());
+      }
+      this.selectedTag = null;
     },
     typeToggle(type) {
       this.ideaType = type;
@@ -270,6 +281,27 @@ export default {
     display inline-block
     width 33%
 
+  &__select
+    -webkit-appearance none
+    -webkit-user-select none
+    appearance none
+    width 100%
+    padding 10px
+    font-size 1em
+    font-family 'Titillium Web', Helvetica, Arial, sans-serif
+    letter-spacing 1px
+    color $gray_text
+    border 1px solid $purple
+    border-radius 0
+    background white url('https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_keyboard_arrow_down_48px-128.png') no-repeat
+    background-position right 10px center
+    background-repeat no-repeat
+    background-size 20px
+
+
+
+  &__select-option
+
   &__keyword
     margin 10px 0
 
@@ -302,13 +334,13 @@ export default {
     line-height: 1.4;
     background-color: transparent;
     border-radius: 2px;
-    border: 1px solid rgba(0, 126, 255, 0.24);
+    border: 1px solid rgba(124,72,194, 0.25);
     margin-right: 10px;
     margin-top: 5px;
     vertical-align: top;
 
     &:hover
-      border: 1px solid $gray_bkgrd;
+      border: 1px solid rgba(124,72,194, 1);
 
 
     &__label
@@ -331,7 +363,7 @@ export default {
       cursor: pointer;
       border-bottom-left-radius: 2px;
       border-top-left-radius: 2px;
-      border-right: 1px solid rgba(0, 126, 255, 0.24);
+      border-right: 1px solid rgba(124,72,194, 0.25);
       padding: 1px 5px 3px;
 
       &:hover

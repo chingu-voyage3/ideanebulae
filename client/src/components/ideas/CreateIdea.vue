@@ -320,13 +320,13 @@ export default {
     line-height: 1.4;
     background-color: transparent;
     border-radius: 2px;
-    border: 1px solid rgba(0, 126, 255, 0.24);
+    border: 1px solid rgba(124,72,194, 0.25);
     margin-right: 10px;
     margin-top: 5px;
     vertical-align: top;
 
     &:hover
-      border: 1px solid $gray_bkgrd;
+      border: 1px solid rgba(124,72,194, 1);
 
 
     &__label
@@ -349,7 +349,7 @@ export default {
       cursor: pointer;
       border-bottom-left-radius: 2px;
       border-top-left-radius: 2px;
-      border-right: 1px solid rgba(0, 126, 255, 0.24);
+      border-right: 1px solid rgba(124,72,194, 0.25);
       padding: 1px 5px 3px;
 
       &:hover
