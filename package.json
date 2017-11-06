@@ -24,6 +24,7 @@
     "express": "^4.16.2",
     "express-jwt": "^5.3.0",
     "jwks-rsa": "^1.2.0",
+    "jwt-decode": "^2.2.0",
     "mongodb": "^2.2.33",
     "mongoose": "^4.12.3"
   },
