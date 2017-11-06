@@ -46,7 +46,7 @@ const agreementSchema = new Schema({
 });
 
 // Create a model for the schema
-agreementSchema.loadClass(userMethods);
+agreementSchema.loadClass(agreementMethods);
 const Agreement = mongoose.model('Agreement', agreementSchema);
 
 export default Agreement;

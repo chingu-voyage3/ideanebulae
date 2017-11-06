@@ -104,11 +104,6 @@ export default {
     // Retrieve the idea identified by the URL paramaters
     http.get(`/idea/?creatorId=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
     .then((response) => {
-<<<<<<< HEAD
-      // TODO: Initialize the data elements
-=======
-      console.log('response: ', response);
->>>>>>> 383c88f337b12eee3b28a20eb3a9e39116ad3434
       this.ideaCreatorId = response.data[0].creator_id;
       this.ideaTitle = response.data[0].title;
       // TODO: Calculate this as a virtual database field in Mongoose
@@ -125,26 +120,15 @@ export default {
         default:
           throw new Error(`Invalid idea type field value: ${response.data[0].type}`);
       }
-<<<<<<< HEAD
-      this.ideaDesc = response.data[0].description;
-      this.links = response.data[0].documents;
-      this.tags = response.data[0].tags;
-=======
->>>>>>> 383c88f337b12eee3b28a20eb3a9e39116ad3434
       // eslint-disable-next-line no-underscore-dangle
       this.idea_id = response.data[0]._id;
       this.ideaDesc = response.data[0].description;
       this.ideaLinks = response.data[0].documents;
       this.ideaTags = response.data[0].tags;
-      this.ideaAgreement = response.data[0].agreement;
+      this.ideaAgreement = response.data[0].agreement.agreement;
     })
     .catch((err) => {
-<<<<<<< HEAD
       throw new Error(`Error locating idea: ${err}`);
-=======
-      // eslint-disable-next-line
-      throw `Failed to retrieve idea: ${err}`;
->>>>>>> 383c88f337b12eee3b28a20eb3a9e39116ad3434
     });
   },
   methods: {
