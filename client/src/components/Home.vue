@@ -8,7 +8,7 @@
         <div class="splash__tagline">where ideas are born</div>
       </div>
       <div class="splash__button-wrap">
-        <button class="btn btn__primary splash__button">Start Ideation</button>
+        <router-link to="create" class="btn btn__primary splash__button">Start Ideation</router-link>
       </div>
     </header>
 
@@ -59,7 +59,7 @@
     <section id="idea-count" class="splash__counter">
       <span class="splash__number">140,257</span>
       <div class="splash__counter-text">Ideas born so far</div>
-      <button class="btn btn__primary splash__button splash__button--btm">What's <strong>your</strong> idea?</button>
+      <router-link to="create" class="btn btn__primary splash__button splash__button--btm">What's <strong>your</strong> idea?</router-link>
     </section>
 
   </div>
@@ -122,9 +122,11 @@ export default {
     margin 6vw auto
 
   &__button
+    text-decoration none
+    line-height 1.5em
 
     &--btm
-        margin-top 10vh
+      margin-top 10vh
 
     @media (min-width: 600px)
       font-size 2.5vw
@@ -236,7 +238,7 @@ export default {
   &__counter-text
     color $purple
     font-size: 1.5em
-    margin-top: 20px
+    margin: 20px 0 10vh
 
 
 

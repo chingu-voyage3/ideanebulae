@@ -49,7 +49,7 @@
         <div class="create__form-element">
           <div id="create__links" class="create__form__link" v-for="(link, index) in links" v-bind:key="index">
             <div class="create__link">
-              <a :href="link">{{link}}</a>
+              <a class="create__link-text" :href="link">{{link}}</a>
               <button class="create__remove-link" id="remove__link" @click="removeLink(index)"> &times; </button>
             </div>
           </div>
@@ -259,6 +259,7 @@ export default {
     width 100%
     font-size 1em
     border 1px solid $purple
+    color $gray_text
 
     &:focus
       -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
@@ -286,7 +287,18 @@ export default {
     width 33%
 
   &__link
+    display inline-block
     margin 10px 0
+
+  &__link-text
+    text-decoration none
+    color $purple
+    border-bottom 1px dotted $purple
+    &:hover, &:focus, &:active
+      color $aqua
+      border-bottom 1px dotted $aqua
+      transition color 300ms linear
+
 
   &__radio-group
     display flex
@@ -320,13 +332,13 @@ export default {
     line-height: 1.4;
     background-color: transparent;
     border-radius: 2px;
-    border: 1px solid rgba(0, 126, 255, 0.24);
+    border: 1px solid rgba(124,72,194, 0.25);
     margin-right: 10px;
     margin-top: 5px;
     vertical-align: top;
 
     &:hover
-      border: 1px solid $gray_bkgrd;
+      border: 1px solid rgba(124,72,194, 1);
 
 
     &__label
@@ -349,7 +361,7 @@ export default {
       cursor: pointer;
       border-bottom-left-radius: 2px;
       border-top-left-radius: 2px;
-      border-right: 1px solid rgba(0, 126, 255, 0.24);
+      border-right: 1px solid rgba(124,72,194, 0.25);
       padding: 1px 5px 3px;
 
       &:hover
@@ -362,12 +374,12 @@ export default {
     color: inherit;
     cursor: pointer;
     font-size: 1em;
-    border: 1px solid rgba(0, 126, 255, 0.24);
+    border: 1px solid rgba(124,72,194, 0.25);
     padding: 0 4px 2px;
     margin-left 10px
 
     &:hover
-      border: 1px solid $gray_bkgrd;
+      border: 1px solid rgb(124,72,194);
 
   &__option
       -webkit-appearance: none;
@@ -415,7 +427,6 @@ export default {
         content: '';
         display: inline-block;
         border-radius: 100%;
-        background-color: white;
 
         &:focus
           border-radius: 50%;
@@ -456,9 +467,14 @@ export default {
     border-radius: 50%;
     display block
     text-align center
+    height 21px
+    width 21px
 
     &::after
       border-radius: 50%;
+
+      &:hover
+        background: $pink;
 
     &:focus
       border-radius: 50%;
@@ -469,6 +485,18 @@ export default {
 
   &__radio-wrap
     display: inline-block;
+
+.active::before
+  height: 19px;
+  width: 19px;
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  border: 3px solid white
+  content: '';
+  display: inline-block;
+  border-radius: 100%;
+  background-color: $purple
 
 .tooltip {
     position: relative;
@@ -503,16 +531,6 @@ export default {
     visibility: visible;
 }
 
-.active::before
-  height: 12px;
-  width: 12px;
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  content: '';
-  display: inline-block;
-  border-radius: 100%;
-  background-color: purple;
 
 
 </style>

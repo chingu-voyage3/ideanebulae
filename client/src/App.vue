@@ -34,14 +34,11 @@ export default {
             console.log(res);
           })
           .catch((err) => {
-            // eslint-disable-next-line
-            console.error(err);
+            throw new Error(`Error routing to user profile page: ${err}`);
           });
         })
         .catch((err) => {
-          // ToDo: Handle error in a more gracefully way
-          // eslint-disable-next-line
-          console.error(err);
+          throw new Error(`Error retrieving user security profile: ${err}`);
         });
     }
   },
@@ -53,7 +50,7 @@ export default {
 
 // global styles
 
-* {
+*, *::before, *::after {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   margin: 0;
@@ -72,7 +69,9 @@ export default {
 .container
   width 100%
   max-width 1200px
+  padding-top 20px
   margin auto
+  min-height calc(100vh - 150px) // combined height of nav + footer
 
 .purple-gradient
   background $purple
@@ -108,6 +107,7 @@ export default {
   border: none;
   background: transparent;
   color: inherit;
+  cursor: pointer
 
 
   &:hover, &:active, &:focus

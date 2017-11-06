@@ -99,7 +99,6 @@ export default {
     http.get(`/idea/?creatorId=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
     .then((response) => {
       // TODO: Initialize the data elements
-      console.log('response: ', response);
       this.ideaCreatorId = response.data[0].creator_id;
       this.ideaTitle = response.data[0].title;
       switch (response.data[0].type) {
@@ -113,18 +112,16 @@ export default {
           this.ideaType = 2;
           break;
         default:
-          // eslint-disable-next-line no-throw-literal
-          throw `Invalid idea type field value: ${response.data[0].type}`;
+          throw new Error(`Invalid idea type field value: ${response.data[0].type}`);
       }
       this.ideaDesc = response.data[0].description;
       this.links = response.data[0].documents;
-      console.log('this.links', this.links);
       this.tags = response.data[0].tags;
       // eslint-disable-next-line no-underscore-dangle
       this.idea_id = response.data[0]._id;
     })
     .catch((err) => {
-      console.log('error: ', err);
+      throw new Error(`Error locating idea: ${err}`);
     });
   },
   methods: {

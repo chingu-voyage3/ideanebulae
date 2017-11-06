@@ -46,7 +46,6 @@ router.put('/profile/:username(*)', (req, res) => {
     res.json('User profile created/updated');
   })
   .catch((err) => {
-    console.error(`An error ocurred: ${err}`);
     res.json(err);
   })
 });
@@ -61,11 +60,9 @@ router.route('/ideas')
   .post((req, res) => {
     Idea.saveIdea(req.body)
       .then(() => {
-        console.log('Idea created');
         res.json('Idea created');
       })
       .catch(err => {
-        console.error(err);
         res.send(err);
       });
   })

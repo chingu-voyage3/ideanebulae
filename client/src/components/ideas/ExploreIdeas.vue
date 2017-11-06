@@ -28,8 +28,11 @@
           </div>
 
           <label class="explore__label" for="explore__tags">Tags</label>
-          <select v-model="selectedTag" v-on:change="tagIsSelected">
-            <option v-for="tag in ideaTags" v-bind:key="tag" v-bind:value="tag">
+          <select class="explore__select" v-model="selectedTag" v-on:change="tagIsSelected">
+            <option class="explore__select-option" :value="null" disabled>
+              Choose Tag
+            </option>
+            <option class="explore__select-option" v-for="tag in ideaTags" v-bind:key="tag" v-bind:value="tag">
               {{ tag }}
             </option>
           </select>
@@ -72,23 +75,23 @@
     </section>
 
     <!-- Filtered Search Results -->
-    <section class="explore">
-      <div class="container explore">
-        <table>
-          <tr>
-            <th>Idea</th>
-            <th>Type</th>
-            <th>Status</th>
-            <th>Status Date</th
+    <section class="explore__results" v-show="ideas.length">
+        <table class="explore__table">
+          <tr class="explore__tr">
+            <th class="explore__th">Idea</th>
+            <th class="explore__th">Type</th>
+            <th class="explore__th">Status</th>
+            <th class="explore__th">Status Date</th>
           </tr>
-          <tr v-for="idea in ideas" v-bind:key="idea.title">
-            <td>{{idea.title}}</td>
-            <td>{{idea.type}}</td>
-            <td>{{idea.status}}</td>
-            <td>{{idea.status_dt}}</td>
+          <tr class="explore__tr" v-for="idea in ideas" v-bind:key="idea.title">
+            <td class="explore__td">
+              <a class="explore__link" href="">{{idea.title}}</a>
+            </td>
+            <td class="explore__td">{{idea.type}}</td>
+            <td class="explore__td">{{idea.status}}</td>
+            <td class="explore__td">{{new Date(idea.status_dt).toLocaleDateString()}}</td>
           </tr>
         </table>
-      </div>
     </section>
 
   </div>
@@ -106,7 +109,7 @@ export default {
       currentUserNickname: '',
       // Search term form variables
       ideaTags: [],
-      selectedTag: '',
+      selectedTag: null,
       searchForTags: [],
       newKeywords: '',
       searchForKeywords: [],
@@ -136,6 +139,7 @@ export default {
       this.searchForTags = [];
       this.newKeywords = '';
       this.searchForKeywords = [];
+      this.ideas = [];
     },
     removeKeyword(index) {
       this.searchForKeywords.splice(index, 1);
@@ -144,7 +148,15 @@ export default {
       this.searchForTags.splice(index, 1);
     },
     tagIsSelected() {
-      this.searchForTags.push(this.selectedTag);
+      const newVal = this.selectedTag.trim();
+      // Add the new tag to the array only if it hasn't been previously added
+      const searchResult = this.searchForTags.find(currentTag =>
+        currentTag === newVal.trim(),
+      );
+      if (searchResult === undefined) {
+        this.searchForTags.push(newVal.trim());
+      }
+      this.selectedTag = null;
     },
     typeToggle(type) {
       this.ideaType = type;
@@ -154,8 +166,7 @@ export default {
       .then((response) => {
         this.ideas = response.data;
       }).catch((err) => {
-        // eslint-disable-next-line
-        console.error(err);
+        throw new Error(`Error searching ideas on tags/keywords: ${err}`);
       });
     },
   },
@@ -164,8 +175,7 @@ export default {
     http.get('/ideas/getAllTags').then((response) => {
       this.ideaTags = response.data;
     }).catch((err) => {
-      // eslint-disable-next-line
-      console.error(err);
+      throw new Error(`Error retrieving all idea tags: ${err}`);
     });
     // Retrieve attributes of the currently logged on user
     if (getAccessToken()) {
@@ -174,8 +184,7 @@ export default {
         this.currentUserNickname = profile.nickname;
       })
       .catch((err) => {
-          // eslint-disable-next-line
-          console.error(err);
+        throw new Error(`Error accessing user security profile: ${err}`);
       });
     }
   },
@@ -188,7 +197,8 @@ export default {
 
 .explore
 
-  &__form-wrapper
+  &__form-wrapper,
+  &__results
     width 100%
     max-width 600px
     margin auto
@@ -196,6 +206,52 @@ export default {
     @media (min-width: 600px)
       padding 40px
       border 1px solid $purple
+
+  &__results
+    margin-top 20px
+    padding 40px 0 0 0
+    @media (min-width: 600px)
+      border 0
+
+  &__table
+    margin 0 auto
+    width 100%
+
+  &__th
+    padding 10px
+    text-transform uppercase
+    border-bottom 1px dotted $purple
+    &:first-child
+      text-align left
+      padding-left 0
+    &:last-child
+      text-align right
+      padding-right 0
+
+  &__tr
+    padding 10px
+
+  &__td
+    padding 10px
+    border-bottom 1px dotted $purple
+    &:first-child
+      padding-left 0
+    &:nth-child(2),
+    &:nth-child(3)
+      text-align center
+    &:last-child
+      text-align right
+      max-width 25px
+      padding-right 0
+
+  &__link
+    text-decoration none
+    color $purple
+    border-bottom 1px dotted $purple
+    &:hover, &:focus, &:active
+      color $aqua
+      border-bottom 1px dotted $aqua
+      transition color 300ms linear
 
   &__header
     text-align center
@@ -258,6 +314,7 @@ export default {
     width 100%
     font-size 1em
     border 1px solid $purple
+    color $gray_text
 
     &:focus
       -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
@@ -284,13 +341,34 @@ export default {
     display inline-block
     width 33%
 
+  &__select
+    -webkit-appearance none
+    -webkit-user-select none
+    appearance none
+    width 100%
+    padding 10px
+    font-size 1em
+    font-family 'Titillium Web', Helvetica, Arial, sans-serif
+    letter-spacing 1px
+    color $gray_text
+    border 1px solid $purple
+    border-radius 0
+    background white url('https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_keyboard_arrow_down_48px-128.png') no-repeat
+    background-position right 10px center
+    background-repeat no-repeat
+    background-size 20px
+
+
+
+  &__select-option
+
   &__keyword
     margin 10px 0
 
   &__button-wrap
     display flex
     justify-content center
-    margin 20px auto
+    margin 20px auto 0 auto
 
   &__button
 
@@ -316,13 +394,13 @@ export default {
     line-height: 1.4;
     background-color: transparent;
     border-radius: 2px;
-    border: 1px solid rgba(0, 126, 255, 0.24);
+    border: 1px solid rgba(124,72,194, 0.25);
     margin-right: 10px;
     margin-top: 5px;
     vertical-align: top;
 
     &:hover
-      border: 1px solid $gray_bkgrd;
+      border: 1px solid rgba(124,72,194, 1);
 
 
     &__label
@@ -345,7 +423,7 @@ export default {
       cursor: pointer;
       border-bottom-left-radius: 2px;
       border-top-left-radius: 2px;
-      border-right: 1px solid rgba(0, 126, 255, 0.24);
+      border-right: 1px solid rgba(124,72,194, 0.25);
       padding: 1px 5px 3px;
 
       &:hover
@@ -365,123 +443,6 @@ export default {
     &:hover
       border: 1px solid $gray_bkgrd;
 
-  &__option
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      -ms-appearance: none;
-      -o-appearance: none;
-      appearance: none;
-      position: relative;
-      top: 4px;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      height: 20px;
-      width: 20px;
-      transition: all 0.15s ease-out 0s;
-      border: 2px solid $purple
-      color: $purple
-      cursor: pointer;
-      display: block;
-      margin-right: 0.5rem;
-      position: relative;
-      z-index: 10;
-
-      & input
-        z-index: -1
-        opacity: 0
-        width 100%
-        display flex
-        height 20px
-        position relative
-
-
-      &:hover
-        background: $pink;
-
-      &:checked
-        background: $pink;
-
-      &::before
-        height: 12px;
-        width: 12px;
-        position: absolute;
-        top: 2px;
-        left: 2px;
-        content: '';
-        display: inline-block;
-        border-radius: 100%;
-        background-color: white;
-
-        &:focus
-          border-radius: 50%;
-
-      &::after
-        background: #40e0d0;
-        content: '';
-        display: block;
-        position: relative;
-        z-index: 100;
-
-  &__type-title
-    text-align center
-    width 100%
-    position absolute
-    top -24px
-    left 30px
-
-  &__type-desc
-    width 100%
-    min-width 150px
-    margin-left 60px
-    padding-left 10px
-    font-size .8em
-    @media (min-width: 600px)
-      min-width 400px
-
-.tooltip {
-    position: relative;
-}
-
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 60%;
-    background-color $purple
-    color: white;
-    border: 1px solid $purple
-    position: absolute;
-    z-index: 1;
-    top: -5px;
-    left: 110%;
-    text-align: center
-    padding 9px 10px 11px 10px
-    line-height 1em
-}
-
-.tooltip .tooltiptext::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    right: 100%;
-    margin-top: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: transparent $purple transparent transparent;
-}
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-}
-
-.active::before
-  height: 12px;
-  width: 12px;
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  content: '';
-  display: inline-block;
-  border-radius: 100%;
-  background-color: purple;
 
 </style>
 

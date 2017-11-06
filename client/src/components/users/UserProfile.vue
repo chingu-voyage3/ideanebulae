@@ -22,7 +22,7 @@
             <div class="profile__name">
               {{userName}}</div>
             <div class="profile__username">
-              {{userId}}</div>
+              {{name}}</div>
           </div>
           </div>
           <div class="profile__qualifications">
@@ -62,6 +62,7 @@
     data() {
       return {
         userId: '',
+        name: '',
         userName: '',
         userAvatarUrl: '',
         userQualifications: '',
@@ -81,8 +82,7 @@
             this.userAvatarUrl = response.data.avatar_url;
             this.userQualifications = response.data.qualifications;
           }).catch((err) => {
-            // eslint-disable-next-line
-            console.error(err);
+            throw new Error(`Error retrieving user app profile: ${err}`);
           });
         });
       }
@@ -100,6 +100,9 @@
           } else {
             // TODO: Issue error message
           }
+        })
+        .catch((err) => {
+          throw new Error(`Error adding/updating user app profile: ${err}`);
         });
       },
       cancelQualifications() {

@@ -20,7 +20,8 @@ export default class ideaMethods {
    * @returns  {Promise} The matching idea document
    * @memberof agreementMethods
    */
-  static async getIdea(creatorId, title, type) {
+  static async findIdea(creatorId, title, type) {
+    console.log('Got to this findIdea');
     return await this.find({
       creator_id: creatorId,
       title: title,
