@@ -34,14 +34,11 @@ export default {
             console.log(res);
           })
           .catch((err) => {
-            // eslint-disable-next-line
-            console.error(err);
+            throw new Error(`Error routing to user profile page: ${err}`);
           });
         })
         .catch((err) => {
-          // ToDo: Handle error in a more gracefully way
-          // eslint-disable-next-line
-          console.error(err);
+          throw new Error(`Error retrieving user security profile: ${err}`);
         });
     }
   },

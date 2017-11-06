@@ -69,6 +69,24 @@
         edit: false,
       };
     },
+    mounted() {
+      this.adjustTextArea(document.getElementById('qualifications'));
+      if (getAccessToken()) {
+        getUserProfile()
+        .then((profile) => {
+          // Dispatch an action to set the current user profile data
+          // to the payload we received
+          http.get(`/profile/?username=${profile.nickname}`).then((response) => {
+            this.userId = response.data.user_id;
+            this.userName = response.data.username;
+            this.userAvatarUrl = response.data.avatar_url;
+            this.userQualifications = response.data.qualifications;
+          }).catch((err) => {
+            throw new Error(`Error retrieving user app profile: ${err}`);
+          });
+        });
+      }
+    },
     methods: {
       saveQualifications() {
         this.toggleEdit();
@@ -82,6 +100,9 @@
           } else {
             // TODO: Issue error message
           }
+        })
+        .catch((err) => {
+          throw new Error(`Error adding/updating user app profile: ${err}`);
         });
       },
       cancelQualifications() {
@@ -101,26 +122,6 @@
         this.edit = !this.edit;
         this.adjustTextArea(document.getElementById('qualifications'));
       },
-    },
-    mounted() {
-      this.adjustTextArea(document.getElementById('qualifications'));
-      if (getAccessToken()) {
-        getUserProfile()
-        .then((profile) => {
-          // Dispatch an action to set the current user profile data
-          // to the payload we received
-          http.get(`/profile/?username=${profile.nickname}`).then((response) => {
-            this.name = response.data.name;
-            this.userId = response.data.user_id;
-            this.userName = response.data.username;
-            this.userAvatarUrl = response.data.avatar_url;
-            this.userQualifications = response.data.qualifications;
-          }).catch((err) => {
-            // eslint-disable-next-line
-            console.error(err);
-          });
-        });
-      }
     },
   };
 </script>

@@ -46,7 +46,6 @@ router.put('/profile/:username(*)', (req, res) => {
     res.json('User profile created/updated');
   })
   .catch((err) => {
-    console.error(`An error ocurred: ${err}`);
     res.json(err);
   })
 });
@@ -61,18 +60,25 @@ router.route('/ideas')
   .post((req, res) => {
     Idea.saveIdea(req.body)
       .then(() => {
-        console.log('Idea created');
         res.json('Idea created');
       })
       .catch(err => {
-        console.error(err);
         res.send(err);
       });
   })
 
-router.route('/ideas/search/:searchForTags(*):searchForKeywords(*)')
+router.route('/idea/:creatorId(*):title(*):type(*)')
   .get((req, res) => {
-    Idea.searchIdeas(req.query.searchForTags, req.query.searchForKeywords)
+    Idea.findIdea(req.query.creatorId, req.query.title, req.query.type)
+      .then(idea => {
+        res.json(idea)
+      })
+      .catch(err => res.send(err));
+  });
+
+router.route('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)')
+  .get((req, res) => {
+    Idea.searchIdeas(req.query.currUser, req.query.searchForTags, req.query.searchForKeywords)
       .then(ideas => {
         res.json(ideas)
       })

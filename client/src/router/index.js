@@ -37,7 +37,7 @@ export default new Router({
       component: CreateIdea,
     },
     {
-      path: '/ideas/:slug',
+      path: '/ideas/:creatorId/:title/:type',
       name: 'IdeaDetails',
       component: IdeaDetails,
     },

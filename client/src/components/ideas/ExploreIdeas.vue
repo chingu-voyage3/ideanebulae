@@ -85,7 +85,7 @@
           </tr>
           <tr class="explore__tr" v-for="idea in ideas" v-bind:key="idea.title">
             <td class="explore__td">
-              <a class="explore__link" href="">{{idea.title}}</a>
+              <a class="explore__link" :href="'ideas/'+idea.creator_id+'/'+idea.title+'/'+idea.type">{{idea.title}}</a>
             </td>
             <td class="explore__td">{{idea.type}}</td>
             <td class="explore__td">{{idea.status}}</td>
@@ -98,12 +98,15 @@
 </template>
 
 <script>
+import { getUserProfile, getAccessToken } from '@/auth';
 import http from '../../api/index';
 
 export default {
   name: 'ExploreIdeas',
   data() {
     return {
+      // Environment information
+      currentUserNickname: '',
       // Search term form variables
       ideaTags: [],
       selectedTag: null,
@@ -159,12 +162,11 @@ export default {
       this.ideaType = type;
     },
     searchIdeas() {
-      http.get(`/ideas/search/?searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
+      http.get(`/ideas/search/?currUser=${this.currentUserNickname}&searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
       .then((response) => {
         this.ideas = response.data;
       }).catch((err) => {
-        // eslint-disable-next-line
-        console.error(err);
+        throw new Error(`Error searching ideas on tags/keywords: ${err}`);
       });
     },
   },
@@ -173,9 +175,18 @@ export default {
     http.get('/ideas/getAllTags').then((response) => {
       this.ideaTags = response.data;
     }).catch((err) => {
-      // eslint-disable-next-line
-      console.error(err);
+      throw new Error(`Error retrieving all idea tags: ${err}`);
     });
+    // Retrieve attributes of the currently logged on user
+    if (getAccessToken()) {
+      getUserProfile()
+      .then((profile) => {
+        this.currentUserNickname = profile.nickname;
+      })
+      .catch((err) => {
+        throw new Error(`Error accessing user security profile: ${err}`);
+      });
+    }
   },
 };
 

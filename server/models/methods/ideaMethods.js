@@ -1,22 +1,70 @@
+import Agreement from '../agreement';
+
 export default class ideaMethods {
-  // Finds an idea using the ObjectID
+  /**
+   * @description Retrieve an idea document based on its '_id' field
+   * @static
+   * @param {any} agreementID The '_id' value of the agreement document
+   * @returns  {Promise} The matching idea document
+   * @memberof agreementMethods
+   */
   static async findIdea(ideaID) {
-    return await this.findById(ideaID);
+    return await this.findById(ideaID)
+    .populate('agreement')
+    .exec();
   }
 
-  // Get all unique tags referenced in all idea documents
+  /**
+   * @description Retrieve an idea document based on the value of its creator_id,
+   * title, and type fields
+   * @static
+   * @param {String} creator_id The creator of the idea
+   * @param {String} title The ideas title
+   * @param {String} type The ideas type value
+   * @returns  {Promise} The matching idea document
+   * @memberof agreementMethods
+   */
+  static async findIdea(creatorId, title, type) {
+    return await this.find({
+      creator_id: creatorId,
+      title: title,
+      type: type,
+    })
+    .populate('agreement')
+    .exec();
+  }
+
+  /**
+   * @description Retrieve all unique idea tags from the database
+   * @static
+   * @returns {Promise} An array containing the unique tags in ascending sequence
+   * @memberof ideaMethods
+   */
   static async getAllTags() {
     return await this.find({})
     .distinct('tags')
     .exec();
   }
 
-  // List all the ideas in the ideas collection
-  static async listIdeas() {
-    return await this.find();
+  /**
+   * @description Retrieve all idea documents
+   * @static
+   * @returns  {Promise} An array containing all idea documents
+   * @memberof agreementMethods
+   */  static async listIdeas() {
+    return await this.find()
+    .populate('agreement')
+    .exec();
   }
 
-  // Saves an idea to the collection
+  /**
+   * @description Add an idea document to the database. It is expected that the
+   * parent user document for the creator and any reviewers will already exist in 
+   * the database.
+   * @param {Object} body An object containing all idea fields except for references.
+   * @returns  {Promise} A WriteResult object containing the status of the operation
+   * @memberof agreementMethods
+   */
   static async saveIdea(body) {
     let { creator_id, title, type, description, documents, agreement } = body;
     let idea = new this();
@@ -26,7 +74,8 @@ export default class ideaMethods {
     idea.type = type;
     idea.description = description;
     idea.documents = documents;
-    idea.agreement = agreement;
+    // TODO: Create separate agreement document for private or commercial ideas
+    // idea.agreement = agreement;
 
     return await idea.save();
   }
@@ -34,27 +83,46 @@ export default class ideaMethods {
   /**
    * @description Find ideas based on a list of tags and keywords. Each idea
    * to be returned to the caller must be categorized with at least one tag or
-   * contain at least one keyword in either the title or description field.
+   * contain at least one keyword in either the title or description field and 
+   * the specified user must be either the creator of the idea or one of its
+   * reviewers if the idea type is anything other than 'public'.
    * Note that the keyword search requires a full text index on the title and
    * description fields of the idea collection.
+   * @param {String} currentuserNickname The nickname of the currently logged on user
    * @param {String} tags A list of comma-separated unique tags
    * @param {String} keywords A list of comma-separated of unique keywords
-   * @returns {Object[]} An array of ideas, each described by its title, type, status,
+   * @returns {Promise} An array of ideas, each described by its title, type, status,
    * and status date
    * @memberof ideaMethods
    */
-  static async searchIdeas(searchForTags, searchForKeywords) {
+  static async searchIdeas(currUserNickname, searchForTags, searchForKeywords) {
     if (searchForTags.length === 0 && searchForKeywords.length === 0) {
       // Retrieve all ideas if no tags or keywords were provided since an 
       // idea must match at least one of the provided tags (see below) 
-      return await this.find({}).exec();
+      return await this.find({
+        $or: [
+          {type: 'public'},
+          {type: {$in: ['private', 'commercial']}, creator_id: currUserNickname},
+          {type: {$in: ['private', 'commercial']}, reviews: {reviewer_id: currUserNickname }},
+        ],
+      })
+      .populate('agreement')
+      .exec();
     }
     return await this.find({
-      $or: [
-        {$text : {$search : searchForKeywords}},
-        {tags: {$in: searchForTags.split(',')}}
+      $and: [
+        { $or: [
+            {$text : {$search : searchForKeywords}},
+            {tags: {$in: searchForTags.split(',')}},
+        ]},
+        { $or: [
+          {type: 'public'},
+          {type: {$in: ['private', 'commercial']}, creator_id: currUserNickname},
+          {type: {$in: ['private', 'commercial']}, reviews: {reviewer_id: currUserNickname }},
+        ]},
       ]
     })
+    .populate('agreement')
     .exec();
   }
   
