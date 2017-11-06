@@ -85,7 +85,7 @@
           </tr>
           <tr class="explore__tr" v-for="idea in ideas" v-bind:key="idea.title">
             <td class="explore__td">
-              <a class="explore__link" href="">{{idea.title}}</a>
+              <a class="explore__link" :href="'ideas/'+idea.creator_id+'/'+idea.title+'/'+idea.type">{{idea.title}}</a>
             </td>
             <td class="explore__td">{{idea.type}}</td>
             <td class="explore__td">{{idea.status}}</td>
