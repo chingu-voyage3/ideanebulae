@@ -13,15 +13,16 @@ export default class ideaMethods {
 
   // List all the ideas in the ideas collection
   static async listIdeas() {
-    return await this.find();
+    return await this.find().populate('creator');
   }
 
   // Saves an idea to the collection
-  static async saveIdea(body) {
-    let { creator_id, title, type, description, documents, agreement } = body;
+  static async saveIdea(body, userId) {
+    let { title, type, description, documents, agreement } = body;
     let idea = new this();
 
-    idea.creator_id = creator_id;
+    idea.creator = userId;
+
     idea.title = title;
     idea.type = type;
     idea.description = description;
@@ -45,8 +46,8 @@ export default class ideaMethods {
    */
   static async searchIdeas(searchForTags, searchForKeywords) {
     if (searchForTags.length === 0 && searchForKeywords.length === 0) {
-      // Retrieve all ideas if no tags or keywords were provided since an 
-      // idea must match at least one of the provided tags (see below) 
+      // Retrieve all ideas if no tags or keywords were provided since an
+      // idea must match at least one of the provided tags (see below)
       return await this.find({}).exec();
     }
     return await this.find({
@@ -57,5 +58,5 @@ export default class ideaMethods {
     })
     .exec();
   }
-  
+
 }
