@@ -53,7 +53,7 @@ export default {
 
 // global styles
 
-* {
+*, *::before, *::after {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   margin: 0;
@@ -72,7 +72,9 @@ export default {
 .container
   width 100%
   max-width 1200px
+  padding-top 20px
   margin auto
+  min-height calc(100vh - 150px) // combined height of nav + footer
 
 .purple-gradient
   background $purple
@@ -108,6 +110,7 @@ export default {
   border: none;
   background: transparent;
   color: inherit;
+  cursor: pointer
 
 
   &:hover, &:active, &:focus
