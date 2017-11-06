@@ -38,7 +38,7 @@ const agreementSchema = new Schema({
     unique: false
   },
 
-  idea: { 
+  parent_idea: { 
     type: Schema.Types.ObjectId, 
     ref: 'Idea'
   },
