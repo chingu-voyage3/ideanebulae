@@ -1,4 +1,4 @@
-import Idea from '../models/idea';
+import Idea from '../idea';
 
 export default class agreementMethods {
   

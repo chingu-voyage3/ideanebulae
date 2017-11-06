@@ -29,9 +29,8 @@ const ideaSchema = new Schema({
   },
 
   agreement: {
-    type: String,
-    required: true,
-    unique: false
+    type: Schema.Types.ObjectId, 
+    ref: 'Agreement'
   },
 
   created_ts: {

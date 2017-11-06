@@ -69,7 +69,7 @@ router.route('/ideas')
 
 router.route('/idea/:creatorId(*):title(*):type(*)')
   .get((req, res) => {
-    Idea.getIdea(req.query.creatorId, req.query.title, req.query.type)
+    Idea.findIdea(req.query.creatorId, req.query.title, req.query.type)
       .then(idea => {
         res.json(idea)
       })

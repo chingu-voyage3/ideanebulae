@@ -1,3 +1,5 @@
+import Agreement from '../agreement';
+
 export default class ideaMethods {
   /**
    * @description Retrieve an idea document based on its '_id' field
@@ -7,7 +9,9 @@ export default class ideaMethods {
    * @memberof agreementMethods
    */
   static async findIdea(ideaID) {
-    return await this.findById(ideaID);
+    return await this.findById(ideaID)
+    .populate('agreement')
+    .exec();
   }
 
   /**
@@ -21,12 +25,13 @@ export default class ideaMethods {
    * @memberof agreementMethods
    */
   static async findIdea(creatorId, title, type) {
-    console.log('Got to this findIdea');
     return await this.find({
       creator_id: creatorId,
       title: title,
       type: type,
-    });
+    })
+    .populate('agreement')
+    .exec();
   }
 
   /**
@@ -47,7 +52,9 @@ export default class ideaMethods {
    * @returns  {Promise} An array containing all idea documents
    * @memberof agreementMethods
    */  static async listIdeas() {
-    return await this.find();
+    return await this.find()
+    .populate('agreement')
+    .exec();
   }
 
   /**
@@ -67,7 +74,8 @@ export default class ideaMethods {
     idea.type = type;
     idea.description = description;
     idea.documents = documents;
-    idea.agreement = agreement;
+    // TODO: Create separate agreement document for private or commercial ideas
+    // idea.agreement = agreement;
 
     return await idea.save();
   }
@@ -97,7 +105,9 @@ export default class ideaMethods {
           {type: {$in: ['private', 'commercial']}, creator_id: currUserNickname},
           {type: {$in: ['private', 'commercial']}, reviews: {reviewer_id: currUserNickname }},
         ],
-      }).exec();
+      })
+      .populate('agreement')
+      .exec();
     }
     return await this.find({
       $and: [
@@ -112,6 +122,7 @@ export default class ideaMethods {
         ]},
       ]
     })
+    .populate('agreement')
     .exec();
   }
   
