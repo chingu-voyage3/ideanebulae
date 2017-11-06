@@ -9,6 +9,12 @@ export default class userMethods {
     return await this.findOne({username: username});
   }
 
+  // Finds an user using the sub property
+  // provided by the JWT token
+  static async findUserBySub(sub) {
+    return await this.findOne({user_id: sub});
+  }
+
   // Update a user if it exists, otherwise insert it
   static async createOrUpdateUser(userId, profileData) {
     const profile = {
