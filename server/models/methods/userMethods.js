@@ -16,11 +16,12 @@ export default class userMethods {
       username: profileData.nickname,
       name: profileData.name,
       avatar_url: profileData.picture,
+      qualifications: profileData.qualifications,
     };
 
     return await this.updateOne(
       { user_id: userId },
-      profile,
+      profileData,
       { upsert: true, new: true, runValidators: true }
     );
   }

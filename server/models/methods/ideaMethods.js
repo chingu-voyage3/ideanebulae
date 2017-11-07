@@ -4,12 +4,12 @@ export default class ideaMethods {
   /**
    * @description Retrieve an idea document based on its '_id' field
    * @static
-   * @param {any} agreementID The '_id' value of the agreement document
+   * @param {any} ideaId The '_id' value of the idea document
    * @returns  {Promise} The matching idea document
-   * @memberof agreementMethods
+   * @memberof ideaMethods
    */
-  static async findIdea(ideaID) {
-    return await this.findById(ideaID)
+  static async findIdea(ideaId) {
+    return await this.findById(ideaId)
     .populate('agreement')
     .exec();
   }
@@ -18,15 +18,15 @@ export default class ideaMethods {
    * @description Retrieve an idea document based on the value of its creator_id,
    * title, and type fields
    * @static
-   * @param {String} creator_id The creator of the idea
+   * @param {String} creator The creator of the idea
    * @param {String} title The ideas title
    * @param {String} type The ideas type value
    * @returns  {Promise} The matching idea document
-   * @memberof agreementMethods
+   * @memberof ideaMethods
    */
-  static async findIdea(creatorId, title, type) {
+  static async findIdea(creator, title, type) {
     return await this.find({
-      creator_id: creatorId,
+      creator: creator,
       title: title,
       type: type,
     })
@@ -51,7 +51,8 @@ export default class ideaMethods {
    * @static
    * @returns  {Promise} An array containing all idea documents
    * @memberof agreementMethods
-   */  static async listIdeas() {
+   */
+  static async listIdeas() {
     return await this.find()
     .populate('agreement')
     .exec();
@@ -61,22 +62,22 @@ export default class ideaMethods {
    * @description Add an idea document to the database. It is expected that the
    * parent user document for the creator and any reviewers will already exist in 
    * the database.
-   * @param {Object} body An object containing all idea fields except for references.
+   * @param {Object} body An object containing all idea fields except for referenced
+   * documents.
    * @returns  {Promise} A WriteResult object containing the status of the operation
    * @memberof agreementMethods
    */
   static async saveIdea(body) {
-    let { creator_id, title, type, description, documents, agreement } = body;
+    let { creator, title, type, description, documents, tags } = body;
+    
     let idea = new this();
-
-    idea.creator_id = creator_id;
+    idea.creator = creator;
     idea.title = title;
     idea.type = type;
     idea.description = description;
     idea.documents = documents;
-    // TODO: Create separate agreement document for private or commercial ideas
-    // idea.agreement = agreement;
-
+    idea.tags = tags;
+    idea.created_ts = Date.now();
     return await idea.save();
   }
 
@@ -88,7 +89,7 @@ export default class ideaMethods {
    * reviewers if the idea type is anything other than 'public'.
    * Note that the keyword search requires a full text index on the title and
    * description fields of the idea collection.
-   * @param {String} currentuserNickname The nickname of the currently logged on user
+   * @param {String} currUserNickname The nickname of the currently logged on user
    * @param {String} tags A list of comma-separated unique tags
    * @param {String} keywords A list of comma-separated of unique keywords
    * @returns {Promise} An array of ideas, each described by its title, type, status,
@@ -98,12 +99,12 @@ export default class ideaMethods {
   static async searchIdeas(currUserNickname, searchForTags, searchForKeywords) {
     if (searchForTags.length === 0 && searchForKeywords.length === 0) {
       // Retrieve all ideas if no tags or keywords were provided since an 
-      // idea must match at least one of the provided tags (see below) 
+      // idea must match at least one of the provided tags (see below)
       return await this.find({
         $or: [
           {type: 'public'},
-          {type: {$in: ['private', 'commercial']}, creator_id: currUserNickname},
-          {type: {$in: ['private', 'commercial']}, reviews: {reviewer_id: currUserNickname }},
+          {type: {$in: ['private', 'commercial']}, creator: currUserNickname},
+          {type: {$in: ['private', 'commercial']}, reviews: {$elemMatch: {reviewer: currUserNickname}}},
         ],
       })
       .populate('agreement')
@@ -117,13 +118,37 @@ export default class ideaMethods {
         ]},
         { $or: [
           {type: 'public'},
-          {type: {$in: ['private', 'commercial']}, creator_id: currUserNickname},
-          {type: {$in: ['private', 'commercial']}, reviews: {reviewer_id: currUserNickname }},
+          {type: {$in: ['private', 'commercial']}, creator: currUserNickname},
+          {type: {$in: ['private', 'commercial']}, reviews: {$elemMatch: {reviewer: currUserNickname}}},
         ]},
       ]
     })
     .populate('agreement')
     .exec();
   }
-  
+
+  /**
+   * @description Replace the agreement reference field in the idea document with
+   * a new agreement _id.
+   * @static
+   * @param {String} creator The creator of the idea
+   * @param {String} title The ideas title
+   * @param {String} type The ideas type value
+   * @returns  {Promise} The updated idea document
+   * @memberof ideaMethods
+   */
+  static async replaceIdeaAgreement(creator, title, type, agreement_id) {
+    return await this.updateOne(
+      {
+        creator: userId,
+        title: title,
+        type: type
+      },
+      {
+        agreement: agreement_id
+      },
+      { upsert: false, new: true, runValidators: true }
+    );
+  }
+    
 }

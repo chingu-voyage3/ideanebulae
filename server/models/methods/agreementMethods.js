@@ -22,7 +22,7 @@ export default class agreementMethods {
   static async saveAgreement(body) {
     let { creator_id, title, type, agreement, agreement_version} = body;
 
-    // Retrieve the _id of the parent idea before saving the new agreement
+    // Retrieve the parent idea before saving the new agreement
     // document to the database
     Idea.findIdea(creator_id, title, type)
     .then(idea => {
@@ -33,9 +33,23 @@ export default class agreementMethods {
       agreement.type = type;
       agreement.agreement = agreement;
       agreement.agreement_version = agreement_version;
-      agreement.idea = idea._id;
-
-      return agreement.save();      
+      const agreementResult = agreement.save();
+      agreementResult
+      .then(agreement => {
+        Idea.replaceIdeaAgreement(creator_id, title, type, agreement._id)
+        .then(idea => {
+          return agreementResult;
+        })
+        .catch(err => {
+          throw new Error(`Failure when attempting to update agreement reference in idea document: ${err}`);
+        });
+      })
+      .catch(err => {
+        throw new Error(`Error saving new agreement document: ${err}`);
+      });
+    })
+    .catch(err => {
+      throw new Error(`Error retrieving parent idea for agreement document: ${err}`);
     });
   }
 

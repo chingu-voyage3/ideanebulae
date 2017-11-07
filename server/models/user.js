@@ -17,21 +17,21 @@ const userSchema = new Schema({
   // User name used for authentication (Auth0 nickname field)
   username: {
     type: String,
-    required: true,
+    required: false,
     unique: true
   },
 
   // User full name (Auth0 name field)
   name: {
     type: String,
-    required: true,
+    required: false,
     unique: false,
   },
 
   // User's social media avatar (Auth0 picture field)
   avatar_url: {
     type: String,
-    required: true,
+    required: false,
     unique: false
   },
 

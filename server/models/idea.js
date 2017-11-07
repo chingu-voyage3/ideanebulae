@@ -1,10 +1,9 @@
 import mongoose, { Schema } from 'mongoose';
 import ideaMethods from './methods/ideaMethods';
-import reviewMethods from './methods/reviewMethods';
 
 // Create the schema for the Ideas collection
 const ideaSchema = new Schema({
-  creator_id: {
+  creator: {
     type: String,
     required: true,
     unique: true
@@ -61,8 +60,29 @@ const ideaSchema = new Schema({
   },
 
   reviews: [{
-    type: Schema.Types.ObjectId, 
-    ref: 'Review'
+    reviewer: {
+      type: String,
+      required: true,
+      unique: true
+    },
+
+    assigned_ts: {
+      type: Date,
+      required: false,
+      unique: false
+    },
+
+    updated_ts: {
+      type: Date,
+      required: true,
+      unique: false
+    },
+
+    review_comments: {
+      type: String,
+      required: true,
+      unique: false
+    },
   }],
 },{
   toObject: { virtuals: true },
