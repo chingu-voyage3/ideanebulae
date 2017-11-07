@@ -9,7 +9,7 @@
 
         <div class="view__form-element">
           <label class="view__label" for="view__creator">Creator</label>
-          <input class="view__input" id="view__creator" maxlength="100" type="text" name="creator" v-model="ideaCreatorId" placeholder="Creator" autofocus disabled>
+          <input class="view__input" id="view__creator" maxlength="100" type="text" name="creator" v-model="ideaCreator" placeholder="Creator" autofocus disabled>
         </div>
 
         <div class="view__form-element">
@@ -90,7 +90,7 @@ export default {
   data() {
     return {
       idea_id: '',
-      ideaCreatorId: '',
+      ideaCreator: '',
       ideaTitle: '',
       ideaDesc: '',
       ideaTags: [],
@@ -102,9 +102,9 @@ export default {
   },
   mounted() {
     // Retrieve the idea identified by the URL paramaters
-    http.get(`/idea/?creatorId=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
+    http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
     .then((response) => {
-      this.ideaCreatorId = response.data[0].creator_id;
+      this.ideaCreator = response.data[0].creator;
       this.ideaTitle = response.data[0].title;
       // TODO: Calculate this as a virtual database field in Mongoose
       switch (response.data[0].type) {

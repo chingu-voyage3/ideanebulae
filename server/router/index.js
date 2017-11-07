@@ -29,8 +29,7 @@ router.route('/users')
       .catch(err => res.send(err));
   });
 
-// Gets the data of an user
-// based on the userId param
+// Retrieve the user profile for the specified user name
 router.get('/profile/:username(*)', (req, res) => {
   User.findUser(req.query.username)
   .then(user => {
@@ -39,24 +38,27 @@ router.get('/profile/:username(*)', (req, res) => {
   .catch(err => res.send(err));
 });
 
+// Add or update the user profile for the specified user.
 //router.put('/profile/:username(*)', authCheck, (req, res) => {
-router.put('/profile/:username(*)', (req, res) => {
-  User.createOrUpdateUser(req.params.username, req.body.profile)
+router.put('/profile/:userId(*)', (req, res) => {
+  User.createOrUpdateUser(req.params.userId, req.body.profile)
   .then((doc) => {
     res.json('User profile created/updated');
   })
   .catch((err) => {
+    console.log('Error: ', err);
     res.json(err);
   })
 });
 
-// Routes for the ideas endpoint
 router.route('/ideas')
+  // Retrieve all idea documents with no filtering
   .get((req, res) => {
     Idea.listIdeas()
       .then(ideas => res.json(ideas))
       .catch(err => res.send(err));
   })
+  // Add or update an idea document
   .post((req, res) => {
     Idea.saveIdea(req.body)
       .then(() => {
@@ -67,15 +69,17 @@ router.route('/ideas')
       });
   })
 
-router.route('/idea/:creatorId(*):title(*):type(*)')
+// Retrieve the idea document identified by the specified creator, title, and type.
+router.route('/idea/:creator(*):title(*):type(*)')
   .get((req, res) => {
-    Idea.findIdea(req.query.creatorId, req.query.title, req.query.type)
+    Idea.findIdea(req.query.creator, req.query.title, req.query.type)
       .then(idea => {
         res.json(idea)
       })
       .catch(err => res.send(err));
   });
 
+// Retrieve the idea documents matching the specified tags and keywords. 
 router.route('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)')
   .get((req, res) => {
     Idea.searchIdeas(req.query.currUser, req.query.searchForTags, req.query.searchForKeywords)
@@ -84,7 +88,8 @@ router.route('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)')
       })
       .catch(err => res.send(err));
   });
-  
+
+// Retrieve all unique idea tags that are currently assigned to ideas  
 router.route('/ideas/getAllTags')
   .get((req, res) => {
     Idea.getAllTags()

@@ -3,7 +3,7 @@ import ideaMethods from './methods/ideaMethods';
 
 // Create the schema for the Ideas collection
 const ideaSchema = new Schema({
-  creator_id: {
+  creator: {
     type: String,
     required: true,
     unique: true
@@ -60,7 +60,7 @@ const ideaSchema = new Schema({
   },
 
   reviews: [{
-    reviewer_id: {
+    reviewer: {
       type: String,
       required: true,
       unique: true

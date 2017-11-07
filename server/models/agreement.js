@@ -38,11 +38,6 @@ const agreementSchema = new Schema({
     unique: false
   },
 
-  parent_idea: { 
-    type: Schema.Types.ObjectId, 
-    ref: 'Idea'
-  },
-
 });
 
 // Create a model for the schema
