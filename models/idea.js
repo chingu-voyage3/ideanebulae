@@ -29,9 +29,8 @@ const ideaSchema = new Schema({
   },
 
   agreement: {
-    type: String,
-    required: true,
-    unique: false
+    type: Schema.Types.ObjectId,
+    ref: 'Agreement'
   },
 
   created_ts: {
@@ -61,7 +60,7 @@ const ideaSchema = new Schema({
   },
 
   reviews: [{
-    reviewer_id: {
+    reviewer: {
       type: String,
       required: true,
       unique: true
