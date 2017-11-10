@@ -75,6 +75,8 @@
     </section>
 
     <!-- Filtered Search Results -->
+    <ModalDialog></ModalDialog>
+
     <section class="explore__results" v-show="ideas.length">
         <table class="explore__table">
           <tr class="explore__tr">
@@ -85,9 +87,10 @@
           </tr>
           <tr class="explore__tr" v-for="idea in ideas" v-bind:key="idea.title">
             <td class="explore__td">
-              <a class="explore__link" :href="'ideas/'+idea.creator+'/'+idea.title+'/'+idea.type">{{idea.title}}</a>
+              <!-- <a class="explore__link" :href="'ideas/'+idea.creator+'/'+idea.title+'/'+idea.type">{{idea.title}}</a> --> 
+              <a class="explore__link" v-on:click="checkForAgreement(idea)">{{idea.title}}</a>
             </td>
-            <td class="explore__td">{{idea.type}}</td>
+            <td class="explore__td">{{idea.type}}</td> 
             <td class="explore__td">{{idea.status}}</td>
             <td class="explore__td">{{new Date(idea.status_dt).toLocaleDateString()}}</td>
           </tr>
@@ -100,9 +103,13 @@
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
 import http from '../../api/index';
+import ModalDialog from '../shared/ModalDialog';
 
 export default {
   name: 'ExploreIdeas',
+  components: {
+    ModalDialog,
+  },
   data() {
     return {
       // Environment information
@@ -116,6 +123,24 @@ export default {
       // Results display variables
       ideas: [],
     };
+  },
+  mounted() {
+    // Retrieve all unique tags referenced across all ideas
+    http.get('/ideas/getAllTags').then((response) => {
+      this.ideaTags = response.data;
+    }).catch((err) => {
+      throw new Error(`Error retrieving all idea tags: ${err}`);
+    });
+    // Retrieve attributes of the currently logged on user
+    if (getAccessToken()) {
+      getUserProfile()
+      .then((profile) => {
+        this.currentUserNickname = profile.nickname;
+      })
+      .catch((err) => {
+        throw new Error(`Error accessing user security profile: ${err}`);
+      });
+    }
   },
   methods: {
     addKeyword() {
@@ -133,6 +158,22 @@ export default {
         }
         this.newKeywords = '';
       }
+    },
+    checkForAgreement(idea) {
+      console.log(idea);
+      // TODO: If the user is a reviewer and has not yet accepted the agreement for this
+      // idea display a modal to get acceptance before displaying idea details
+      if (idea.type === 'public') {
+        this.transferToDetails(idea);
+      }
+      // eslint-disable-next-line
+      const reviewerNickname = idea.reviews.find((review) => {
+        return review.reviewer === this.currentUserNickname;
+      });
+      if (reviewerNickname !== undefined) {
+        this.transferToDetails(idea);
+      }
+      // Prompt the user for acceptance of the agreement
     },
     clearSearchTerms() {
       this.selectedTag = '';
@@ -158,6 +199,9 @@ export default {
       }
       this.selectedTag = null;
     },
+    transferToDetails(idea) {
+      this.$router.push(`ideas/${idea.creator}/${idea.title}/${idea.type}`);
+    },
     typeToggle(type) {
       this.ideaType = type;
     },
@@ -169,24 +213,6 @@ export default {
         throw new Error(`Error searching ideas on tags/keywords: ${err}`);
       });
     },
-  },
-  mounted() {
-    // Retrieve all unique tags referenced across all ideas
-    http.get('/ideas/getAllTags').then((response) => {
-      this.ideaTags = response.data;
-    }).catch((err) => {
-      throw new Error(`Error retrieving all idea tags: ${err}`);
-    });
-    // Retrieve attributes of the currently logged on user
-    if (getAccessToken()) {
-      getUserProfile()
-      .then((profile) => {
-        this.currentUserNickname = profile.nickname;
-      })
-      .catch((err) => {
-        throw new Error(`Error accessing user security profile: ${err}`);
-      });
-    }
   },
 };
 
@@ -442,7 +468,6 @@ export default {
 
     &:hover
       border: 1px solid $gray_bkgrd;
-
 
 </style>
 
