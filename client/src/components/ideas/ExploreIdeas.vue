@@ -75,7 +75,11 @@
     </section>
 
     <!-- Filtered Search Results -->
-    <ModalDialog v-if="showModal" @close="showModal = false"></ModalDialog>
+    <ModalDialog v-if="showModal" @close="showModal = false">
+      <h3 slot="header">Accept Idea Agreement</h3>
+      <h3 slot="body">Replace me with agreement text</h3>
+      <h3 slot="footer">Click to accept this agreement</h3>
+    </ModalDialog>
 
     <section class="explore__results" v-show="ideas.length">
         <table class="explore__table">
