@@ -23,7 +23,7 @@
           </div>
 
           <div class="modal-buttons">
-              <button class="modal-default-button" @click="cancel()">
+              <button class="modal-default-button" @click="$emit('close')">
                 Cancel
               </button>
               <button class="modal-default-button" @click="acceptTerms()">
@@ -39,15 +39,20 @@
 <script>
 export default {
   name: 'ModalDialog',
-  mounted: {
-
+  data() {
+    return {
+      showDialog: false,
+    };
+  },
+  mounted() {
+    // TODO: Do something
   },
   methods: {
-    acceptTerms: {
+    acceptTerms() {
       // TODO: Add reviewer
     },
-    cancel: {
-      // TODO: Close dialog
+    cancel() {
+      this.showDialog = false;
     },
   },
 };

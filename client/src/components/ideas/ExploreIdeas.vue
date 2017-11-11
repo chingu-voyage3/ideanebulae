@@ -75,7 +75,7 @@
     </section>
 
     <!-- Filtered Search Results -->
-    <ModalDialog></ModalDialog>
+    <ModalDialog v-if="showModal" @close="showModal = false"></ModalDialog>
 
     <section class="explore__results" v-show="ideas.length">
         <table class="explore__table">
@@ -114,6 +114,7 @@ export default {
     return {
       // Environment information
       currentUserNickname: '',
+      showModal: false,
       // Search term form variables
       ideaTags: [],
       selectedTag: null,
@@ -174,6 +175,7 @@ export default {
         this.transferToDetails(idea);
       }
       // Prompt the user for acceptance of the agreement
+      this.showModal = true;
     },
     clearSearchTerms() {
       this.selectedTag = '';
