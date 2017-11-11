@@ -53,25 +53,24 @@ export default class ideaMethods {
    * @memberof agreementMethods
    */
   static async listIdeas() {
-    return await this.find()
-    .populate('agreement')
-    .exec();
+    return await this.find().populate('creator').exec();
   }
 
   /**
    * @description Add an idea document to the database. It is expected that the
-   * parent user document for the creator and any reviewers will already exist in 
+   * parent user document for the creator and any reviewers will already exist in
    * the database.
    * @param {Object} body An object containing all idea fields except for referenced
    * documents.
+   * @param {ObjectID} userId An ObjectID to populate referenced documents.
    * @returns  {Promise} A WriteResult object containing the status of the operation
    * @memberof agreementMethods
    */
-  static async saveIdea(body) {
-    let { creator, title, type, description, documents, tags } = body;
-    
+  static async saveIdea(body, userId) {
+    let { title, type, description, documents, tags } = body;
+
     let idea = new this();
-    idea.creator = creator;
+    idea.creator = userId;
     idea.title = title;
     idea.type = type;
     idea.description = description;
@@ -84,7 +83,7 @@ export default class ideaMethods {
   /**
    * @description Find ideas based on a list of tags and keywords. Each idea
    * to be returned to the caller must be categorized with at least one tag or
-   * contain at least one keyword in either the title or description field and 
+   * contain at least one keyword in either the title or description field and
    * the specified user must be either the creator of the idea or one of its
    * reviewers if the idea type is anything other than 'public'.
    * Note that the keyword search requires a full text index on the title and
@@ -98,7 +97,7 @@ export default class ideaMethods {
    */
   static async searchIdeas(currUserNickname, searchForTags, searchForKeywords) {
     if (searchForTags.length === 0 && searchForKeywords.length === 0) {
-      // Retrieve all ideas if no tags or keywords were provided since an 
+      // Retrieve all ideas if no tags or keywords were provided since an
       // idea must match at least one of the provided tags (see below)
       return await this.find({
         $or: [
@@ -108,6 +107,7 @@ export default class ideaMethods {
         ],
       })
       .populate('agreement')
+      .populate('creator')
       .exec();
     }
     return await this.find({
@@ -150,5 +150,4 @@ export default class ideaMethods {
       { upsert: false, new: true, runValidators: true }
     );
   }
-    
 }
