@@ -51,6 +51,29 @@ router.put('/profile/:userId(*)', (req, res) => {
   })
 });
 
+// Retrieve the idea document identified by the specified creator, title, and type.
+router.route('/idea/:creator(*):title(*):type(*)')
+.get((req, res) => {
+  Idea.findIdea(req.query.creator, req.query.title, req.query.type)
+    .then(idea => {
+      res.json(idea)
+    })
+    .catch(err => res.send(err));
+});
+
+// Add a new review to the idea document identified by the specified creator, title, and type.
+// TODO: Change get to put
+router.route('/idea/addreviewer/:creator(*):title(*):type(*):reviewer(*)')
+.get((req, res) => {
+  console.log('router - req.params: ', req.params);  
+  Idea.addIdeaReviewer(req.params.creator, req.params.title, req.params.type, req.params.reviewer)
+    .then(idea => {
+      res.json(idea)
+    })
+    .catch(err => res.send(err));
+});
+
+// TODO: Consolidate all idea routes here
 router.route('/ideas')
   // Retrieve all idea documents with no filtering
   .get((req, res) => {
@@ -67,16 +90,6 @@ router.route('/ideas')
       .catch(err => {
         res.send(err);
       });
-  })
-
-// Retrieve the idea document identified by the specified creator, title, and type.
-router.route('/idea/:creator(*):title(*):type(*)')
-  .get((req, res) => {
-    Idea.findIdea(req.query.creator, req.query.title, req.query.type)
-      .then(idea => {
-        res.json(idea)
-      })
-      .catch(err => res.send(err));
   });
 
 // Retrieve the idea documents matching the specified tags and keywords. 

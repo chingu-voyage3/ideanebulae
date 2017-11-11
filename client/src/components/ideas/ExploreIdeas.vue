@@ -77,8 +77,8 @@
     <!-- Filtered Search Results -->
     <ModalDialog v-if="showModal" @cancel="showModal = false" @accept="acceptAgreement">
       <h3 slot="header">Accept Idea Agreement</h3>
-      <h3 slot="body">Replace me with agreement text</h3>
-      <h3 slot="footer">Click to accept this agreement</h3>
+      <h5 slot="body">Replace me with agreement text</h5>
+      <h5 slot="footer">Click to accept this agreement</h5>
     </ModalDialog>
 
     <section class="explore__results" v-show="ideas.length">
@@ -150,8 +150,15 @@ export default {
   },
   methods: {
     acceptAgreement() {
-      this.showModal = false;
-      this.transferToDetails(this.selectedIdea);
+      // TODO: Change get to put
+      http.get(`/idea/addreviewer/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}&reviewer=${this.currentUserNickname}`)
+      .then((response) => {
+        console.log('after addreviewer - response.data: ', response.data);
+        this.showModal = false;
+        this.transferToDetails(this.selectedIdea);
+      }).catch((err) => {
+        throw new Error(`Error adding an idea reviewer: ${err}`);
+      });
     },
     addKeyword() {
       let newVal = this.newKeywords.trim();

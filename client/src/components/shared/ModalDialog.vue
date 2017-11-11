@@ -99,9 +99,8 @@ export default {
   }
 
   /*
-  * The following styles are auto-applied to elements with
-  * transition="modal" when their visibility is toggled
-  * by Vue.js.
+  * The following styles are applied automatically by Vue.js to page elements
+  * in the transition when they become visible.
   */
 
   .modal-enter {

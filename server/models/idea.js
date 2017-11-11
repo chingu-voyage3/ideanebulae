@@ -58,7 +58,9 @@ const ideaSchema = new Schema({
       unique: false
     },
   },
-
+    
+  // It is expected that the reviews field will contain one and only one review per reviewer.
+  // New reviews are always pushed to the end of the array
   reviews: [{
     reviewer: {
       type: String,
