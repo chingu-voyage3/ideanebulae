@@ -23,10 +23,10 @@
           </div>
 
           <div class="modal-buttons">
-              <button class="modal-default-button" @click="$emit('close')">
+              <button class="modal-default-button" @click="emitAnswer('cancel')">
                 Cancel
               </button>
-              <button class="modal-default-button" @click="acceptTerms()">
+              <button class="modal-default-button" @click="emitAnswer('accept')">
                 Accept Terms
               </button> 
           </div>
@@ -48,11 +48,9 @@ export default {
     // TODO: Do something
   },
   methods: {
-    acceptTerms() {
-      // TODO: Add reviewer
-    },
-    cancel() {
+    emitAnswer(answer) {
       this.showDialog = false;
+      this.$emit(answer);
     },
   },
 };

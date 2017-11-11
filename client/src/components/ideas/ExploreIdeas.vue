@@ -75,7 +75,7 @@
     </section>
 
     <!-- Filtered Search Results -->
-    <ModalDialog v-if="showModal" @close="showModal = false">
+    <ModalDialog v-if="showModal" @cancel="showModal = false" @accept="acceptAgreement">
       <h3 slot="header">Accept Idea Agreement</h3>
       <h3 slot="body">Replace me with agreement text</h3>
       <h3 slot="footer">Click to accept this agreement</h3>
@@ -119,6 +119,7 @@ export default {
       // Environment information
       currentUserNickname: '',
       showModal: false,
+      selectedIdea: null,
       // Search term form variables
       ideaTags: [],
       selectedTag: null,
@@ -148,6 +149,10 @@ export default {
     }
   },
   methods: {
+    acceptAgreement() {
+      this.showModal = false;
+      this.transferToDetails(this.selectedIdea);
+    },
     addKeyword() {
       let newVal = this.newKeywords.trim();
       if (newVal[newVal.length - 1] === ',') {
@@ -165,7 +170,6 @@ export default {
       }
     },
     checkForAgreement(idea) {
-      console.log(idea);
       // TODO: If the user is a reviewer and has not yet accepted the agreement for this
       // idea display a modal to get acceptance before displaying idea details
       if (idea.type === 'public') {
@@ -179,6 +183,7 @@ export default {
         this.transferToDetails(idea);
       }
       // Prompt the user for acceptance of the agreement
+      this.selectedIdea = idea;
       this.showModal = true;
     },
     clearSearchTerms() {
