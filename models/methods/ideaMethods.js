@@ -83,9 +83,7 @@ export default class ideaMethods {
   /**
    * @description Find ideas based on a list of tags and keywords. Each idea
    * to be returned to the caller must be categorized with at least one tag or
-   * contain at least one keyword in either the title or description field and
-   * the specified user must be either the creator of the idea or one of its
-   * reviewers if the idea type is anything other than 'public'.
+   * contain at least one keyword in either the title or description field.
    * Note that the keyword search requires a full text index on the title and
    * description fields of the idea collection.
    * @param {String} currUserNickname The nickname of the currently logged on user
@@ -99,28 +97,14 @@ export default class ideaMethods {
     if (searchForTags.length === 0 && searchForKeywords.length === 0) {
       // Retrieve all ideas if no tags or keywords were provided since an
       // idea must match at least one of the provided tags (see below)
-      return await this.find({
-        $or: [
-          {type: 'public'},
-          {type: {$in: ['private', 'commercial']}, creator: currUserNickname},
-          {type: {$in: ['private', 'commercial']}, reviews: {$elemMatch: {reviewer: currUserNickname}}},
-        ],
-      })
+      return await this.find({})
       .populate('agreement')
-      .populate('creator')
       .exec();
     }
     return await this.find({
-      $and: [
-        { $or: [
-            {$text : {$search : searchForKeywords}},
-            {tags: {$in: searchForTags.split(',')}},
-        ]},
-        { $or: [
-          {type: 'public'},
-          {type: {$in: ['private', 'commercial']}, creator: currUserNickname},
-          {type: {$in: ['private', 'commercial']}, reviews: {$elemMatch: {reviewer: currUserNickname}}},
-        ]},
+      $or: [
+        {$text : {$search : searchForKeywords}},
+        {tags: {$in: searchForTags.split(',')}}
       ]
     })
     .populate('agreement')
@@ -140,7 +124,7 @@ export default class ideaMethods {
   static async replaceIdeaAgreement(creator, title, type, agreement_id) {
     return await this.updateOne(
       {
-        creator: userId,
+        creator: creator,
         title: title,
         type: type
       },
@@ -150,4 +134,34 @@ export default class ideaMethods {
       { upsert: false, new: true, runValidators: true }
     );
   }
+
+  /**
+   * @description Add a new review to an existing idea. 
+   * @static
+   * @param {String} creator The creator of the idea
+   * @param {String} title The ideas title
+   * @param {String} type The ideas type value
+   * @param {any} {"reviewer": reviewer, "assigned_ts": assigned_ts, "updated_ts": updated_ts, "comments": comments} The An object containing the properties and values in the
+   * new reviews field entry of the idea schema.
+   * @returns  {Promise} The updated idea document when resolved
+   * @memberof ideaMethods
+   */
+  static async addIdeaReviewer(creator, title, type, reviewer) {
+    // TODO: Validate that reviewer doesn't already have an entry in the 'reviews' field.
+    // It is expected that the reviews field will contain one and only one review per reviewer 
+    const review = {
+      "reviewer": reviewer,
+    };
+    return await this.updateOne(
+      {
+        creator: creator,
+        title: title,
+        type: type
+      },
+      {
+        $push: { "reviews": review }
+      },
+      { upsert: false, new: true, runValidators: true }
+    );
+  }    
 }

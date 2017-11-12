@@ -4,7 +4,7 @@ import ideaMethods from './methods/ideaMethods';
 // Create the schema for the Ideas collection
 const ideaSchema = new Schema({
   creator: {
-    type: Schema.Types.ObjectId,
+    type: String,
     required: true,
     ref: 'User'
   },
@@ -35,7 +35,7 @@ const ideaSchema = new Schema({
 
   created_ts: {
     type: Date,
-    required: false,
+    default: Date.now,
     unique: false
   },
 
@@ -58,7 +58,9 @@ const ideaSchema = new Schema({
       unique: false
     },
   },
-
+    
+  // It is expected that the reviews field will contain one and only one review per reviewer.
+  // New reviews are always pushed to the end of the array
   reviews: [{
     reviewer: {
       type: String,
@@ -68,19 +70,19 @@ const ideaSchema = new Schema({
 
     assigned_ts: {
       type: Date,
-      required: false,
+      default: Date.now,
       unique: false
     },
 
     updated_ts: {
       type: Date,
-      required: true,
+      default: Date.now,
       unique: false
     },
 
-    review_comments: {
+    comments: {
       type: String,
-      required: true,
+      default: '',
       unique: false
     },
   }],
@@ -102,7 +104,7 @@ ideaSchema.virtual('status')
   if (this.reviews.length === 0) {
     return 'Created';
   }
-  if (this.reviews[this.reviews.length-1].review_comments.length === 0) {
+  if (this.reviews[this.reviews.length-1].comments.length === 0) {
     return 'Assigned';
   }
   return 'Reviewed';
@@ -121,7 +123,7 @@ ideaSchema.virtual('status_dt')
     return this.created_ts;
   }
   const lastElementPos = this.reviews.length-1;
-  if (this.reviews[lastElementPos].review_comments.length === 0) {
+  if (this.reviews[lastElementPos].comments.length === 0) {
     return this.reviews[lastElementPos].assigned_ts;
   }
   return this.reviews[lastElementPos].updated_ts;
