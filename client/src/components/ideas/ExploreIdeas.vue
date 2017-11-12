@@ -85,7 +85,6 @@
         </tr>
         <tr class="explore__tr" v-for="idea in ideas" v-bind:key="idea.title">
           <td class="explore__td">
-            <!-- <a class="explore__link" :href="'ideas/'+idea.creator+'/'+idea.title+'/'+idea.type">{{idea.title}}</a> --> 
             <a class="explore__link" v-on:click="checkForAgreement(idea)">{{idea.title}}</a>
           </td>
           <td class="explore__td">{{idea.type}}</td> 
@@ -110,6 +109,8 @@
 
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
+import debounce from 'lodash.debounce';
+import localstorage from '@/utils/localstorage';
 import http from '../../api/index';
 import ModalDialog from '../shared/ModalDialog';
 
@@ -135,6 +136,14 @@ export default {
     };
   },
   mounted() {
+    const savedState = localstorage.getObject('explore-ideas-save');
+    if (savedState != null) {
+      Object.assign(this.$data, savedState);
+    }
+    this.$watch('$data',
+      debounce(this.saveIdea, 1500, { trailing: true }),
+      { deep: true },
+    );
     // Retrieve all unique tags referenced across all ideas
     http.get('/ideas/getalltags').then((response) => {
       this.ideaTags = response.data;
@@ -154,7 +163,6 @@ export default {
   },
   methods: {
     acceptAgreement() {
-      // TODO: Change get to put
       http.put(`/idea/addreviewer/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}&reviewer=${this.currentUserNickname}`)
       .then((response) => {
         if (response.ok && response.nModified) {
@@ -192,6 +200,7 @@ export default {
      * @param {Object} idea The idea selected by the user from the displayed list
      */
     checkForAgreement(idea) {
+      console.log('checkForAgreement idea: ', idea);
       if (idea.type === 'public') {
         this.transferToDetails(idea);
       }
@@ -242,6 +251,7 @@ export default {
       this.selectedTag = null;
     },
     transferToDetails(idea) {
+      console.log('transferToDetails idea: ', idea);
       this.$router.push(`ideas/${idea.creator}/${idea.title}/${idea.type}`);
     },
     typeToggle(type) {

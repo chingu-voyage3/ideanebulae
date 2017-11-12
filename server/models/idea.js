@@ -6,7 +6,7 @@ const ideaSchema = new Schema({
   creator: {
     type: String,
     required: true,
-    unique: true
+    ref: 'User'
   },
 
   title: {
@@ -29,7 +29,7 @@ const ideaSchema = new Schema({
   },
 
   agreement: {
-    type: Schema.Types.ObjectId, 
+    type: Schema.Types.ObjectId,
     ref: 'Agreement'
   },
 
@@ -93,7 +93,7 @@ const ideaSchema = new Schema({
 
 
 /**
- * @description Produce the idea's current status as a virtual field in the 
+ * @description Produce the idea's current status as a virtual field in the
  * schema. By design there is no cooresponding setter function so this field should
  * not be used for updates.
  * @returns {String} The sttus value: 'Created', 'Assigned', or 'Reviewed'.
@@ -111,8 +111,8 @@ ideaSchema.virtual('status')
 });
 
 /**
- * @description Produce the date for the idea's current status as a virtual 
- * field in the schema. By design there is no cooresponding setter function 
+ * @description Produce the date for the idea's current status as a virtual
+ * field in the schema. By design there is no cooresponding setter function
  * so this field should not be used for updates.
  * @returns {String} The status date in the format 'yyyy-mm-ddThh:mm:ss'
  * @memberof ideaSchema
