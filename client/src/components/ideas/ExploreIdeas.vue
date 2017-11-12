@@ -109,8 +109,6 @@
 
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
-import debounce from 'lodash.debounce';
-import localstorage from '@/utils/localstorage';
 import http from '../../api/index';
 import ModalDialog from '../shared/ModalDialog';
 
@@ -136,14 +134,6 @@ export default {
     };
   },
   mounted() {
-    const savedState = localstorage.getObject('explore-ideas-save');
-    if (savedState != null) {
-      Object.assign(this.$data, savedState);
-    }
-    this.$watch('$data',
-      debounce(this.saveIdea, 1500, { trailing: true }),
-      { deep: true },
-    );
     // Retrieve all unique tags referenced across all ideas
     http.get('/ideas/getalltags').then((response) => {
       this.ideaTags = response.data;
@@ -200,7 +190,6 @@ export default {
      * @param {Object} idea The idea selected by the user from the displayed list
      */
     checkForAgreement(idea) {
-      console.log('checkForAgreement idea: ', idea);
       if (idea.type === 'public') {
         this.transferToDetails(idea);
       }
@@ -251,7 +240,6 @@ export default {
       this.selectedTag = null;
     },
     transferToDetails(idea) {
-      console.log('transferToDetails idea: ', idea);
       this.$router.push(`ideas/${idea.creator}/${idea.title}/${idea.type}`);
     },
     typeToggle(type) {
