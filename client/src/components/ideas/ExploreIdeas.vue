@@ -75,30 +75,34 @@
     </section>
 
     <!-- Filtered Search Results -->
-    <ModalDialog v-if="showModal" @cancel="showModal = false" @accept="acceptAgreement">
-      <h3 slot="header">Accept Idea Agreement</h3>
-      <h5 slot="body">Replace me with agreement text</h5>
-      <h5 slot="footer">Click to accept this agreement</h5>
-    </ModalDialog>
-
     <section class="explore__results" v-show="ideas.length">
-        <table class="explore__table">
-          <tr class="explore__tr">
-            <th class="explore__th">Idea</th>
-            <th class="explore__th">Type</th>
-            <th class="explore__th">Status</th>
-            <th class="explore__th">Status Date</th>
-          </tr>
-          <tr class="explore__tr" v-for="idea in ideas" v-bind:key="idea.title">
-            <td class="explore__td">
-              <!-- <a class="explore__link" :href="'ideas/'+idea.creator+'/'+idea.title+'/'+idea.type">{{idea.title}}</a> --> 
-              <a class="explore__link" v-on:click="checkForAgreement(idea)">{{idea.title}}</a>
-            </td>
-            <td class="explore__td">{{idea.type}}</td> 
-            <td class="explore__td">{{idea.status}}</td>
-            <td class="explore__td">{{new Date(idea.status_dt).toLocaleDateString()}}</td>
-          </tr>
-        </table>
+      <table class="explore__table">
+        <tr class="explore__tr">
+          <th class="explore__th">Idea</th>
+          <th class="explore__th">Type</th>
+          <th class="explore__th">Status</th>
+          <th class="explore__th">Status Date</th>
+        </tr>
+        <tr class="explore__tr" v-for="idea in ideas" v-bind:key="idea.title">
+          <td class="explore__td">
+            <!-- <a class="explore__link" :href="'ideas/'+idea.creator+'/'+idea.title+'/'+idea.type">{{idea.title}}</a> --> 
+            <a class="explore__link" v-on:click="checkForAgreement(idea)">{{idea.title}}</a>
+          </td>
+          <td class="explore__td">{{idea.type}}</td> 
+          <td class="explore__td">{{idea.status}}</td>
+          <td class="explore__td">{{new Date(idea.status_dt).toLocaleDateString()}}</td>
+        </tr>
+      </table>
+      <ModalDialog v-if="showModal" @cancel="showModal = false" @accept="acceptAgreement">
+        <h3 slot="header">Accept Idea Agreement</h3>
+        <div slot="body">
+          <label class="explore__label">Type</label>
+          <div>{{this.selectedIdea.type}}</div>
+          <label class="explore__label">Agreement</label>
+          <div>{{this.selectedIdea.agreement.agreement}}</div>
+        </div>
+        <h5 slot="footer">Click to accept this agreement</h5>
+      </ModalDialog>
     </section>
 
   </div>
