@@ -67,7 +67,6 @@ router.route('/idea/:creator(*):title(*):type(*)')
 // TODO: Change get to put
 router.route('/idea/addreviewer/:creator(*):title(*):type(*):reviewer(*)')
 .put((req, res) => {
-  console.log('router - req.query: ', req.query);  
   Idea.addIdeaReviewer(req.query.creator, req.query.title, req.query.type, req.query.reviewer)
     .then(idea => {
       res.json(idea)
