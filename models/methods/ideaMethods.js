@@ -168,8 +168,8 @@ export default class ideaMethods {
     // It is expected that the reviews field will contain one and only one review per reviewer 
     const review = {
       "reviewer": reviewer,
-      "assigned_ts": Date.now(),
-      "updated_ts": 0,
+      "assigned_ts": `${Date.now()}`,
+      "updated_ts": `${Date.now()}`,
       "comments": ''
     };
     return await this.updateOne(
