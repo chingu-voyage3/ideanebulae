@@ -163,14 +163,10 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async addIdeaReviewer(creator, title, type, reviewer) {
-    console.log(`addIdeaReviewer - creator: ${creator} title: ${title} type: ${type} reviewer: ${reviewer}`);
     // TODO: Validate that reviewer doesn't already have an entry in the 'reviews' field.
     // It is expected that the reviews field will contain one and only one review per reviewer 
     const review = {
       "reviewer": reviewer,
-      "assigned_ts": `${Date.now()}`,
-      "updated_ts": `${Date.now()}`,
-      "comments": ''
     };
     return await this.updateOne(
       {
