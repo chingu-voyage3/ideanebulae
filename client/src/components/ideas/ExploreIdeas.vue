@@ -109,6 +109,7 @@
 
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
+import localstorage from '@/utils/localstorage';
 import http from '../../api/index';
 import ModalDialog from '../shared/ModalDialog';
 
@@ -134,6 +135,10 @@ export default {
     };
   },
   mounted() {
+    const savedState = localstorage.getObject('explore-ideas-save');
+    if (savedState != null) {
+      Object.assign(this.$data, savedState);
+    }
     // Retrieve all unique tags referenced across all ideas
     http.get('/ideas/getalltags').then((response) => {
       this.ideaTags = response.data;
@@ -192,9 +197,11 @@ export default {
     checkForAgreement(idea) {
       if (idea.type === 'public') {
         this.transferToDetails(idea);
+        return;
       }
       if (idea.creator === this.currentUserNickname) {
         this.transferToDetails(idea);
+        return;
       }
       // eslint-disable-next-line arrow-body-style
       const reviewerNickname = idea.reviews.find((review) => {
@@ -202,6 +209,7 @@ export default {
       });
       if (reviewerNickname !== undefined) {
         this.transferToDetails(idea);
+        return;
       }
       // Prompt the user for acceptance of the agreement
       this.selectedIdea = idea;
@@ -213,6 +221,7 @@ export default {
       this.newKeywords = '';
       this.searchForKeywords = [];
       this.ideas = [];
+      localStorage.removeItem('explore-ideas-save');
     },
     removeKeyword(index) {
       this.searchForKeywords.splice(index, 1);
@@ -240,6 +249,7 @@ export default {
       this.selectedTag = null;
     },
     transferToDetails(idea) {
+      localstorage.setObject('explore-ideas-save', this.$data);
       this.$router.push(`ideas/${idea.creator}/${idea.title}/${idea.type}`);
     },
     typeToggle(type) {
