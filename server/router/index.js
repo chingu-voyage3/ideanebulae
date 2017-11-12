@@ -114,10 +114,7 @@ router.route('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)')
       .catch(err => res.send(err));
   });
 
-<<<<<<< HEAD
-=======
 // Retrieve all unique idea tags that are currently assigned to ideas
->>>>>>> development
 router.route('/ideas/getAllTags')
   .get((req, res) => {
     Idea.getAllTags()
