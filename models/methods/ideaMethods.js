@@ -103,8 +103,10 @@ export default class ideaMethods {
       .exec();
     }
     return await this.find({
-      $text : {$search : searchForKeywords},
-      tags: {$in: searchForTags.split(',')}
+      $or: [
+        {$text : {$search : searchForKeywords}},
+        {tags: {$in: searchForTags.split(',')}}
+      ]
     })
     .populate('agreement')
     .exec();
