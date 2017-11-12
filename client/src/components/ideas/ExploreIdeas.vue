@@ -157,9 +157,11 @@ export default {
       // TODO: Change get to put
       http.put(`/idea/addreviewer/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}&reviewer=${this.currentUserNickname}`)
       .then((response) => {
-        console.log('after addreviewer - response.data: ', response.data);
-        this.showModal = false;
-        this.transferToDetails(this.selectedIdea);
+        if (response.ok && response.nModified) {
+          this.showModal = false;
+          this.transferToDetails(this.selectedIdea);
+        }
+        throw new Error(`Error adding reviewer to idea document. ${response}`);
       }).catch((err) => {
         throw new Error(`Error adding an idea reviewer: ${err}`);
       });
@@ -180,13 +182,23 @@ export default {
         this.newKeywords = '';
       }
     },
+    /**
+     * @description Examing the selected idea to determine if agreement acceptance is
+     * required before transferring to the Idea Details page. The following must be
+     * true to transfer without acceptance of the ideas agreement.
+     * - The idea must be public
+     * - The idea creator and the current user must be one in the same
+     * - The current user must have previously accepted the agreement
+     * @param {Object} idea The idea selected by the user from the displayed list
+     */
     checkForAgreement(idea) {
-      // TODO: If the user is a reviewer and has not yet accepted the agreement for this
-      // idea display a modal to get acceptance before displaying idea details
       if (idea.type === 'public') {
         this.transferToDetails(idea);
       }
-      // eslint-disable-next-line
+      if (idea.creator === this.currentUserNickname) {
+        this.transferToDetails(idea);
+      }
+      // eslint-disable-next-line arrow-body-style
       const reviewerNickname = idea.reviews.find((review) => {
         return review.reviewer === this.currentUserNickname;
       });
