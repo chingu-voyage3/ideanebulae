@@ -35,7 +35,7 @@ const ideaSchema = new Schema({
 
   created_ts: {
     type: Date,
-    required: false,
+    default: Date.now,
     unique: false
   },
 
@@ -70,19 +70,19 @@ const ideaSchema = new Schema({
 
     assigned_ts: {
       type: Date,
-      required: false,
+      default: Date.now,
       unique: false
     },
 
     updated_ts: {
       type: Date,
-      required: true,
+      default: Date.now,
       unique: false
     },
 
-    review_comments: {
+    comments: {
       type: String,
-      required: true,
+      default: '',
       unique: false
     },
   }],
@@ -104,7 +104,7 @@ ideaSchema.virtual('status')
   if (this.reviews.length === 0) {
     return 'Created';
   }
-  if (this.reviews[this.reviews.length-1].review_comments.length === 0) {
+  if (this.reviews[this.reviews.length-1].comments.length === 0) {
     return 'Assigned';
   }
   return 'Reviewed';
@@ -123,7 +123,7 @@ ideaSchema.virtual('status_dt')
     return this.created_ts;
   }
   const lastElementPos = this.reviews.length-1;
-  if (this.reviews[lastElementPos].review_comments.length === 0) {
+  if (this.reviews[lastElementPos].comments.length === 0) {
     return this.reviews[lastElementPos].assigned_ts;
   }
   return this.reviews[lastElementPos].updated_ts;

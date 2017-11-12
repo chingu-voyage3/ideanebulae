@@ -132,7 +132,7 @@ export default {
   },
   mounted() {
     // Retrieve all unique tags referenced across all ideas
-    http.get('/ideas/getAllTags').then((response) => {
+    http.get('/ideas/getalltags').then((response) => {
       this.ideaTags = response.data;
     }).catch((err) => {
       throw new Error(`Error retrieving all idea tags: ${err}`);
@@ -151,7 +151,7 @@ export default {
   methods: {
     acceptAgreement() {
       // TODO: Change get to put
-      http.get(`/idea/addreviewer/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}&reviewer=${this.currentUserNickname}`)
+      http.put(`/idea/addreviewer/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}&reviewer=${this.currentUserNickname}`)
       .then((response) => {
         console.log('after addreviewer - response.data: ', response.data);
         this.showModal = false;
@@ -206,6 +206,14 @@ export default {
     removeTag(index) {
       this.searchForTags.splice(index, 1);
     },
+    searchIdeas() {
+      http.get(`/ideas/search/?currUser=${this.currentUserNickname}&searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
+      .then((response) => {
+        this.ideas = response.data;
+      }).catch((err) => {
+        throw new Error(`Error searching ideas on tags/keywords: ${err}`);
+      });
+    },
     tagIsSelected() {
       const newVal = this.selectedTag.trim();
       // Add the new tag to the array only if it hasn't been previously added
@@ -223,14 +231,7 @@ export default {
     typeToggle(type) {
       this.ideaType = type;
     },
-    searchIdeas() {
-      http.get(`/ideas/search/?currUser=${this.currentUserNickname}&searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
-      .then((response) => {
-        this.ideas = response.data;
-      }).catch((err) => {
-        throw new Error(`Error searching ideas on tags/keywords: ${err}`);
-      });
-    },
+
   },
 };
 

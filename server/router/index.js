@@ -17,9 +17,11 @@ mongoose.Promise = global.Promise;
 // Example of route that implements authCheck
 // only if you've been authenticated you can access
 // inner functionality
+/*
 router.get('/private', authCheck, (req, res) => {
   res.json('You must be authenticated to see this route');
 });
+*/
 
 // Returns a list of all the users
 router.route('/users')
@@ -64,16 +66,15 @@ router.route('/idea/:creator(*):title(*):type(*)')
 // Add a new review to the idea document identified by the specified creator, title, and type.
 // TODO: Change get to put
 router.route('/idea/addreviewer/:creator(*):title(*):type(*):reviewer(*)')
-.get((req, res) => {
-  console.log('router - req.params: ', req.params);  
-  Idea.addIdeaReviewer(req.params.creator, req.params.title, req.params.type, req.params.reviewer)
+.put((req, res) => {
+  console.log('router - req.query: ', req.query);  
+  Idea.addIdeaReviewer(req.query.creator, req.query.title, req.query.type, req.query.reviewer)
     .then(idea => {
       res.json(idea)
     })
     .catch(err => res.send(err));
 });
 
-// TODO: Consolidate all idea routes here
 router.route('/ideas')
   // Retrieve all idea documents with no filtering
   .get((req, res) => {
@@ -92,24 +93,24 @@ router.route('/ideas')
       });
   });
 
+// Retrieve all unique idea tags that are currently assigned to ideas  
+router.route('/ideas/getalltags')
+.get((req, res) => {
+  Idea.getAllTags()
+    .then(ideaTags => {
+      res.json(ideaTags)
+    })
+    .catch(err => res.send(err));
+});
+
 // Retrieve the idea documents matching the specified tags and keywords. 
 router.route('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)')
-  .get((req, res) => {
-    Idea.searchIdeas(req.query.currUser, req.query.searchForTags, req.query.searchForKeywords)
-      .then(ideas => {
-        res.json(ideas)
-      })
-      .catch(err => res.send(err));
-  });
-
-// Retrieve all unique idea tags that are currently assigned to ideas  
-router.route('/ideas/getAllTags')
-  .get((req, res) => {
-    Idea.getAllTags()
-      .then(ideaTags => {
-        res.json(ideaTags)
-      })
-      .catch(err => res.send(err));
-  });
+.get((req, res) => {
+  Idea.searchIdeas(req.query.currUser, req.query.searchForTags, req.query.searchForKeywords)
+    .then(ideas => {
+      res.json(ideas)
+    })
+    .catch(err => res.send(err));
+});
 
 export default router;
