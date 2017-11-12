@@ -76,22 +76,32 @@
 
     <!-- Filtered Search Results -->
     <section class="explore__results" v-show="ideas.length">
-        <table class="explore__table">
-          <tr class="explore__tr">
-            <th class="explore__th">Idea</th>
-            <th class="explore__th">Type</th>
-            <th class="explore__th">Status</th>
-            <th class="explore__th">Status Date</th>
-          </tr>
-          <tr class="explore__tr" v-for="idea in ideas" v-bind:key="idea.title">
-            <td class="explore__td">
-              <a class="explore__link" :href="'ideas/'+idea.creator+'/'+idea.title+'/'+idea.type">{{idea.title}}</a>
-            </td>
-            <td class="explore__td">{{idea.type}}</td>
-            <td class="explore__td">{{idea.status}}</td>
-            <td class="explore__td">{{new Date(idea.status_dt).toLocaleDateString()}}</td>
-          </tr>
-        </table>
+      <table class="explore__table">
+        <tr class="explore__tr">
+          <th class="explore__th">Idea</th>
+          <th class="explore__th">Type</th>
+          <th class="explore__th">Status</th>
+          <th class="explore__th">Status Date</th>
+        </tr>
+        <tr class="explore__tr" v-for="idea in ideas" v-bind:key="idea.title">
+          <td class="explore__td">
+            <a class="explore__link" v-on:click="checkForAgreement(idea)">{{idea.title}}</a>
+          </td>
+          <td class="explore__td">{{idea.type}}</td> 
+          <td class="explore__td">{{idea.status}}</td>
+          <td class="explore__td">{{new Date(idea.status_dt).toLocaleDateString()}}</td>
+        </tr>
+      </table>
+      <ModalDialog v-if="showModal" @cancel="showModal = false" @accept="acceptAgreement">
+        <h3 slot="header">Accept Idea Agreement</h3>
+        <div slot="body">
+          <label class="explore__label">Type</label>
+          <div>{{this.selectedIdea.type}}</div>
+          <label class="explore__label">Agreement</label>
+          <div>{{this.selectedIdea.agreement.agreement}}</div>
+        </div>
+        <h5 slot="footer">Click to accept this agreement</h5>
+      </ModalDialog>
     </section>
 
   </div>
@@ -99,14 +109,21 @@
 
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
+import localstorage from '@/utils/localstorage';
 import http from '../../api/index';
+import ModalDialog from '../shared/ModalDialog';
 
 export default {
   name: 'ExploreIdeas',
+  components: {
+    ModalDialog,
+  },
   data() {
     return {
       // Environment information
       currentUserNickname: '',
+      showModal: false,
+      selectedIdea: null,
       // Search term form variables
       ideaTags: [],
       selectedTag: null,
@@ -117,7 +134,41 @@ export default {
       ideas: [],
     };
   },
+  mounted() {
+    const savedState = localstorage.getObject('explore-ideas-save');
+    if (savedState != null) {
+      Object.assign(this.$data, savedState);
+    }
+    // Retrieve all unique tags referenced across all ideas
+    http.get('/ideas/getalltags').then((response) => {
+      this.ideaTags = response.data;
+    }).catch((err) => {
+      throw new Error(`Error retrieving all idea tags: ${err}`);
+    });
+    // Retrieve attributes of the currently logged on user
+    if (getAccessToken()) {
+      getUserProfile()
+      .then((profile) => {
+        this.currentUserNickname = profile.nickname;
+      })
+      .catch((err) => {
+        throw new Error(`Error accessing user security profile: ${err}`);
+      });
+    }
+  },
   methods: {
+    acceptAgreement() {
+      http.put(`/idea/addreviewer/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}&reviewer=${this.currentUserNickname}`)
+      .then((response) => {
+        if (response.ok && response.nModified) {
+          this.showModal = false;
+          this.transferToDetails(this.selectedIdea);
+        }
+        throw new Error(`Error adding reviewer to idea document. ${response}`);
+      }).catch((err) => {
+        throw new Error(`Error adding an idea reviewer: ${err}`);
+      });
+    },
     addKeyword() {
       let newVal = this.newKeywords.trim();
       if (newVal[newVal.length - 1] === ',') {
@@ -134,18 +185,57 @@ export default {
         this.newKeywords = '';
       }
     },
+    /**
+     * @description Examing the selected idea to determine if agreement acceptance is
+     * required before transferring to the Idea Details page. The following must be
+     * true to transfer without acceptance of the ideas agreement.
+     * - The idea must be public
+     * - The idea creator and the current user must be one in the same
+     * - The current user must have previously accepted the agreement
+     * @param {Object} idea The idea selected by the user from the displayed list
+     */
+    checkForAgreement(idea) {
+      if (idea.type === 'public') {
+        this.transferToDetails(idea);
+        return;
+      }
+      if (idea.creator === this.currentUserNickname) {
+        this.transferToDetails(idea);
+        return;
+      }
+      // eslint-disable-next-line arrow-body-style
+      const reviewerNickname = idea.reviews.find((review) => {
+        return review.reviewer === this.currentUserNickname;
+      });
+      if (reviewerNickname !== undefined) {
+        this.transferToDetails(idea);
+        return;
+      }
+      // Prompt the user for acceptance of the agreement
+      this.selectedIdea = idea;
+      this.showModal = true;
+    },
     clearSearchTerms() {
       this.selectedTag = '';
       this.searchForTags = [];
       this.newKeywords = '';
       this.searchForKeywords = [];
       this.ideas = [];
+      localStorage.removeItem('explore-ideas-save');
     },
     removeKeyword(index) {
       this.searchForKeywords.splice(index, 1);
     },
     removeTag(index) {
       this.searchForTags.splice(index, 1);
+    },
+    searchIdeas() {
+      http.get(`/ideas/search/?currUser=${this.currentUserNickname}&searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
+      .then((response) => {
+        this.ideas = response.data;
+      }).catch((err) => {
+        throw new Error(`Error searching ideas on tags/keywords: ${err}`);
+      });
     },
     tagIsSelected() {
       const newVal = this.selectedTag.trim();
@@ -158,35 +248,14 @@ export default {
       }
       this.selectedTag = null;
     },
+    transferToDetails(idea) {
+      localstorage.setObject('explore-ideas-save', this.$data);
+      this.$router.push(`ideas/${idea.creator}/${idea.title}/${idea.type}`);
+    },
     typeToggle(type) {
       this.ideaType = type;
     },
-    searchIdeas() {
-      http.get(`/ideas/search/?currUser=${this.currentUserNickname}&searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
-      .then((response) => {
-        this.ideas = response.data;
-      }).catch((err) => {
-        throw new Error(`Error searching ideas on tags/keywords: ${err}`);
-      });
-    },
-  },
-  mounted() {
-    // Retrieve all unique tags referenced across all ideas
-    http.get('/ideas/getAllTags').then((response) => {
-      this.ideaTags = response.data;
-    }).catch((err) => {
-      throw new Error(`Error retrieving all idea tags: ${err}`);
-    });
-    // Retrieve attributes of the currently logged on user
-    if (getAccessToken()) {
-      getUserProfile()
-      .then((profile) => {
-        this.currentUserNickname = profile.nickname;
-      })
-      .catch((err) => {
-        throw new Error(`Error accessing user security profile: ${err}`);
-      });
-    }
+
   },
 };
 
@@ -442,7 +511,6 @@ export default {
 
     &:hover
       border: 1px solid $gray_bkgrd;
-
 
 </style>
 
