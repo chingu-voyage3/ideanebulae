@@ -49,7 +49,7 @@
         <div class="edit__form-element">
           <div id="edit__links" class="edit__form__link" v-for="(link, index) in ideaLinks" v-bind:key="index">
             <div class="edit__link">
-              <a class="edit__link-text" :href="link">{{link}}</a>
+              <a class="edit__link-text" :href="link.url">{{link.url_description}}</a>
               <button class="edit__remove-link" id="remove__link" @click="removeLink(index)"> &times; </button>
             </div>
           </div>
@@ -74,13 +74,13 @@
                 <span class="edit__type-desc tooltiptext" v-if="upHere == 0">Anyone can read and give feedback</span>
               </div>
             </div>
-            <div class="edit__radio create__option" v-bind:class="{ active: ideaTypeCode === 1 }" @mouseover="upHere = 1" @mouseleave="upHere = -1" @click="typeToggle(1)">
+            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === 1 }" @mouseover="upHere = 1" @mouseleave="upHere = -1" @click="typeToggle(1)">
               <input type="radio" name="ideatype" value="1" v-model="ideaTypeCode">
               <div class="edit__type-title tooltip">Private
                 <span class="edit__type-desc tooltiptext" v-if="upHere == 1">Only visible to people who agree to the license</span>
               </div>
             </div>
-            <div class="edit__radio create__option" v-bind:class="{ active: ideaTypeCode === 2 }" @mouseover="upHere = 2" @mouseleave="upHere = -1" @click="typeToggle(2)">
+            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === 2 }" @mouseover="upHere = 2" @mouseleave="upHere = -1" @click="typeToggle(2)">
               <input type="radio" name="ideatype" value="2" v-model="ideaTypeCode">
               <div class="edit__type-title tooltip">Custom
                 <span class="edit__type-desc tooltiptext" v-if="upHere == 2">Customise the license and choose who can see the idea</span>
@@ -214,7 +214,7 @@ export default {
       this.ideaTags.splice(index, 1);
     },
     typeToggle(type) {
-      this.ideaType = type;
+      this.ideaTypeCode = type;
     },
     saveIdea() {
       localstorage.setObject('create-idea-save', this.$data);
