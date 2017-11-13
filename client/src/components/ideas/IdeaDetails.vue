@@ -76,19 +76,25 @@
 
       </div>
       <div class="create__button-wrap">
-        <button class="btn btn__primary profile__button view__button--btm" @click="editIdea">Edit</button>
+        <button class="btn btn__primary profile__button view__button--btm" @click="editIdea">{{editButtonText}}</button>
       </div>
     </section>
   </div>
 </template>
 
 <script>
+import { getUserProfile, getAccessToken } from '@/auth';
 import http from '../../api/index';
 
 export default {
   name: 'IdeaDetails',
   data() {
     return {
+      // Session information
+      currentUserNickname: '',
+      userRole: '',
+      editButtonText: '',
+      // Idea information
       idea_id: '',
       ideaCreator: '',
       ideaTitle: '',
@@ -101,6 +107,16 @@ export default {
     };
   },
   mounted() {
+    // Get the profile for the currently logged in (i.e. session) user
+    if (getAccessToken()) {
+      getUserProfile()
+      .then((profile) => {
+        this.currentUserNickname = profile.nickname;
+      })
+      .catch((err) => {
+        throw new Error(`Error accessing user security profile: ${err}`);
+      });
+    }
     // Retrieve the idea identified by the URL paramaters
     http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
     .then((response) => {
@@ -126,6 +142,8 @@ export default {
       this.ideaLinks = response.data[0].documents;
       this.ideaTags = response.data[0].tags;
       this.ideaAgreement = response.data[0].agreement.agreement;
+      this.userRole = (this.ideaCreator === this.currentUserNickname) ? 'creator' : 'reviewer';
+      this.editButtonText = (this.userRole === 'creator') ? 'Edit Idea' : 'Review Idea';
     })
     .catch((err) => {
       throw new Error(`Error locating idea: ${err}`);
@@ -134,6 +152,11 @@ export default {
   methods: {
     editIdea() {
       // TODO: Add logic to transfer to edit idea page
+      if (this.userRole === 'creator') {
+        // TODO: transfer to idea edit page
+      } else {
+        // TODO: transfer to idea review page
+      }
     },
   },
 };
