@@ -69,7 +69,7 @@
           </div>
         </div>
 
-        <div class="view__form-element">
+        <div class="view__form-element" v-show="this.ideaType">
           <label class="view__label" for="view__agreement">Agreement</label>
           <textarea id="view__agreement" name="agreement" class="view__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement" disabled></textarea>
         </div>
