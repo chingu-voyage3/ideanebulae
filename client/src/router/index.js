@@ -4,6 +4,8 @@ import Router from 'vue-router';
 import Home from '@/components/Home';
 import Dashboard from '@/components/ideas/Dashboard';
 import CreateIdea from '@/components/ideas/CreateIdea';
+import EditIdea from '@/components/ideas/EditIdea';
+import ReviewIdea from '@/components/ideas/ReviewIdea';
 import IdeaDetails from '@/components/ideas/IdeaDetails';
 import ExploreIdeas from '@/components/ideas/ExploreIdeas';
 import Agreement from '@/components/misc/Agreement';
@@ -37,6 +39,11 @@ export default new Router({
       component: CreateIdea,
     },
     {
+      path: '/edit',
+      name: 'EditIdea',
+      component: EditIdea,
+    },
+    {
       path: '/ideas/:creatorId/:title/:type',
       name: 'IdeaDetails',
       component: IdeaDetails,
@@ -55,6 +62,11 @@ export default new Router({
       path: '/agreement',
       name: 'Agreement',
       component: Agreement,
+    },
+    {
+      path: '/review',
+      name: 'ReviewIdea',
+      component: ReviewIdea,
     },
     {
       path: '/callback',

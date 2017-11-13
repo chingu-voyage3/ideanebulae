@@ -48,20 +48,20 @@
         <div class="view__form-element">
           <label class="view__label" for="create__type">Type</label>
           <div class="view__radio-group">
-            <div class="view__radio view__option" v-bind:class="{ active: ideaType === 0 }" @mouseover="upHere = 0" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" v-validate="'required'" value="0" v-model="ideaType" disable>
+            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === 0 }" @mouseover="upHere = 0" @mouseleave="upHere = -1">
+              <input type="radio" name="ideatype" v-validate="'required'" value="0" v-model="ideaTypeCode" disable>
               <div class="view__type-title tooltip">Public
                 <span class="view__type-desc tooltiptext" v-if="upHere == 0">Anyone can read and give feedback</span>
               </div>
             </div>
-            <div class="view__radio view__option" v-bind:class="{ active: ideaType === 1 }" @mouseover="upHere = 1" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" value="1" v-model="ideaType" disable>
+            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === 1 }" @mouseover="upHere = 1" @mouseleave="upHere = -1">
+              <input type="radio" name="ideatype" value="1" v-model="ideaTypeCode" disable>
               <div class="view__type-title tooltip">Private
                 <span class="view__type-desc tooltiptext" v-if="upHere == 1">Only visible to people who agree to the license</span>
               </div>
             </div>
-            <div class="view__radio view__option" v-bind:class="{ active: ideaType === 2 }" @mouseover="upHere = 2" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" value="2" v-model="ideaType" disable>
+            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === 2 }" @mouseover="upHere = 2" @mouseleave="upHere = -1">
+              <input type="radio" name="ideatype" value="2" v-model="ideaTypeCode" disable>
               <div class="view__type-title tooltip">Custom
                 <span class="view__type-desc tooltiptext" v-if="upHere == 2">Customise the license and choose who can see the idea</span>
               </div>
@@ -69,7 +69,7 @@
           </div>
         </div>
 
-        <div class="view__form-element" v-show="this.ideaType">
+        <div class="view__form-element" v-show="this.ideaTypeCode">
           <label class="view__label" for="view__agreement">Agreement</label>
           <textarea id="view__agreement" name="agreement" class="view__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement" disabled></textarea>
         </div>
@@ -119,12 +119,13 @@ export default {
       idea_id: '',
       ideaCreator: '',
       ideaTitle: '',
+      ideaType: '',
       ideaDesc: '',
       ideaTags: [],
       ideaLinks: [''],
       ideaAgreement: '',
       ideaReviews: [],
-      ideaType: '0',
+      ideaTypeCode: '0',
       upHere: '-1',
     };
   },
@@ -134,51 +135,53 @@ export default {
       getUserProfile()
       .then((profile) => {
         this.currentUserNickname = profile.nickname;
+
+        // Retrieve the idea identified by the URL paramaters
+        http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
+        .then((response) => {
+          this.ideaCreator = response.data[0].creator;
+          this.ideaTitle = response.data[0].title;
+          // TODO: Calculate this as a virtual database field in Mongoose
+          this.ideaType = response.data[0].type;
+          switch (response.data[0].type) {
+            case 'public':
+              this.ideaTypeCode = 0;
+              break;
+            case 'private':
+              this.ideaTypeCode = 1;
+              break;
+            case 'commercial':
+              this.ideaTypeCode = 2;
+              break;
+            default:
+              throw new Error(`Invalid idea type field value: ${response.data[0].type}`);
+          }
+
+          // eslint-disable-next-line no-underscore-dangle
+          this.idea_id = response.data[0]._id;
+          this.ideaDesc = response.data[0].description;
+          this.ideaLinks = response.data[0].documents;
+          this.ideaTags = response.data[0].tags;
+          this.ideaAgreement = response.data[0].agreement.agreement;
+          this.ideaReviews = response.data[0].reviews;
+          this.userRole = (this.ideaCreator === this.currentUserNickname) ? 'creator' : 'reviewer';
+          this.editButtonText = (this.userRole === 'creator') ? 'Edit Idea' : 'Add/Update Review';
+        })
+        .catch((err) => {
+          throw new Error(`Error locating idea: ${err}`);
+        });
       })
       .catch((err) => {
         throw new Error(`Error accessing user security profile: ${err}`);
       });
     }
-    // Retrieve the idea identified by the URL paramaters
-    http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
-    .then((response) => {
-      this.ideaCreator = response.data[0].creator;
-      this.ideaTitle = response.data[0].title;
-      // TODO: Calculate this as a virtual database field in Mongoose
-      switch (response.data[0].type) {
-        case 'public':
-          this.ideaType = 0;
-          break;
-        case 'private':
-          this.ideaType = 1;
-          break;
-        case 'commercial':
-          this.ideaType = 2;
-          break;
-        default:
-          throw new Error(`Invalid idea type field value: ${response.data[0].type}`);
-      }
-      // eslint-disable-next-line no-underscore-dangle
-      this.idea_id = response.data[0]._id;
-      this.ideaDesc = response.data[0].description;
-      this.ideaLinks = response.data[0].documents;
-      this.ideaTags = response.data[0].tags;
-      this.ideaAgreement = response.data[0].agreement.agreement;
-      this.ideaReviews = response.data[0].reviews;
-      this.userRole = (this.ideaCreator === this.currentUserNickname) ? 'creator' : 'reviewer';
-      this.editButtonText = (this.userRole === 'creator') ? 'Edit Idea' : 'Add/Update Review';
-    })
-    .catch((err) => {
-      throw new Error(`Error locating idea: ${err}`);
-    });
   },
   methods: {
     editIdea() {
-      // TODO: Add logic to transfer to edit idea page
       if (this.userRole === 'creator') {
-        // TODO: transfer to idea edit page
+        this.$router.push(`edit/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}`);
       } else {
-        // TODO: transfer to idea review page
+        this.$router.push(`review/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}`);
       }
     },
   },
