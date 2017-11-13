@@ -99,6 +99,7 @@ export default class ideaMethods {
       // idea must match at least one of the provided tags (see below)
       return await this.find({})
       .populate('agreement')
+      .sort({created_ts: -1})
       .exec();
     }
     return await this.find({
@@ -108,6 +109,7 @@ export default class ideaMethods {
       ]
     })
     .populate('agreement')
+    .sort({created_ts: -1})    
     .exec();
   }
 

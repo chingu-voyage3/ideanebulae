@@ -76,7 +76,8 @@
         .then((profile) => {
           // Dispatch an action to set the current user profile data
           // to the payload we received
-          http.get(`/profile/?username=${profile.nickname}`).then((response) => {
+          http.get(`/profile/?username=${profile.nickname}`)
+          .then((response) => {
             this.userId = response.data.user_id;
             this.userName = response.data.username;
             this.userAvatarUrl = response.data.avatar_url;

@@ -123,7 +123,6 @@ export default {
       // Environment information
       currentUserNickname: '',
       showModal: false,
-      selectedIdea: null,
       // Search term form variables
       ideaTags: [],
       selectedTag: null,
@@ -132,6 +131,7 @@ export default {
       searchForKeywords: [],
       // Results display variables
       ideas: [],
+      selectedIdea: null,
     };
   },
   mounted() {
