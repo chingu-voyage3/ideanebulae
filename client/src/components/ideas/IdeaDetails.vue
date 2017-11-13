@@ -74,7 +74,28 @@
           <textarea id="view__agreement" name="agreement" class="view__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement" disabled></textarea>
         </div>
 
+        <div class="view__form-element">
+          <label class="view__label" for="view__reviews">Reviews</label>
+          <section class="view__results" v-show="this.ideaReviews.length">
+            <table class="view__table">
+              <tr class="view__tr">
+                <th class="view__th">Reviewer</th>
+                <th class="view__th">Assigned</th>
+                <th class="view__th">Updated</th>
+                <th class="view__th">Comments</th>
+              </tr>
+              <tr class="view__tr" v-for="review in ideaReviews" v-bind:key="review.reviewer">
+                <td class="view__td">{{review.reviewer}}</td> 
+                <td class="view__td">{{new Date(review.assigned_ts).toLocaleDateString()}}</td>
+                <td class="view__td">{{new Date(review.updated_ts).toLocaleDateString()}}</td>
+                <td class="view__td">{{review.comments}}</td>
+              </tr>
+            </table>
+          </section>
+        </div>
+
       </div>
+
       <div class="create__button-wrap">
         <button class="btn btn__primary profile__button view__button--btm" @click="editIdea">{{editButtonText}}</button>
       </div>
@@ -102,6 +123,7 @@ export default {
       ideaTags: [],
       ideaLinks: [''],
       ideaAgreement: '',
+      ideaReviews: [],
       ideaType: '0',
       upHere: '-1',
     };
@@ -142,8 +164,9 @@ export default {
       this.ideaLinks = response.data[0].documents;
       this.ideaTags = response.data[0].tags;
       this.ideaAgreement = response.data[0].agreement.agreement;
+      this.ideaReviews = response.data[0].reviews;
       this.userRole = (this.ideaCreator === this.currentUserNickname) ? 'creator' : 'reviewer';
-      this.editButtonText = (this.userRole === 'creator') ? 'Edit Idea' : 'Review Idea';
+      this.editButtonText = (this.userRole === 'creator') ? 'Edit Idea' : 'Add/Update Review';
     })
     .catch((err) => {
       throw new Error(`Error locating idea: ${err}`);
@@ -194,6 +217,37 @@ export default {
     letter-spacing 2.5px
     font-weight 700
     display block
+
+  &__table
+    margin 0 auto
+    width 100%
+
+  &__th
+    padding 10px
+    text-transform uppercase
+    border-bottom 1px dotted $purple
+    &:first-child
+      text-align left
+      padding-left 0
+    &:last-child
+      text-align right
+      padding-right 0
+
+  &__tr
+    padding 10px
+
+  &__td
+    padding 10px
+    border-bottom 1px dotted $purple
+    &:first-child
+      padding-left 0
+    &:nth-child(2),
+    &:nth-child(3)
+      text-align center
+    &:last-child
+      text-align right
+      max-width 25px
+      padding-right 0
 
   &__input-wrap
     width 100%
