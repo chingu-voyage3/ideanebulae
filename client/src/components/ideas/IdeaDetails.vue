@@ -96,7 +96,7 @@
 
       </div>
 
-      <div class="create__button-wrap">
+      <div class="view__button-wrap">
         <button class="btn btn__primary profile__button view__button--btm" @click="editIdea">{{editButtonText}}</button>
       </div>
     </section>
@@ -179,9 +179,9 @@ export default {
   methods: {
     editIdea() {
       if (this.userRole === 'creator') {
-        this.$router.push(`edit/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}`);
+        this.$router.push({ path: `/edit/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
       } else {
-        this.$router.push(`review/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}`);
+        this.$router.replace({ path: `review/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
       }
     },
   },
