@@ -1,4 +1,5 @@
 import Agreement from '../agreement';
+import User from '../user';
 
 export default class ideaMethods {
 
@@ -170,14 +171,14 @@ export default class ideaMethods {
 
   /**
    * @description Update an idea. The following conditions are taken into consideration:
-   * - If the original creator of the idea has changed the User document will be
-   * validated to ensure the new user exists.
+   * - Creators are not allowed to change, but it is included as the first parameter in the 
+   * interest of orthoganality. Validate that the instances of creator in the parameters are
+   * the same and that a User document exists for the creator.
    * - If the original idea type was changed from 'private' or 'commercial' to 'public'
    * delete the associated Agreement document.
    * - If the original idea type was changed from 'public' to 'private' or
    * 'commercial' add a new Agreement document.
-   * - If the original idea type was not changed, but the creator, title, and/or
-   * agreement text were modified update the associated Agreement document.
+   * - If the original idea type was not changed update the associated Agreement document.
    * @static
    * @param {String} origCreator The original creator of the idea
    * @param {String} origTitle The original title of the idea
@@ -189,44 +190,83 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async updateIdea(origCreator, origTitle, origType, newIdea) {
+    // Verify that the creator hasn't changed and a User document exists for it.
     if (origCreator !== newIdea.creator) {
-      // TODO: Verify that a User document exists for the new user
+      throw new Error(`The creator field of an idea is not allowed to change. origCreator: ${origCreator} newIdea.creator: ${newIdea.creator}`);
     }
+    User.findUser(origCreator)
+    .then(user => {
+        // If the original idea type was changed from 'private' or 'commercial' to 'public'
+        // delete the associated Agreement document.
+        if (['commercial', 'private'].includes(origType) &&
+            newIdea.type === 'public') {
+          Agreement.deleteAgreement(origCreator, origTitle, origType)
+          .then(deleteAgreementResult => {
+            if (!deleteAgreementResult.result.ok) {
+              throw new Error(`Error attempting to delete agreement document: ${err}`);
+            }
+            newIdea.agreement = '';
+          })
+          .catch(err => {
+            throw new Error(`Error attempting to delete agreement document: ${err}`);            
+          });
+        }
+        // If the original idea type was changed from 'public' to 'private' or
+        // 'commercial' add a new Agreement document.
+        else if (origType === 'public' &&
+                 ['commercial', 'private'].includes(newIdea.type)) {
+          const agreement =  { 
+            creator: newIdea.creator, 
+            title: newIdea.title, 
+            type: newIdea.type, 
+            agreement: newIdea.agreement, 
+            agreement_version: 0,
+          };
+          Agreement.saveAgreement(agreement)
+          .then(addAgreementResult => {
+            // TODO: Check results
+          })
+          .catch(err => {
+            throw new Error(`Error adding new agreement document: ${err}`);            
+          });
+        }
+        // If the original idea type was not changed update the associated Agreement document
+        else {
+          const agreement =  { 
+            creator: newIdea.creator, 
+            title: newIdea.title, 
+            type: newIdea.type, 
+            agreement: newIdea.agreement, 
+            agreement_version: 0,
+          };
+          Agreement.updateAgreement(agreement)
+          .then(updateAgreementResult => {
+            // TODO: Check results
+          })
+          .catch(err => {
+            throw new Error(`Error adding new agreement document: ${err}`);            
+          });
+        }
 
-    // Update the Idea document with the new values
-    const result = this.updateOne(
-      {
-        creator: newIdea.creator,
-        title: newIdea.title,
-        type: newIdea.type
-      },
-      { newIdea },
-      { upsert: true, new: true, runValidators: true }
-    )
-    .exec()
-    .then((updateResult) => {
-      // If the original idea type was changed from 'private' or 'commercial' to 'public'
-      // delete the associated Agreement document.
-      if (['commercial', 'private'].includes(origType) &&
-          newIdea.type === 'public') {
-        // TODO: Delete the associated Agreement document
-      }
-      // If the original idea type was changed from 'public' to 'private' or
-      // 'commercial' add a new Agreement document.
-      else if (origType === 'public' &&
-               ['commercial', 'private'].includes(newIdea.type)) {
-        // TODO: Add a new Agreement document
-      }
-      // If the original idea type was not changed, but the creator, title, and/or
-      // agreement text were modified update the associated Agreement document with the
-      // new key values. 
-      else if (origCreator !== newIdea.creator &&
-               origTitle !== newIdea.title) {
-        // TODO: Update the current Agreement document
-      }
+        // Update the Idea document with the new values
+        const result = this.updateOne(
+          {
+            creator: newIdea.creator,
+            title: newIdea.title,
+            type: newIdea.type
+          },
+          { newIdea },
+          { upsert: true, new: true, runValidators: true }
+        )
+        .exec()
+        .then((updateResult) => {
+        })
+        .catch((err) => {
+          throw new Error(`Error attempting to update idea document: ${err}`);
+        });
     })
-    .catch((err) => {
-      throw new Error(`Error attempting to update idea document: ${err}`);
+    .catch(err => { 
+      throw new Error(`User document not found for creator: ${creator}`); 
     });
   }
   

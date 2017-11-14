@@ -7,7 +7,7 @@ const agreementSchema = new Schema({
     type: Schema.Types.ObjectId,
   },
 
-  creator_id: {
+  creator: {
     type: String,
     required: true,
     unique: true
