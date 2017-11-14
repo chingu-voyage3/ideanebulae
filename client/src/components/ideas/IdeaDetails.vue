@@ -40,7 +40,7 @@
           <label class="view__label" for="view__links">Links</label>
           <div id="view__links" class="create__form__link" v-for="(link, index) in ideaLinks" v-bind:key="index">
             <div class="view__link">
-              <a :href="link.url">{{link.url_description}}</a>
+              <a :href="link.url" target="_blank">{{link.url_description}}</a>
             </div>
           </div>
         </div>

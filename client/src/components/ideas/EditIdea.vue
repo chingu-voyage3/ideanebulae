@@ -49,7 +49,7 @@
         <div class="edit__form-element">
           <div id="edit__links" class="edit__form__link" v-for="(link, index) in ideaLinks" v-bind:key="index">
             <div class="edit__link">
-              <a class="edit__link-text" :href="link.url">{{link.url_description}}</a>
+              <a class="edit__link-text" :href="link.url" target="_blank">{{link.url_description}}</a>
               <button class="edit__remove-link" id="remove__link" @click="removeLink(index)"> &times; </button>
             </div>
           </div>
