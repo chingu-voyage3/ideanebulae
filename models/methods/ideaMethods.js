@@ -8,7 +8,7 @@ export default class ideaMethods {
    * @param {String} creator The creator of the idea
    * @param {String} title The ideas title
    * @param {String} type The ideas type value
-   * @param {any} {"reviewer": reviewer, "assigned_ts": assigned_ts, "updated_ts": updated_ts, "comments": comments} The An object containing the properties and values in the
+   * @param {Object} {"reviewer": reviewer, "assigned_ts": assigned_ts, "updated_ts": updated_ts, "comments": comments} The An object containing the properties and values in the
    * new reviews field entry of the idea schema.
    * @returns  {Promise} The updated idea document when resolved
    * @memberof ideaMethods
@@ -35,8 +35,8 @@ export default class ideaMethods {
   /**
    * @description Retrieve an idea document based on its '_id' field
    * @static
-   * @param {any} ideaId The '_id' value of the idea document
-   * @returns  {Promise} The matching idea document
+   * @param {String} ideaId The '_id' value of the idea document
+   * @returns {Promise} The matching idea document
    * @memberof ideaMethods
    */
   static async findIdea(ideaId) {
@@ -168,4 +168,66 @@ export default class ideaMethods {
     .exec();
   }
 
+  /**
+   * @description Update an idea. The following conditions are taken into consideration:
+   * - If the original creator of the idea has changed the User document will be
+   * validated to ensure the new user exists.
+   * - If the original idea type was changed from 'private' or 'commercial' to 'public'
+   * delete the associated Agreement document.
+   * - If the original idea type was changed from 'public' to 'private' or
+   * 'commercial' add a new Agreement document.
+   * - If the original idea type was not changed, but the creator, title, and/or
+   * agreement text were modified update the associated Agreement document.
+   * @static
+   * @param {String} creator The original creator of the idea
+   * @param {String} title The original title of the idea
+   * @param {String} type The original type value of the idea
+   * @param {Object} idea The An object containing the properties and values of the idea.
+   * The creator, title, and type fields are required. All other idea fields need only
+   * be included if they have changed.
+   * @returns  {Object} The updated idea document
+   * @memberof ideaMethods
+   */
+  static async updateIdea(origCreator, origTitle, origType, idea) {
+    if (origCreator !== idea.creator) {
+      // TODO: Verify that a User document exists for the new user
+    }
+
+    // Update the Idea document with the new values
+    const result = this.updateOne(
+      {
+        creator: idea.creator,
+        title: idea.title,
+        type: idea.type
+      },
+      { idea },
+      { upsert: true, new: true, runValidators: true }
+    )
+    .exec()
+    .then((updateResult) => {
+      // If the original idea type was changed from 'private' or 'commercial' to 'public'
+      // delete the associated Agreement document.
+      if (['commercial', 'private'].includes(origType) &&
+          idea.type === 'public') {
+        // TODO: Delete the associated Agreement document
+      }
+      // If the original idea type was changed from 'public' to 'private' or
+      // 'commercial' add a new Agreement document.
+      else if (origType === 'public' &&
+               ['commercial', 'private'].includes(idea.type)) {
+        // TODO: Add a new Agreement document
+      }
+      // If the original idea type was not changed, but the creator, title, and/or
+      // agreement text were modified update the associated Agreement document with the
+      // new key values. 
+      else if (origCreator !== idea.creator &&
+               origTitle !== idea.title) {
+        // TODO: Update the current Agreement document
+      }
+    })
+    .catch((err) => {
+
+    });
+  }
+  
 }
