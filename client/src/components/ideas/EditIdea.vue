@@ -49,7 +49,7 @@
         <div class="edit__form-element">
           <div id="edit__links" class="edit__form__link" v-for="(link, index) in ideaLinks" v-bind:key="index">
             <div class="edit__link">
-              <a class="edit__link-text" :href="link.url" target="_blank">{{link.url_description}}</a>
+              <a class="edit__link-text" :href="link">{{link}}</a>
               <button class="edit__remove-link" id="remove__link" @click="removeLink(index)"> &times; </button>
             </div>
           </div>
@@ -90,7 +90,7 @@
         </div>
       </div>
 
-      <div class="edit__form-element" v-show="this.ideaTypeCode">
+      <div class="edit__form-element" v-show="this.ideaAgreement">
         <label class="edit__label" for="edit__agreement">Agreement</label>
         <textarea id="edit__agreement" name="agreement" class="edit__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement"></textarea>
       </div>
@@ -98,6 +98,7 @@
       <div class="edit__button-wrap">
         <a class="btn btn__primary profile__button edit__button--btm" href="/dashboard">Cancel</a>
         <button class="btn btn__primary profile__button edit__button--btm" @click="updateIdea">Update</button>
+        <button class="btn btn__primary profile__button edit__button--btm" @click="deleteIdea">Delete</button>
       </div>
     </section>
   </div>
@@ -110,7 +111,7 @@ import localstorage from '@/utils/localstorage';
 import http from '../../api/index';
 
 export default {
-  name: 'CreateIdea',
+  name: 'EditIdea',
   data() {
     return {
       // Idea information
@@ -198,7 +199,7 @@ export default {
             newVal = `https://${newVal}`;
           }
 
-          this.ideaLinks.push(newVal);
+          this.ideaLinks.url.push(newVal);
           this.linkText = '';
         }
       });
@@ -213,6 +214,9 @@ export default {
         this.tagText = '';
       }
     },
+    deleteIdea() {
+      // TODO: Remove the idea from the database
+    },
     removeLink(index) {
       this.ideaLinks.splice(index, 1);
     },
@@ -223,17 +227,11 @@ export default {
       this.ideaTypeCode = type;
     },
     saveIdea() {
-      localstorage.setObject('create-idea-save', this.$data);
+      localstorage.setObject('edit-idea-save', this.$data);
     },
     updateIdea() {
-      localStorage.removeItem('create-idea-save');
-      /* Uncomment once API implementation is complete.
-      const payload = {
-        ideaTitle: this.ideaTitle,
-        ideaDesc: this.ideaDesc,
-        links: this.links,
-      };
-      */
+      localStorage.removeItem('edit-idea-save');
+      // TODO: Update the idea in the database
     },
   },
 };
