@@ -1,6 +1,37 @@
 import Agreement from '../agreement';
 
 export default class ideaMethods {
+
+  /**
+   * @description Add a new review to an existing idea. 
+   * @static
+   * @param {String} creator The creator of the idea
+   * @param {String} title The ideas title
+   * @param {String} type The ideas type value
+   * @param {any} {"reviewer": reviewer, "assigned_ts": assigned_ts, "updated_ts": updated_ts, "comments": comments} The An object containing the properties and values in the
+   * new reviews field entry of the idea schema.
+   * @returns  {Promise} The updated idea document when resolved
+   * @memberof ideaMethods
+   */
+  static async addIdeaReviewer(creator, title, type, reviewer) {
+    // TODO: Validate that reviewer doesn't already have an entry in the 'reviews' field.
+    // It is expected that the reviews field will contain one and only one review per reviewer 
+    const review = {
+      "reviewer": reviewer,
+    };
+    return await this.updateOne(
+      {
+        creator: creator,
+        title: title,
+        type: type
+      },
+      {
+        $push: { "reviews": review }
+      },
+      { upsert: false, new: true, runValidators: true }
+    );
+  }
+  
   /**
    * @description Retrieve an idea document based on its '_id' field
    * @static
@@ -54,6 +85,30 @@ export default class ideaMethods {
    */
   static async listIdeas() {
     return await this.find().populate('creator').exec();
+  }
+
+  /**
+   * @description Replace the agreement reference field in the idea document with
+   * a new agreement _id.
+   * @static
+   * @param {String} creator The creator of the idea
+   * @param {String} title The ideas title
+   * @param {String} type The ideas type value
+   * @returns  {Promise} The updated idea document
+   * @memberof ideaMethods
+   */
+  static async replaceIdeaAgreement(creator, title, type, agreement_id) {
+    return await this.updateOne(
+      {
+        creator: creator,
+        title: title,
+        type: type
+      },
+      {
+        agreement: agreement_id
+      },
+      { upsert: false, new: true, runValidators: true }
+    );
   }
 
   /**
@@ -113,57 +168,4 @@ export default class ideaMethods {
     .exec();
   }
 
-  /**
-   * @description Replace the agreement reference field in the idea document with
-   * a new agreement _id.
-   * @static
-   * @param {String} creator The creator of the idea
-   * @param {String} title The ideas title
-   * @param {String} type The ideas type value
-   * @returns  {Promise} The updated idea document
-   * @memberof ideaMethods
-   */
-  static async replaceIdeaAgreement(creator, title, type, agreement_id) {
-    return await this.updateOne(
-      {
-        creator: creator,
-        title: title,
-        type: type
-      },
-      {
-        agreement: agreement_id
-      },
-      { upsert: false, new: true, runValidators: true }
-    );
-  }
-
-  /**
-   * @description Add a new review to an existing idea. 
-   * @static
-   * @param {String} creator The creator of the idea
-   * @param {String} title The ideas title
-   * @param {String} type The ideas type value
-   * @param {any} {"reviewer": reviewer, "assigned_ts": assigned_ts, "updated_ts": updated_ts, "comments": comments} The An object containing the properties and values in the
-   * new reviews field entry of the idea schema.
-   * @returns  {Promise} The updated idea document when resolved
-   * @memberof ideaMethods
-   */
-  static async addIdeaReviewer(creator, title, type, reviewer) {
-    // TODO: Validate that reviewer doesn't already have an entry in the 'reviews' field.
-    // It is expected that the reviews field will contain one and only one review per reviewer 
-    const review = {
-      "reviewer": reviewer,
-    };
-    return await this.updateOne(
-      {
-        creator: creator,
-        title: title,
-        type: type
-      },
-      {
-        $push: { "reviews": review }
-      },
-      { upsert: false, new: true, runValidators: true }
-    );
-  }    
 }
