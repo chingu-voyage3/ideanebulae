@@ -112,7 +112,7 @@ export default {
   data() {
     return {
       // Session information
-      currentUserNickname: '',
+      currentUser: '',
       userRole: '',
       editButtonText: '',
       // Idea information
@@ -135,7 +135,7 @@ export default {
       getUserProfile()
       .then((profile) => {
         console.log('profile: ', profile);
-        this.currentUserNickname = profile.nickname;
+        this.currentUser = profile.sub;
 
         // Retrieve the idea identified by the URL paramaters
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
@@ -173,7 +173,7 @@ export default {
             this.ideaAgreement = response.data[0].agreement.agreement;
           }
           this.ideaReviews = response.data[0].reviews;
-          this.userRole = (this.ideaCreator === this.currentUserNickname) ? 'creator' : 'reviewer';
+          this.userRole = (this.ideaCreator === this.currentUser) ? 'creator' : 'reviewer';
           this.editButtonText = (this.userRole === 'creator') ? 'Edit Idea' : 'Add/Update Review';
         })
         .catch((err) => {

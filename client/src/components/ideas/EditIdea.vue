@@ -172,7 +172,11 @@ export default {
           this.ideaDesc = response.data[0].description;
           this.ideaLinks = response.data[0].documents;
           this.ideaTags = response.data[0].tags;
-          this.ideaAgreement = response.data[0].agreement.agreement;
+          if (response.data[0].agreement === null) {
+            this.ideaAgreement = null;
+          } else {
+            this.ideaAgreement = response.data[0].agreement.agreement;
+          }
           this.ideaReviews = response.data[0].reviews;
         })
         .catch((err) => {
