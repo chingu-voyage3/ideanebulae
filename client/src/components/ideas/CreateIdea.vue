@@ -100,6 +100,7 @@
 <script>
 import debounce from 'lodash.debounce';
 import localstorage from '@/utils/localstorage';
+import http from '../../api/index';
 
 export default {
   name: 'CreateIdea',
@@ -114,7 +115,6 @@ export default {
       addLinkError: false,
       tags: [],
       links: [
-        'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
       ],
     };
   },
@@ -143,7 +143,8 @@ export default {
             newVal = `https://${newVal}`;
           }
 
-          this.links.push(newVal);
+          this.links.push(JSON.stringify({ url_description: ' ', url: `${newVal}` }));
+          console.log('this.links: ', this.links);
           this.linkText = '';
         }
       });
@@ -172,13 +173,24 @@ export default {
     },
     submitIdea() {
       localStorage.removeItem('create-idea-save');
-      /* Uncomment once API implementation is complete.
       const payload = {
-        ideaTitle: this.ideaTitle,
-        ideaDesc: this.ideaDesc,
-        links: this.links,
+        title: this.ideaTitle,
+        type: this.ideaType,
+        description: this.ideaDesc,
+        documents: this.links,
+        tags: this.tags,
       };
-      */
+      console.log('submitIdea - payload: ', payload);
+      http.post('/ideas', payload)
+      .then((response) => {
+        console.log('submitIdea - response: ', response);
+        if (response.ok && response.nModified) {
+          // TODO: Error check
+        }
+        throw new Error(`Error adding new idea document. ${response}`);
+      }).catch((err) => {
+        throw new Error(`Error adding new idea document: ${err}`);
+      });
     },
   },
 };
