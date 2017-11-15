@@ -149,7 +149,6 @@ export default {
             this.linkText = newVal;
           }
           this.ideaDocuments.push({ url_description: this.linkText, url: `${newVal}` });
-          console.log('this.links: ', this.ideaDocuments);
         }
       });
     },
@@ -197,10 +196,8 @@ export default {
         documents: this.ideaDocuments,
         tags: this.ideaTags,
       };
-      console.log('submitIdea - payload: ', payload);
       http.post('/ideas', payload)
       .then((response) => {
-        console.log('submitIdea - response: ', response);
         if (response.statusText !== 'OK') {
           throw new Error(`Error adding new idea document. ${response}`);
         }
