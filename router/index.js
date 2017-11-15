@@ -101,6 +101,8 @@ router.route('/ideas')
 
   // First we get the token from the headers
   let token = req.headers['authorization'].slice(7);
+  console.log('req.headers: ', req.headers);
+  console.log('token: ', token);
 
   // Then we decode it and extract sub only
   let { sub } = decodeToken(token);
@@ -109,8 +111,8 @@ router.route('/ideas')
   User.findUserBySub(sub)
     // If there's an user, we can use its _id to create the idea
     .then((user) => {
-      Idea.saveIdea(req.body, user._id)
-        .then(() => {
+      Idea.saveIdea(req.body, user.user_id)
+        .then(idea => {
           console.log('Idea created');
           res.json('Idea created');
         })
