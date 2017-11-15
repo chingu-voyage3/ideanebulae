@@ -80,7 +80,7 @@ export default class agreementMethods {
   static async updateAgreement(body) {
     let { creator, title, type, agreement, agreement_version} = body;
 
-      let agreement = new this();
+      agreement = new this();
       
       agreement.creator = creator;
       agreement.title = title;
