@@ -134,11 +134,16 @@ export default {
     if (getAccessToken()) {
       getUserProfile()
       .then((profile) => {
+        console.log('profile: ', profile);
         this.currentUserNickname = profile.nickname;
 
         // Retrieve the idea identified by the URL paramaters
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
+          console.log('response: ', response);
+          if (response.data[0].agreement === null) {
+            console.log('response.data[0].agreement is null');
+          }
           this.ideaCreator = response.data[0].creator;
           this.ideaTitle = response.data[0].title;
           // TODO: Calculate this as a virtual database field in Mongoose
@@ -162,7 +167,11 @@ export default {
           this.ideaDesc = response.data[0].description;
           this.ideaLinks = response.data[0].documents;
           this.ideaTags = response.data[0].tags;
-          this.ideaAgreement = response.data[0].agreement.agreement;
+          if (response.data[0].agreement === null) {
+            this.ideaAgreement = null;
+          } else {
+            this.ideaAgreement = response.data[0].agreement.agreement;
+          }
           this.ideaReviews = response.data[0].reviews;
           this.userRole = (this.ideaCreator === this.currentUserNickname) ? 'creator' : 'reviewer';
           this.editButtonText = (this.userRole === 'creator') ? 'Edit Idea' : 'Add/Update Review';

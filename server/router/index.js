@@ -101,8 +101,6 @@ router.route('/ideas')
 
   // First we get the token from the headers
   let token = req.headers['authorization'].slice(7);
-  console.log('req.headers: ', req.headers);
-  console.log('token: ', token);
 
   // Then we decode it and extract sub only
   let { sub } = decodeToken(token);
