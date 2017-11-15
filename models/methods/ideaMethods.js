@@ -133,6 +133,8 @@ export default class ideaMethods {
     idea.documents = documents;
     idea.tags = tags;
     idea.created_ts = Date.now();
+    // TODO: Handle Agreement properly by setting to null or creating and linking agreement document
+    idea.agreement = null;
     return await idea.save();
   }
 
