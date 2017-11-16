@@ -3,9 +3,6 @@ import agreementMethods from './methods/agreementMethods';
 
 const agreementSchema = new Schema({
   // Create the schema for the User collection
-  _id: {
-    type: Schema.Types.ObjectId,
-  },
 
   creator: {
     type: String,
