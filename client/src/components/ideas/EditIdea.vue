@@ -47,7 +47,7 @@
         </div>
 
         <div class="edit__form-element">
-          <div id="edit__links" class="edit__form__link" v-for="(link, index) in ideaLinks" v-bind:key="index">
+          <div id="edit__links" class="edit__form__link" v-for="(link, index) in ideaDocuments" v-bind:key="index">
             <div class="edit__link">
               <a class="edit__link-text" :href="link.url" target="_blank">{{link.url_description}}</a>
               <button class="edit__remove-link" id="remove__link" @click="removeLink(index)"> &times; </button>
@@ -106,7 +106,7 @@
 
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
-import debounce from 'lodash.debounce';
+// import debounce from 'lodash.debounce';
 import localstorage from '@/utils/localstorage';
 import http from '../../api/index';
 
@@ -121,9 +121,12 @@ export default {
       ideaType: '',
       ideaDesc: '',
       ideaTags: [],
-      ideaLinks: [''],
+      ideaDocuments: [''],
       ideaAgreement: '',
       ideaReviews: [],
+      // Page work variables
+      origTitle: '',
+      origType: '',
       linkText: '',
       tagText: '',
       ideaTypeCode: '0',
@@ -136,23 +139,27 @@ export default {
     if (savedState != null) {
       Object.assign(this.$data, savedState);
     }
+    /*
     this.$watch('$data',
       debounce(this.updateIdea, 1500, { trailing: true }),
       { deep: true },
     );
+    */
     // Get the profile for the currently logged in (i.e. session) user
     if (getAccessToken()) {
       getUserProfile()
       .then((profile) => {
-        this.currentUserNickname = profile.nickname;
+        this.currentUser = profile.sub;
 
         // Retrieve the idea identified by the URL paramaters
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
           this.ideaCreator = response.data[0].creator;
           this.ideaTitle = response.data[0].title;
+          this.origTitle = response.data[0].title;
           // TODO: Calculate this as a virtual database field in Mongoose
           this.ideaType = response.data[0].type;
+          this.origType = response.data[0].type;
           switch (response.data[0].type) {
             case 'public':
               this.ideaTypeCode = 0;
@@ -170,7 +177,7 @@ export default {
           // eslint-disable-next-line no-underscore-dangle
           this.idea_id = response.data[0]._id;
           this.ideaDesc = response.data[0].description;
-          this.ideaLinks = response.data[0].documents;
+          this.ideaDocuments = response.data[0].documents;
           this.ideaTags = response.data[0].tags;
           if (response.data[0].agreement === null) {
             this.ideaAgreement = null;
@@ -203,7 +210,7 @@ export default {
             newVal = `https://${newVal}`;
           }
 
-          this.ideaLinks.url.push(newVal);
+          this.ideaDocuments.url.push(newVal);
           this.linkText = '';
         }
       });
@@ -222,7 +229,7 @@ export default {
       // TODO: Remove the idea from the database
     },
     removeLink(index) {
-      this.ideaLinks.splice(index, 1);
+      this.ideaDocuments.splice(index, 1);
     },
     removeTag(index) {
       this.ideaTags.splice(index, 1);
@@ -235,7 +242,37 @@ export default {
     },
     updateIdea() {
       localStorage.removeItem('edit-idea-save');
-      // TODO: Update the idea in the database
+      const newIdea = {
+        creator: this.ideaCreator,
+        title: this.ideaTitle,
+        type: this.ideaType,
+        description: this.ideaDesc,
+        tags: this.ideaTags,
+        documents: this.ideaDocuments,
+        agreement: this.ideaAgreement,
+        reviews: this.ideaReviews,
+      };
+      console.log('updateIdea - ideaCreator: ', this.ideaCreator,
+                  '\n origTitle: ', this.origTitle,
+                  '\n origType: ', this.origType,
+                  '\n newIdea: ', newIdea);
+      http.put('/ideas', {
+        origCreator: this.ideaCreator,
+        origTitle: this.origTitle,
+        origType: this.origType,
+        newIdea,
+      })
+      .then((response) => {
+        if (response === null) {
+          console.log('update response: ', response);
+          // TODO: Issue update successful message
+        } else {
+          throw new Error(`Error updating idea: ${response}`);
+        }
+      })
+      .catch((err) => {
+        throw new Error('Error updating idea: ', err);
+      });
     },
   },
 };

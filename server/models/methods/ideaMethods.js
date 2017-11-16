@@ -192,66 +192,84 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async updateIdea(origCreator, origTitle, origType, newIdea) {
+    console.log('updateIdea Route - origCreator: ', origCreator,
+      '\n origTitle: ', origTitle,
+      '\n origType: ', origType,
+      '\n newIdea: ', newIdea);
+
     // Verify that the creator hasn't changed and a User document exists for it.
     if (origCreator !== newIdea.creator) {
       throw new Error(`The creator field of an idea is not allowed to change. origCreator: ${origCreator} newIdea.creator: ${newIdea.creator}`);
     }
-    User.findUser(origCreator)
-    .then(user => {
-        // If the original idea type was changed from 'private' or 'commercial' to 'public'
-        // delete the associated Agreement document.
-        if (['commercial', 'private'].includes(origType) &&
-            newIdea.type === 'public') {
-          Agreement.deleteAgreement(origCreator, origTitle, origType)
-          .then(deleteAgreementResult => {
-            if (!deleteAgreementResult.result.ok) {
-              throw new Error(`Error attempting to delete agreement document: ${err}`);
-            }
-            newIdea.agreement = '';
-          })
-          .catch(err => {
-            throw new Error(`Error attempting to delete agreement document: ${err}`);            
-          });
-        }
-        // If the original idea type was changed from 'public' to 'private' or
-        // 'commercial' add a new Agreement document.
-        else if (origType === 'public' &&
-                 ['commercial', 'private'].includes(newIdea.type)) {
-          const agreement =  { 
-            creator: newIdea.creator, 
-            title: newIdea.title, 
-            type: newIdea.type, 
-            agreement: newIdea.agreement, 
-            agreement_version: 0,
-          };
-          Agreement.saveAgreement(agreement)
-          .then(addAgreementResult => {
-            // TODO: Check results
-          })
-          .catch(err => {
-            throw new Error(`Error adding new agreement document: ${err}`);            
-          });
-        }
-        // If the original idea type was not changed update the associated Agreement document
-        else {
-          const agreement =  { 
-            creator: newIdea.creator, 
-            title: newIdea.title, 
-            type: newIdea.type, 
-            agreement: newIdea.agreement, 
-            agreement_version: 0,
-          };
-          Agreement.updateAgreement(agreement)
-          .then(updateAgreementResult => {
-            // TODO: Check results
-          })
-          .catch(err => {
-            throw new Error(`Error adding new agreement document: ${err}`);            
-          });
-        }
 
-        // Update the Idea document with the new values
-        const result = this.updateOne(
+    // Create a Promise that will be resolved by one of the Agreement actions - delete, add, or update.
+    let deferredAgreement = null;
+    let agreementPromise = new Promise((resolve, reject) => {
+      deferredAgreement = ({resolve: resolve, reject: reject});
+    });
+
+    User.findUserBySub(origCreator)
+    .then(user => {
+      // If the original idea type was changed from 'private' or 'commercial' to 'public'
+      // delete the associated Agreement document.
+      if (['commercial', 'private'].includes(origType) &&
+          newIdea.type === 'public') {
+        Agreement.deleteAgreement(origCreator, origTitle, origType)
+        .then(deleteAgreementResult => {
+          if (!deleteAgreementResult.result.ok) {
+            throw new Error(`Error attempting to delete agreement document: ${err}`);
+          }
+          newIdea.agreement = '';
+          deferredAgreement.resolve(deleteAgreementResult);
+        })
+        .catch(err => {
+          throw new Error(`Error attempting to delete agreement document: ${err}`);            
+        });
+      }
+      // If the original idea type was changed from 'public' to 'private' or
+      // 'commercial' add a new Agreement document.
+      else if (origType === 'public' &&
+                ['commercial', 'private'].includes(newIdea.type)) {
+        const agreement =  { 
+          creator: newIdea.creator, 
+          title: newIdea.title, 
+          type: newIdea.type, 
+          agreement: newIdea.agreement, 
+          agreement_version: 0,
+        };
+        Agreement.saveAgreement(agreement)
+        .then(addAgreementResult => {
+          deferredAgreement.resolve(addAgreementResult);
+        })
+        .catch(err => {
+          throw new Error(`Error adding new agreement document: ${err}`);            
+        });
+      }
+      // If the original idea type was not changed update the associated Agreement document
+      else if (origType === newIdea.type) {
+        const agreement =  { 
+          creator: newIdea.creator, 
+          title: newIdea.title, 
+          type: newIdea.type, 
+          agreement: newIdea.agreement, 
+          agreement_version: 0,
+        };
+        Agreement.updateAgreement(agreement)
+        .then(updateAgreementResult => {
+          deferredAgreement.resolve(updateAgreementResult);
+        })
+        .catch(err => {
+          throw new Error(`Error adding new agreement document: ${err}`);            
+        });
+      }
+      // If no action is required against the Agreement simply resolve the deferred Promise
+      else {
+        deferredAgreement.resolve('No agreement action required');
+      }
+
+      // Update the Idea document with the new values
+      agreementPromise.then(result => {
+        this.updateOne(
           {
             creator: newIdea.creator,
             title: newIdea.title,
@@ -266,9 +284,10 @@ export default class ideaMethods {
         .catch((err) => {
           throw new Error(`Error attempting to update idea document: ${err}`);
         });
+      });
     })
     .catch(err => { 
-      throw new Error(`User document not found for creator: ${creator}`); 
+      throw new Error(`User document not found for creator: ${origCreator} Error: ${err}`); 
     });
   }
   

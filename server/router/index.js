@@ -124,6 +124,15 @@ router.route('/ideas')
       console.error(err);
       res.send(err);
     });
+})
+// Update an idea
+.put((req, res) => {
+  Idea.updateIdea(req.body.origCreator, req.body.origTitle, req.body.origType, req.body.newIdea)
+  .then(idea => {
+    console.log('Idea Updated ', idea);
+    res.json(idea)
+  })
+  .catch(err => res.send(err));
 });
 
 // Retrieve all unique idea tags that are currently assigned to ideas
