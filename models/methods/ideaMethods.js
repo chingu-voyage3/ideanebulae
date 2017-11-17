@@ -152,7 +152,6 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async searchIdeas(currUserNickname, searchForTags, searchForKeywords) {
-    console.log('Made it here');
     if (searchForTags.length === 0 && searchForKeywords.length === 0) {
       // Retrieve all ideas if no tags or keywords were provided since an
       // idea must match at least one of the provided tags (see below)
@@ -244,10 +243,8 @@ export default class ideaMethods {
           agreement: newIdea.agreement, 
           agreement_version: 0,
         };
-        console.log('\nupdateIdea - Before Agreement add - agreement: ', agreement);
         Agreement.saveAgreement(agreement)
         .then(addAgreementResult => {
-          console.log('\nupdateIdea - After agreement add - addAgreementResult:', addAgreementResult);
           newIdea.agreement = addAgreementResult._id;
           deferredAgreement.resolve(addAgreementResult);
         })
@@ -280,7 +277,6 @@ export default class ideaMethods {
 
       // Update the Idea document with the new values
       agreementPromise.then(result => {
-        console.log('\nBefore update of Idea - result: ', result);
         this.updateOne(
           {
             creator: origCreator,
@@ -291,8 +287,7 @@ export default class ideaMethods {
           { upsert: false, new: true, runValidators: true }
         )
         .then((updateResult) => {
-          console.log('\nAfter update of Idea - updateResult: ', updateResult);
-          deferredUpdate.resolve('updateResult');
+          deferredUpdate.resolve(updateResult);
         })
         .catch((err) => {
           throw new Error(`Attempting to update idea document: ${err}`);
