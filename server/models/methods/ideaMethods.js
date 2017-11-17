@@ -262,8 +262,9 @@ export default class ideaMethods {
           agreement: newIdea.agreement, 
           agreement_version: 0,
         };
-        Agreement.updateAgreement(agreement)
+        Agreement.saveAgreement(agreement)
         .then(updateAgreementResult => {
+          newIdea.agreement = updateAgreementResult._id;
           deferredAgreement.resolve(updateAgreementResult);
         })
         .catch(err => {
