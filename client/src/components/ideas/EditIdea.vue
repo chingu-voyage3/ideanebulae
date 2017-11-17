@@ -90,11 +90,11 @@
         </div>
       </div>
 
-      <div class="edit__form-element" v-show="this.ideaAgreement">
+      <div class="edit__form-element" v-show="this.ideaAgreement !== ''">
         <label class="edit__label" for="edit__agreement">Agreement</label>
         <textarea id="edit__agreement" name="agreement" class="edit__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement"></textarea>
       </div>
-
+ 
       <div class="edit__button-wrap">
         <a class="btn btn__primary profile__button edit__button--btm" href="/dashboard">Cancel</a>
         <button class="btn btn__primary profile__button edit__button--btm" @click="updateIdea">Update</button>
@@ -167,12 +167,15 @@ export default {
           switch (response.data[0].type) {
             case 'public':
               this.ideaTypeCode = this.PUBLIC_IDEA;
+              this.ideaAgreement = '';
               break;
             case 'private':
               this.ideaTypeCode = this.PRIVATE_IDEA;
+              this.ideaAgreement = ' ';
               break;
             case 'commercial':
               this.ideaTypeCode = this.COMMERCIAL_IDEA;
+              this.ideaAgreement = ' ';
               break;
             default:
               throw new Error(`Invalid idea type field value: ${response.data[0].type}`);
@@ -276,8 +279,8 @@ export default {
       if (this.ideaDocuments.length > 0) {
         newIdea.documents = this.ideaDocuments;
       }
-      console.log(`ideaAgreement - length: ${this.ideaAgreement.length} value: ${this.ideaAgreement}`);
-      if (this.ideaAgreement.length > 0) {
+      console.log(`ideaAgreement - value: ${this.ideaAgreement}`);
+      if (this.ideaAgreement && this.ideaAgreement.length > 0) {
         newIdea.agreement = this.ideaAgreement.trim();
       }
       if (this.ideaReviews.length > 0) {
@@ -296,9 +299,9 @@ export default {
       .then((response) => {
         if (response === null) {
           console.log('update response: ', response);
-          // TODO: Issue update successful message
-        } else {
           throw new Error(`Updating idea: ${response}`);
+        } else {
+          console.log('Idea Updated');
         }
       })
       .catch((err) => {

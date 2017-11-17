@@ -200,7 +200,6 @@ export default {
      * @param {Object} idea The idea selected by the user from the displayed list
      */
     checkForAgreement(idea) {
-      console.log('ExploreIdeas - checkForAgreement - currentUser:', this.currentUser, ' - idea: ', idea);
       if (idea.type === 'public') {
         this.transferToDetails(idea);
         return;

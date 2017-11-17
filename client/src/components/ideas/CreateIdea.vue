@@ -101,9 +101,9 @@
 
 <script>
 import debounce from 'lodash.debounce';
+import marked from 'marked';
 import localstorage from '@/utils/localstorage';
 import http from '../../api/index';
-import marked from 'marked';
 
 export default {
   name: 'CreateIdea',
