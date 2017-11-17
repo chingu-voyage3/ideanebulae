@@ -30,7 +30,8 @@ const ideaSchema = new Schema({
 
   agreement: {
     type: Schema.Types.ObjectId,
-    ref: 'Agreement'
+    ref: 'Agreement',
+    default: null
   },
 
   created_ts: {
