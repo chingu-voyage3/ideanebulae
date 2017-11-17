@@ -1,0 +1,9 @@
+# MLab Authentication
+DBUSERID=IdeaNebulae
+DBPASSWD=Columbia*India1
+# Auth0 Authentication
+CLIENTID=54kq1Kx1717k52deTJ55CUHzaq77fJQy
+CLIENTDOMAIN=ideanebulae.auth0.com
+REDIRECT=http://localhost:8080/callback
+SCOPE=openid
+AUDIENCE='https://ideanebulae.auth0.com/api/v2/
