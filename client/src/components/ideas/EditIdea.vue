@@ -68,19 +68,19 @@
         <div class="edit__form-element">
           <label class="edit__label" for="create__type">Type</label>
           <div class="edit__radio-group">
-            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === 0 }" @mouseover="upHere = 0" @mouseleave="upHere = -1" @click="typeToggle(0)">
+            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === PUBLIC_IDEA }" @mouseover="upHere = 0" @mouseleave="upHere = -1" @click="typeToggle(0)">
               <input type="radio" name="ideatype" v-validate="'required'" value="0" v-model="ideaTypeCode">
               <div class="edit__type-title tooltip">Public
                 <span class="edit__type-desc tooltiptext" v-if="upHere == 0">Anyone can read and give feedback</span>
               </div>
             </div>
-            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === 1 }" @mouseover="upHere = 1" @mouseleave="upHere = -1" @click="typeToggle(1)">
+            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === PRIVATE_IDEA }" @mouseover="upHere = 1" @mouseleave="upHere = -1" @click="typeToggle(1)">
               <input type="radio" name="ideatype" value="1" v-model="ideaTypeCode">
               <div class="edit__type-title tooltip">Private
                 <span class="edit__type-desc tooltiptext" v-if="upHere == 1">Only visible to people who agree to the license</span>
               </div>
             </div>
-            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === 2 }" @mouseover="upHere = 2" @mouseleave="upHere = -1" @click="typeToggle(2)">
+            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL_IDEA }" @mouseover="upHere = 2" @mouseleave="upHere = -1" @click="typeToggle(2)">
               <input type="radio" name="ideatype" value="2" v-model="ideaTypeCode">
               <div class="edit__type-title tooltip">Custom
                 <span class="edit__type-desc tooltiptext" v-if="upHere == 2">Customise the license and choose who can see the idea</span>
@@ -132,6 +132,10 @@ export default {
       ideaTypeCode: '0',
       upHere: '-1',
       addLinkError: false,
+      // Constants
+      PUBLIC_IDEA: 0,
+      PRIVATE_IDEA: 1,
+      COMMERCIAL_IDEA: 2,
     };
   },
   mounted() {
@@ -162,13 +166,13 @@ export default {
           this.origType = response.data[0].type;
           switch (response.data[0].type) {
             case 'public':
-              this.ideaTypeCode = 0;
+              this.ideaTypeCode = this.PUBLIC_IDEA;
               break;
             case 'private':
-              this.ideaTypeCode = 1;
+              this.ideaTypeCode = this.PRIVATE_IDEA;
               break;
             case 'commercial':
-              this.ideaTypeCode = 2;
+              this.ideaTypeCode = this.COMMERCIAL_IDEA;
               break;
             default:
               throw new Error(`Invalid idea type field value: ${response.data[0].type}`);
@@ -236,6 +240,7 @@ export default {
     },
     typeToggle(type) {
       this.ideaTypeCode = type;
+      this.ideaAgreement = (this.ideaTypeCode === this.PUBLIC_IDEA) ? '' : ' ';
     },
     saveIdea() {
       localstorage.setObject('edit-idea-save', this.$data);
