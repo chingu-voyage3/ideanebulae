@@ -192,7 +192,7 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async updateIdea(origCreator, origTitle, origType, newIdea) {
-    console.log('updateIdea Route - origCreator: ', origCreator,
+    console.log('updateIdea - origCreator: ', origCreator,
       '\n origTitle: ', origTitle,
       '\n origType: ', origType,
       '\n newIdea: ', newIdea);
@@ -208,6 +208,11 @@ export default class ideaMethods {
       deferredAgreement = ({resolve: resolve, reject: reject});
     });
 
+    let deferredUpdate = null;
+    let updatePromise = new Promise((resolve, reject) => {
+      deferredUpdate = ({resolve: resolve, reject: reject});
+    })
+
     User.findUserBySub(origCreator)
     .then(user => {
       // If the original idea type was changed from 'private' or 'commercial' to 'public'
@@ -217,19 +222,20 @@ export default class ideaMethods {
         Agreement.deleteAgreement(origCreator, origTitle, origType)
         .then(deleteAgreementResult => {
           if (!deleteAgreementResult.result.ok) {
-            throw new Error(`Error attempting to delete agreement document: ${err}`);
+            throw new Error(`Attempting to delete agreement document: ${err}`);
           }
           newIdea.agreement = '';
           deferredAgreement.resolve(deleteAgreementResult);
         })
         .catch(err => {
-          throw new Error(`Error attempting to delete agreement document: ${err}`);            
+          throw new Error(`Attempting to delete agreement document: ${err}`);            
         });
       }
       // If the original idea type was changed from 'public' to 'private' or
       // 'commercial' add a new Agreement document.
       else if (origType === 'public' &&
-                ['commercial', 'private'].includes(newIdea.type)) {
+               ['commercial', 'private'].includes(newIdea.type) &&
+               newIdea.agreement !== undefined) {
         const agreement =  { 
           creator: newIdea.creator, 
           title: newIdea.title, 
@@ -242,11 +248,12 @@ export default class ideaMethods {
           deferredAgreement.resolve(addAgreementResult);
         })
         .catch(err => {
-          throw new Error(`Error adding new agreement document: ${err}`);            
+          throw new Error(`Adding new agreement document: ${err}`);            
         });
       }
       // If the original idea type was not changed update the associated Agreement document
-      else if (origType === newIdea.type) {
+      else if (origType === newIdea.type &&
+               newIdea.agreement !== undefined) {
         const agreement =  { 
           creator: newIdea.creator, 
           title: newIdea.title, 
@@ -259,7 +266,7 @@ export default class ideaMethods {
           deferredAgreement.resolve(updateAgreementResult);
         })
         .catch(err => {
-          throw new Error(`Error adding new agreement document: ${err}`);            
+          throw new Error(`Updating new agreement document: ${err}`);            
         });
       }
       // If no action is required against the Agreement simply resolve the deferred Promise
@@ -269,26 +276,30 @@ export default class ideaMethods {
 
       // Update the Idea document with the new values
       agreementPromise.then(result => {
+        console.log('Before update of Idea - result: ', result);
         this.updateOne(
           {
             creator: newIdea.creator,
             title: newIdea.title,
             type: newIdea.type
           },
-          { newIdea },
+          { $set: newIdea },
           { upsert: true, new: true, runValidators: true }
         )
-        .exec()
         .then((updateResult) => {
+          console.log('After update of Idea - updateResult: ', updateResult);
+          deferredUpdate.resolve('updateResult');
         })
         .catch((err) => {
-          throw new Error(`Error attempting to update idea document: ${err}`);
+          throw new Error(`Attempting to update idea document: ${err}`);
         });
       });
     })
     .catch(err => { 
       throw new Error(`User document not found for creator: ${origCreator} Error: ${err}`); 
     });
+
+    return updatePromise;
   }
   
 }

@@ -187,11 +187,11 @@ export default {
           this.ideaReviews = response.data[0].reviews;
         })
         .catch((err) => {
-          throw new Error(`Error locating idea: ${err}`);
+          throw new Error(`Locating idea: ${err}`);
         });
       })
       .catch((err) => {
-        throw new Error(`Error accessing user security profile: ${err}`);
+        throw new Error(`Accessing user security profile: ${err}`);
       });
     }
   },
@@ -247,11 +247,20 @@ export default {
         title: this.ideaTitle,
         type: this.ideaType,
         description: this.ideaDesc,
-        tags: this.ideaTags,
-        documents: this.ideaDocuments,
-        agreement: this.ideaAgreement,
-        reviews: this.ideaReviews,
       };
+
+      if (this.ideaTags) {
+        newIdea.tags = this.ideaTags;
+      }
+      if (this.documents) {
+        newIdea.documents = this.ideaDocuments;
+      }
+      if (this.agreement) {
+        newIdea.agreement = this.ideaAgreement;
+      }
+      if (this.reviews) {
+        newIdea.reviews = this.ideaReviews;
+      }
       console.log('updateIdea - ideaCreator: ', this.ideaCreator,
                   '\n origTitle: ', this.origTitle,
                   '\n origType: ', this.origType,
@@ -267,11 +276,11 @@ export default {
           console.log('update response: ', response);
           // TODO: Issue update successful message
         } else {
-          throw new Error(`Error updating idea: ${response}`);
+          throw new Error(`Updating idea: ${response}`);
         }
       })
       .catch((err) => {
-        throw new Error('Error updating idea: ', err);
+        throw new Error('Updating idea: ', err);
       });
     },
   },

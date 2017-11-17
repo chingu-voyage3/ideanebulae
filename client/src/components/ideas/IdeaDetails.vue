@@ -177,11 +177,11 @@ export default {
           this.editButtonText = (this.userRole === 'creator') ? 'Edit Idea' : 'Add/Update Review';
         })
         .catch((err) => {
-          throw new Error(`Error locating idea: ${err}`);
+          throw new Error(`Locating idea: ${err}`);
         });
       })
       .catch((err) => {
-        throw new Error(`Error accessing user security profile: ${err}`);
+        throw new Error(`Accessing user security profile: ${err}`);
       });
     }
   },
