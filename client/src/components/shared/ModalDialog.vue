@@ -23,12 +23,12 @@
           </div>
 
           <div class="modal-buttons">
-              <button class="modal-default-button" @click="emitAnswer('cancel')">
+              <button class="btn btn__primary splash__button modal-button" @click="emitAnswer('cancel')">
                 Cancel
               </button>
-              <button class="modal-default-button" @click="emitAnswer('accept')">
+              <button class="btn btn__primary splash__button" @click="emitAnswer('accept')">
                 Accept Terms
-              </button> 
+              </button>
           </div>
         </div>
       </div>
@@ -75,29 +75,55 @@ export default {
   }
 
   .modal-container {
-    width: 300px;
+    max-width: 600px;
     margin: 0px auto;
     padding: 20px 30px;
     background-color: #fff;
     border-radius: 2px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
     transition: all .3s ease;
-    font-family: Helvetica, Arial, sans-serif;
+    font-family: 'Titillium Web', Helvetica, Arial, sans-serif;
   }
 
-  .modal-header h3 {
+  .modal-header {
     margin-top: 0;
-    color: #42b983;
+    color: #7c48c2;
+    font-weight: 100;
+    font-size: 48px;
+    line-height: .8em;
+    text-align: center;
+    padding-top: 10px;
+  }
+
+  .modal-footer {
+    color: #7c48c2;
+    font-weight: 300;
+    font-size: 24px;
+    text-align: center;
+    padding-top: 20px;
   }
 
   .modal-body {
     margin: 20px 0;
   }
 
-  .modal-default-button {
-    float: right;
+  .modal-p {
+    margin-bottom: 20px;
   }
 
+  .modal-proper {
+    text-tranform: capitalize;
+  }
+
+  .modal-buttons {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-button {
+    margin-right: 10px;
+  }
   /*
   * The following styles are applied automatically by Vue.js to page elements
   * in the transition when they become visible.
