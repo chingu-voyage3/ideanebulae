@@ -240,6 +240,22 @@ export default {
     },
     typeToggle(type) {
       this.ideaTypeCode = type;
+      switch (this.ideaTypeCode) {
+        case this.PUBLIC_IDEA:
+          this.ideaType = 'public';
+          this.ideaAgreement = '';
+          break;
+        case this.PRIVATE_IDEA:
+          this.ideaType = 'private';
+          this.ideaAgreement = ' ';
+          break;
+        case this.COMMERCIAL_IDEA:
+          this.ideaType = 'commercial';
+          this.ideaAgreement = ' ';
+          break;
+        default:
+          throw new Error(`Invalid ideaTypeCode encountered: ${this.ideaTypeCode}`);
+      }
       this.ideaAgreement = (this.ideaTypeCode === this.PUBLIC_IDEA) ? '' : ' ';
     },
     saveIdea() {
@@ -254,16 +270,17 @@ export default {
         description: this.ideaDesc,
       };
 
-      if (this.ideaTags) {
+      if (this.ideaTags.length > 0) {
         newIdea.tags = this.ideaTags;
       }
-      if (this.documents) {
+      if (this.ideaDocuments.length > 0) {
         newIdea.documents = this.ideaDocuments;
       }
-      if (this.agreement) {
-        newIdea.agreement = this.ideaAgreement;
+      console.log(`ideaAgreement - length: ${this.ideaAgreement.length} value: ${this.ideaAgreement}`);
+      if (this.ideaAgreement.length > 0) {
+        newIdea.agreement = this.ideaAgreement.trim();
       }
-      if (this.reviews) {
+      if (this.ideaReviews.length > 0) {
         newIdea.reviews = this.ideaReviews;
       }
       console.log('updateIdea - ideaCreator: ', this.ideaCreator,

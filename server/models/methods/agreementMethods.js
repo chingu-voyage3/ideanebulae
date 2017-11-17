@@ -38,36 +38,14 @@ export default class agreementMethods {
    */
   static async saveAgreement(body) {
     let { creator, title, type, agreement, agreement_version} = body;
-
-    // Retrieve the parent idea before saving the new agreement
-    // document to the database
-    Idea.findIdea(creator, title, type)
-    .then(idea => {
-      let agreement = new this();
-      
-      agreement.creator = creator;
-      agreement.title = title;
-      agreement.type = type;
-      agreement.agreement = agreement;
-      agreement.agreement_version = agreement_version;
-      const agreementResult = agreement.save();
-      agreementResult
-      .then(agreement => {
-        Idea.replaceIdeaAgreement(creator, title, type, agreement._id)
-        .then(idea => {
-          return agreementResult;
-        })
-        .catch(err => {
-          throw new Error(`Failure when attempting to update agreement reference in idea document: ${err}`);
-        });
-      })
-      .catch(err => {
-        throw new Error(`Error saving new agreement document: ${err}`);
-      });
-    })
-    .catch(err => {
-      throw new Error(`Error retrieving parent idea for agreement document: ${err}`);
-    });
+    let newAgreement = new this();
+    
+    newAgreement.creator = creator;
+    newAgreement.title = title;
+    newAgreement.type = type;
+    newAgreement.agreement = agreement;
+    newAgreement.agreement_version = agreement_version;
+    return await newAgreement.save();
   }
 
   /**
