@@ -48,24 +48,4 @@ export default class agreementMethods {
     return await newAgreement.save();
   }
 
-  /**
-   * @description Update an agreement document to the database. It is expected that the
-   * parent idea document will already exist in the database.
-   * @param {Object} body An object containing the agreement fields.
-   * @returns {Promise} A WriteResult object containing the status of the operation
-   * @memberof agreementMethods
-   */
-  static async updateAgreement(body) {
-    let { creator, title, type, agreement, agreement_version} = body;
-
-      agreement = new this();
-      
-      agreement.creator = creator;
-      agreement.title = title;
-      agreement.type = type;
-      agreement.agreement = agreement;
-      agreement.agreement_version = agreement_version;
-      return await agreement.save();
-  }
-
 }
