@@ -98,7 +98,12 @@
           <label class="explore__label">Type</label>
           <div class="modal-p modal-proper">{{this.selectedIdea.type}}</div>
           <label class="explore__label">Agreement</label>
-          <div class="modal-p">{{this.selectedIdea.agreement.agreement}}</div>
+          <div v-if="selectedIdea.agreement !== null">
+            <div>{{this.selectedIdea.agreement.agreement}}</div>
+          </div>
+          <div v-else>
+            <div>No agreement has been defined for this idea</div>
+          </div>
         </div>
         <div class="modal-footer" slot="footer">Click to accept this agreement</div>
       </ModalDialog>
@@ -121,7 +126,7 @@ export default {
   data() {
     return {
       // Environment information
-      currentUserNickname: '',
+      currentUser: '',
       showModal: false,
       // Search term form variables
       ideaTags: [],
@@ -149,7 +154,7 @@ export default {
     if (getAccessToken()) {
       getUserProfile()
       .then((profile) => {
-        this.currentUserNickname = profile.nickname;
+        this.currentUser = profile.sub;
       })
       .catch((err) => {
         throw new Error(`Error accessing user security profile: ${err}`);
@@ -158,7 +163,7 @@ export default {
   },
   methods: {
     acceptAgreement() {
-      http.put(`/idea/addreviewer/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}&reviewer=${this.currentUserNickname}`)
+      http.put(`/idea/addreviewer/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}&reviewer=${this.currentUser}`)
       .then((response) => {
         if (response.ok && response.nModified) {
           this.showModal = false;
@@ -199,13 +204,13 @@ export default {
         this.transferToDetails(idea);
         return;
       }
-      if (idea.creator === this.currentUserNickname) {
+      if (idea.creator === this.currentUser) {
         this.transferToDetails(idea);
         return;
       }
       // eslint-disable-next-line arrow-body-style
       const reviewerNickname = idea.reviews.find((review) => {
-        return review.reviewer === this.currentUserNickname;
+        return review.reviewer === this.currentUser;
       });
       if (reviewerNickname !== undefined) {
         this.transferToDetails(idea);
@@ -230,7 +235,7 @@ export default {
       this.searchForTags.splice(index, 1);
     },
     searchIdeas() {
-      http.get(`/ideas/search/?currUser=${this.currentUserNickname}&searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
+      http.get(`/ideas/search/?currUser=${this.currentUser}&searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
       .then((response) => {
         this.ideas = response.data;
       }).catch((err) => {

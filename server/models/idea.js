@@ -30,7 +30,8 @@ const ideaSchema = new Schema({
 
   agreement: {
     type: Schema.Types.ObjectId,
-    ref: 'Agreement'
+    ref: 'Agreement',
+    default: null
   },
 
   created_ts: {
@@ -45,7 +46,7 @@ const ideaSchema = new Schema({
     unique: false
   }],
 
-  documents: {
+  documents: [{
     url_description: {
       type: String,
       required: true,
@@ -57,7 +58,7 @@ const ideaSchema = new Schema({
       required: true,
       unique: false
     },
-  },
+  }],
     
   // It is expected that the reviews field will contain one and only one review per reviewer.
   // New reviews are always pushed to the end of the array

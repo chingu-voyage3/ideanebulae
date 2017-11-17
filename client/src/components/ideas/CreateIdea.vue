@@ -21,7 +21,7 @@
 
         <div class="create__form-tags">
           <div class="create__tag-wrap">
-            <span class="create__form-tag" v-for="(tag, index) in tags" v-bind:key="index">
+            <span class="create__form-tag" v-for="(tag, index) in ideaTags" v-bind:key="index">
               <span class="create__tag" >
                 <span class="create__tag__icon" aria-hidden="true">
                   <button
@@ -49,9 +49,9 @@
         </div>
 
         <div class="create__form-element">
-          <div id="create__links" class="create__form__link" v-for="(link, index) in links" v-bind:key="index">
+          <div id="create__links" class="create__form__link" v-for="(link, index) in ideaDocuments" v-bind:key="index">
             <div class="create__link">
-              <a class="create__link-text" :href="link">{{link}}</a>
+              <a class="create__link-text" :href="link.url" target="_blank">{{link.url_description}}</a>
               <button class="create__remove-link" id="remove__link" @click="removeLink(index)"> &times; </button>
             </div>
           </div>
@@ -70,20 +70,20 @@
         <div class="create__form-element">
           <label class="create__label" for="create__type">Type</label>
           <div class="create__radio-group">
-            <div class="create__radio create__option" v-bind:class="{ active: ideaType === 0 }" @mouseover="upHere = 0" @mouseleave="upHere = -1" @click="typeToggle(0)">
-              <input type="radio" name="ideatype" v-validate="'required'" value="0" v-model="ideaType">
+            <div class="create__radio create__option" v-bind:class="{ active: ideaTypeCode === 0 }" @mouseover="upHere = 0" @mouseleave="upHere = -1" @click="typeToggle(0)">
+              <input type="radio" name="ideatype" v-validate="'required'" value="0" v-model="ideaTypeCode">
               <div class="create__type-title tooltip">Public
                 <span class="create__type-desc tooltiptext" v-if="upHere == 0">Anyone can read and give feedback</span>
               </div>
             </div>
-            <div class="create__radio create__option" v-bind:class="{ active: ideaType === 1 }" @mouseover="upHere = 1" @mouseleave="upHere = -1" @click="typeToggle(1)">
-              <input type="radio" name="ideatype" value="1" v-model="ideaType">
+            <div class="create__radio create__option" v-bind:class="{ active: ideaTypeCode === 1 }" @mouseover="upHere = 1" @mouseleave="upHere = -1" @click="typeToggle(1)">
+              <input type="radio" name="ideatype" value="1" v-model="ideaTypeCode">
               <div class="create__type-title tooltip">Private
                 <span class="create__type-desc tooltiptext" v-if="upHere == 1">Only visible to people who agree to the license</span>
               </div>
             </div>
-            <div class="create__radio create__option" v-bind:class="{ active: ideaType === 2 }" @mouseover="upHere = 2" @mouseleave="upHere = -1" @click="typeToggle(2)">
-              <input type="radio" name="ideatype" value="2" v-model="ideaType">
+            <div class="create__radio create__option" v-bind:class="{ active: ideaTypeCode === 2 }" @mouseover="upHere = 2" @mouseleave="upHere = -1" @click="typeToggle(2)">
+              <input type="radio" name="ideatype" value="2" v-model="ideaTypeCode">
               <div class="create__type-title tooltip">Custom
                 <span class="create__type-desc tooltiptext" v-if="upHere == 2">Customise the license and choose who can see the idea</span>
               </div>
@@ -101,22 +101,26 @@
 
 <script>
 import debounce from 'lodash.debounce';
-import localstorage from '@/utils/localstorage';
 import marked from 'marked';
+import localstorage from '@/utils/localstorage';
+import http from '../../api/index';
 
 export default {
   name: 'CreateIdea',
   data() {
     return {
+      // Idea Document Fields
       ideaTitle: '',
+      ideaType: '',
       ideaDesc: '',
+      ideaTags: [],
+      ideaDocuments: [],
+      // Session Work Fields
       linkText: '',
       tagText: '',
-      ideaType: '0',
+      ideaTypeCode: '0',
       upHere: '-1',
       addLinkError: false,
-      tags: [],
-      links: [],
       ideaDescMarked: '',
       previewDesc: false,
     };
@@ -145,9 +149,10 @@ export default {
           if (!/^http[s]?:\/\/.+/.test(newVal)) {
             newVal = `https://${newVal}`;
           }
-
-          this.links.push(newVal);
-          this.linkText = '';
+          if (this.linkText === '') {
+            this.linkText = newVal;
+          }
+          this.ideaDocuments.push({ url_description: this.linkText, url: `${newVal}` });
         }
       });
     },
@@ -157,18 +162,31 @@ export default {
         newVal = newVal.slice(0, -1);
       }
       if (newVal.length !== 0) {
-        this.tags.push(newVal);
+        this.ideaTags.push(newVal);
         this.tagText = '';
       }
     },
     removeLink(index) {
-      this.links.splice(index, 1);
+      this.ideaDocuments.splice(index, 1);
     },
     removeTag(index) {
-      this.tags.splice(index, 1);
+      this.ideaTags.splice(index, 1);
     },
     typeToggle(type) {
-      this.ideaType = type;
+      this.ideaTypeCode = type;
+      switch (this.ideaTypeCode) {
+        case 0:
+          this.ideaType = 'public';
+          break;
+        case 1:
+          this.ideaType = 'private';
+          break;
+        case 2:
+          this.ideaType = 'commercial';
+          break;
+        default:
+          throw new Error(`Invalid internal type code detected: ${this.type}`);
+      }
     },
     saveIdea() {
       localstorage.setObject('create-idea-save', this.$data);
@@ -178,13 +196,21 @@ export default {
     },
     submitIdea() {
       localStorage.removeItem('create-idea-save');
-      /* Uncomment once API implementation is complete.
       const payload = {
-        ideaTitle: this.ideaTitle,
-        ideaDesc: this.ideaDesc,
-        links: this.links,
+        title: this.ideaTitle,
+        type: this.ideaType,
+        description: this.ideaDesc,
+        documents: this.ideaDocuments,
+        tags: this.ideaTags,
       };
-      */
+      http.post('/ideas', payload)
+      .then((response) => {
+        if (response.statusText !== 'OK') {
+          throw new Error(`Error adding new idea document. ${response}`);
+        }
+      }).catch((err) => {
+        throw new Error(`Error adding new idea document: ${err}`);
+      });
     },
   },
 };

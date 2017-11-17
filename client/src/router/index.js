@@ -39,7 +39,7 @@ export default new Router({
       component: CreateIdea,
     },
     {
-      path: '/edit',
+      path: '/edit/:creatorId/:title/:type',
       name: 'EditIdea',
       component: EditIdea,
     },
@@ -64,7 +64,7 @@ export default new Router({
       component: Agreement,
     },
     {
-      path: '/review',
+      path: '/review/:creatorId/:title/:type',
       name: 'ReviewIdea',
       component: ReviewIdea,
     },

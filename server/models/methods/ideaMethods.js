@@ -1,11 +1,43 @@
 import Agreement from '../agreement';
+import User from '../user';
 
 export default class ideaMethods {
+
+  /**
+   * @description Add a new review to an existing idea. 
+   * @static
+   * @param {String} creator The creator of the idea
+   * @param {String} title The ideas title
+   * @param {String} type The ideas type value
+   * @param {Object} {"reviewer": reviewer, "assigned_ts": assigned_ts, "updated_ts": updated_ts, "comments": comments} The An object containing the properties and values in the
+   * new reviews field entry of the idea schema.
+   * @returns  {Promise} The updated idea document when resolved
+   * @memberof ideaMethods
+   */
+  static async addIdeaReviewer(creator, title, type, reviewer) {
+    // TODO: Validate that reviewer doesn't already have an entry in the 'reviews' field.
+    // It is expected that the reviews field will contain one and only one review per reviewer 
+    const review = {
+      "reviewer": reviewer,
+    };
+    return await this.updateOne(
+      {
+        creator: creator,
+        title: title,
+        type: type
+      },
+      {
+        $push: { "reviews": review }
+      },
+      { upsert: false, new: true, runValidators: true }
+    );
+  }
+  
   /**
    * @description Retrieve an idea document based on its '_id' field
    * @static
-   * @param {any} ideaId The '_id' value of the idea document
-   * @returns  {Promise} The matching idea document
+   * @param {String} ideaId The '_id' value of the idea document
+   * @returns {Promise} The matching idea document
    * @memberof ideaMethods
    */
   static async findIdea(ideaId) {
@@ -57,6 +89,30 @@ export default class ideaMethods {
   }
 
   /**
+   * @description Replace the agreement reference field in the idea document with
+   * a new agreement _id.
+   * @static
+   * @param {String} creator The creator of the idea
+   * @param {String} title The ideas title
+   * @param {String} type The ideas type value
+   * @returns  {Promise} The updated idea document
+   * @memberof ideaMethods
+   */
+  static async replaceIdeaAgreement(creator, title, type, agreement_id) {
+    return await this.updateOne(
+      {
+        creator: creator,
+        title: title,
+        type: type
+      },
+      {
+        agreement: agreement_id
+      },
+      { upsert: false, new: true, runValidators: true }
+    );
+  }
+
+  /**
    * @description Add an idea document to the database. It is expected that the
    * parent user document for the creator and any reviewers will already exist in
    * the database.
@@ -77,6 +133,8 @@ export default class ideaMethods {
     idea.documents = documents;
     idea.tags = tags;
     idea.created_ts = Date.now();
+    // TODO: Handle Agreement properly by setting to null or creating and linking agreement document
+    idea.agreement = null;
     return await idea.save();
   }
 
@@ -114,56 +172,133 @@ export default class ideaMethods {
   }
 
   /**
-   * @description Replace the agreement reference field in the idea document with
-   * a new agreement _id.
+   * @description Update an idea. The following conditions are taken into consideration:
+   * - Creators are not allowed to change, but it is included as the first parameter in the 
+   * interest of orthoganality. Validate that the instances of creator in the parameters are
+   * the same and that a User document exists for the creator.
+   * - If the original idea type was changed from 'private' or 'commercial' to 'public'
+   * delete the associated Agreement document.
+   * - If the original idea type was changed from 'public' to 'private' or
+   * 'commercial' add a new Agreement document.
+   * - If the original idea type was not changed update the associated Agreement document.
    * @static
-   * @param {String} creator The creator of the idea
-   * @param {String} title The ideas title
-   * @param {String} type The ideas type value
-   * @returns  {Promise} The updated idea document
+   * @param {String} origCreator The original creator of the idea
+   * @param {String} origTitle The original title of the idea
+   * @param {String} origType The original type value of the idea
+   * @param {Object} newIdea The An object containing the properties and values of the idea.
+   * The creator, title, and type fields are required. All other idea fields need only
+   * be included if they have changed.
+   * @returns  {Object} The updated idea document
    * @memberof ideaMethods
    */
-  static async replaceIdeaAgreement(creator, title, type, agreement_id) {
-    return await this.updateOne(
-      {
-        creator: creator,
-        title: title,
-        type: type
-      },
-      {
-        agreement: agreement_id
-      },
-      { upsert: false, new: true, runValidators: true }
-    );
-  }
+  static async updateIdea(origCreator, origTitle, origType, newIdea) {
+    console.log('updateIdea - origCreator: ', origCreator,
+      '\n origTitle: ', origTitle,
+      '\n origType: ', origType,
+      '\n newIdea: ', newIdea);
 
-  /**
-   * @description Add a new review to an existing idea. 
-   * @static
-   * @param {String} creator The creator of the idea
-   * @param {String} title The ideas title
-   * @param {String} type The ideas type value
-   * @param {any} {"reviewer": reviewer, "assigned_ts": assigned_ts, "updated_ts": updated_ts, "comments": comments} The An object containing the properties and values in the
-   * new reviews field entry of the idea schema.
-   * @returns  {Promise} The updated idea document when resolved
-   * @memberof ideaMethods
-   */
-  static async addIdeaReviewer(creator, title, type, reviewer) {
-    // TODO: Validate that reviewer doesn't already have an entry in the 'reviews' field.
-    // It is expected that the reviews field will contain one and only one review per reviewer 
-    const review = {
-      "reviewer": reviewer,
-    };
-    return await this.updateOne(
-      {
-        creator: creator,
-        title: title,
-        type: type
-      },
-      {
-        $push: { "reviews": review }
-      },
-      { upsert: false, new: true, runValidators: true }
-    );
-  }    
+    // Verify that the creator hasn't changed and a User document exists for it.
+    if (origCreator !== newIdea.creator) {
+      throw new Error(`The creator field of an idea is not allowed to change. origCreator: ${origCreator} newIdea.creator: ${newIdea.creator}`);
+    }
+
+    // Create a Promise that will be resolved by one of the Agreement actions - delete, add, or update.
+    let deferredAgreement = null;
+    let agreementPromise = new Promise((resolve, reject) => {
+      deferredAgreement = ({resolve: resolve, reject: reject});
+    });
+
+    let deferredUpdate = null;
+    let updatePromise = new Promise((resolve, reject) => {
+      deferredUpdate = ({resolve: resolve, reject: reject});
+    })
+
+    User.findUserBySub(origCreator)
+    .then(user => {
+      // If the original idea type was changed from 'private' or 'commercial' to 'public'
+      // delete the associated Agreement document.
+      if (['commercial', 'private'].includes(origType) &&
+          newIdea.type === 'public') {
+        Agreement.deleteAgreement(origCreator, origTitle, origType)
+        .then(deleteAgreementResult => {
+          if (!deleteAgreementResult.result.ok) {
+            throw new Error(`Attempting to delete agreement document: ${err}`);
+          }
+          newIdea.agreement = '';
+          deferredAgreement.resolve(deleteAgreementResult);
+        })
+        .catch(err => {
+          throw new Error(`Attempting to delete agreement document: ${err}`);            
+        });
+      }
+      // If the original idea type was changed from 'public' to 'private' or
+      // 'commercial' add a new Agreement document.
+      else if (origType === 'public' &&
+               ['commercial', 'private'].includes(newIdea.type) &&
+               newIdea.agreement !== undefined) {
+        const agreement =  { 
+          creator: newIdea.creator, 
+          title: newIdea.title, 
+          type: newIdea.type, 
+          agreement: newIdea.agreement, 
+          agreement_version: 0,
+        };
+        Agreement.saveAgreement(agreement)
+        .then(addAgreementResult => {
+          newIdea.agreement = addAgreementResult._id;
+          deferredAgreement.resolve(addAgreementResult);
+        })
+        .catch(err => {
+          throw new Error(`Adding new agreement document: ${err}`);            
+        });
+      }
+      // If the original idea type was not changed update the associated Agreement document
+      else if (origType === newIdea.type &&
+               newIdea.agreement !== undefined) {
+        const agreement =  { 
+          creator: newIdea.creator, 
+          title: newIdea.title, 
+          type: newIdea.type, 
+          agreement: newIdea.agreement, 
+          agreement_version: 0,
+        };
+        Agreement.updateAgreement(agreement)
+        .then(updateAgreementResult => {
+          deferredAgreement.resolve(updateAgreementResult);
+        })
+        .catch(err => {
+          throw new Error(`Updating new agreement document: ${err}`);            
+        });
+      }
+      // If no action is required against the Agreement simply resolve the deferred Promise
+      else {
+        deferredAgreement.resolve('No agreement action required');
+      }
+
+      // Update the Idea document with the new values
+      agreementPromise.then(result => {
+        this.updateOne(
+          {
+            creator: origCreator,
+            title: origTitle,
+            type: origType
+          },
+          { $set: newIdea },
+          { upsert: false, new: true, runValidators: true }
+        )
+        .then((updateResult) => {
+          deferredUpdate.resolve(updateResult);
+        })
+        .catch((err) => {
+          throw new Error(`Attempting to update idea document: ${err}`);
+        });
+      });
+    })
+    .catch(err => { 
+      throw new Error(`User document not found for creator: ${origCreator} Error: ${err}`); 
+    });
+
+    return updatePromise;
+  }
+  
 }
