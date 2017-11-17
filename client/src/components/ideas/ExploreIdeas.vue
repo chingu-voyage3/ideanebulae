@@ -87,16 +87,16 @@
           <td class="explore__td">
             <a class="explore__link" v-on:click="checkForAgreement(idea)">{{idea.title}}</a>
           </td>
-          <td class="explore__td">{{idea.type}}</td> 
+          <td class="explore__td">{{idea.type}}</td>
           <td class="explore__td">{{idea.status}}</td>
           <td class="explore__td">{{new Date(idea.status_dt).toLocaleDateString()}}</td>
         </tr>
       </table>
       <ModalDialog v-if="showModal" @cancel="showModal = false" @accept="acceptAgreement">
-        <h3 slot="header">Accept Idea Agreement</h3>
-        <div slot="body">
+        <h3 slot="header" class="modal-header">Accept Idea Agreement</h3>
+        <div slot="body" class="modal-body">
           <label class="explore__label">Type</label>
-          <div>{{this.selectedIdea.type}}</div>
+          <div class="modal-p modal-proper">{{this.selectedIdea.type}}</div>
           <label class="explore__label">Agreement</label>
           <div v-if="selectedIdea.agreement !== null">
             <div>{{this.selectedIdea.agreement.agreement}}</div>
@@ -105,7 +105,7 @@
             <div>No agreement has been defined for this idea</div>
           </div>
         </div>
-        <h5 slot="footer">Click to accept this agreement</h5>
+        <div class="modal-footer" slot="footer">Click to accept this agreement</div>
       </ModalDialog>
     </section>
 
