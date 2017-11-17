@@ -40,7 +40,7 @@
           <label class="view__label" for="view__links">Links</label>
           <div id="view__links" class="create__form__link" v-for="(link, index) in ideaLinks" v-bind:key="index">
             <div class="view__link">
-              <a :href="link.url">{{link.url_description}}</a>
+              <a :href="link.url" target="_blank">{{link.url_description}}</a>
             </div>
           </div>
         </div>
@@ -96,7 +96,7 @@
 
       </div>
 
-      <div class="create__button-wrap">
+      <div class="view__button-wrap">
         <button class="btn btn__primary profile__button view__button--btm" @click="editIdea">{{editButtonText}}</button>
       </div>
     </section>
@@ -112,7 +112,7 @@ export default {
   data() {
     return {
       // Session information
-      currentUserNickname: '',
+      currentUser: '',
       userRole: '',
       editButtonText: '',
       // Idea information
@@ -134,11 +134,16 @@ export default {
     if (getAccessToken()) {
       getUserProfile()
       .then((profile) => {
-        this.currentUserNickname = profile.nickname;
+        console.log('profile: ', profile);
+        this.currentUser = profile.sub;
 
         // Retrieve the idea identified by the URL paramaters
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
+          console.log('response: ', response);
+          if (response.data[0].agreement === null) {
+            console.log('response.data[0].agreement is null');
+          }
           this.ideaCreator = response.data[0].creator;
           this.ideaTitle = response.data[0].title;
           // TODO: Calculate this as a virtual database field in Mongoose
@@ -162,9 +167,13 @@ export default {
           this.ideaDesc = response.data[0].description;
           this.ideaLinks = response.data[0].documents;
           this.ideaTags = response.data[0].tags;
-          this.ideaAgreement = response.data[0].agreement.agreement;
+          if (response.data[0].agreement === null) {
+            this.ideaAgreement = null;
+          } else {
+            this.ideaAgreement = response.data[0].agreement.agreement;
+          }
           this.ideaReviews = response.data[0].reviews;
-          this.userRole = (this.ideaCreator === this.currentUserNickname) ? 'creator' : 'reviewer';
+          this.userRole = (this.ideaCreator === this.currentUser) ? 'creator' : 'reviewer';
           this.editButtonText = (this.userRole === 'creator') ? 'Edit Idea' : 'Add/Update Review';
         })
         .catch((err) => {
@@ -179,9 +188,9 @@ export default {
   methods: {
     editIdea() {
       if (this.userRole === 'creator') {
-        this.$router.push(`edit/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}`);
+        this.$router.push({ path: `/edit/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
       } else {
-        this.$router.push(`review/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}`);
+        this.$router.replace({ path: `review/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
       }
     },
   },

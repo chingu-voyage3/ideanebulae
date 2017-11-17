@@ -109,8 +109,8 @@ router.route('/ideas')
   User.findUserBySub(sub)
     // If there's an user, we can use its _id to create the idea
     .then((user) => {
-      Idea.saveIdea(req.body, user._id)
-        .then(() => {
+      Idea.saveIdea(req.body, user.user_id)
+        .then(idea => {
           console.log('Idea created');
           res.json('Idea created');
         })
@@ -124,6 +124,15 @@ router.route('/ideas')
       console.error(err);
       res.send(err);
     });
+})
+// Update an idea
+.put((req, res) => {
+  Idea.updateIdea(req.body.origCreator, req.body.origTitle, req.body.origType, req.body.newIdea)
+  .then(idea => {
+    console.log('Idea Updated ', idea);
+    res.json(idea)
+  })
+  .catch(err => res.send(err));
 });
 
 // Retrieve all unique idea tags that are currently assigned to ideas
