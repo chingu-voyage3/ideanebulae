@@ -14,7 +14,9 @@
 
         <div class="create__form-element">
           <label class="create__label" for="create__desc">Description</label>
-          <textarea id="create__desc" name="description" class="create__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaDesc" placeholder="Description" ></textarea>
+          <textarea id="create__desc" name="description" class="create__textarea" cols="80" rows="13" maxlength="1000" v-if="!previewDesc" v-model="ideaDesc" placeholder="Description" ></textarea>
+          <div class="create__preview create__textarea" v-else v-html="ideaDescMarked"></div>
+          <button class="btn btn__primary profile__button create__button--btm" @click="previewDesc = !previewDesc">Preview</button>
         </div>
 
         <div class="create__form-tags">
@@ -100,6 +102,7 @@
 <script>
 import debounce from 'lodash.debounce';
 import localstorage from '@/utils/localstorage';
+import marked from 'marked';
 
 export default {
   name: 'CreateIdea',
@@ -113,9 +116,9 @@ export default {
       upHere: '-1',
       addLinkError: false,
       tags: [],
-      links: [
-        'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-      ],
+      links: [],
+      ideaDescMarked: '',
+      previewDesc: false,
     };
   },
   mounted() {
@@ -169,6 +172,9 @@ export default {
     },
     saveIdea() {
       localstorage.setObject('create-idea-save', this.$data);
+      this.ideaDescMarked = marked(this.ideaDesc, {
+        sanitize: true,
+      });
     },
     submitIdea() {
       localStorage.removeItem('create-idea-save');
