@@ -190,7 +190,7 @@ export default {
       if (this.userRole === 'creator') {
         this.$router.push({ path: `/edit/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
       } else {
-        this.$router.replace({ path: `review/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
+        this.$router.push({ path: `/review/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
       }
     },
   },

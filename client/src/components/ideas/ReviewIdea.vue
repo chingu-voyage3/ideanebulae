@@ -1,5 +1,106 @@
 <template>
-  <h1>Review Idea</h1>
+  <div class="container view">
+    <header class="review__header">
+      <h1 class="review__title">Review Idea</h1>
+    </header>
+
+    <section class="review__form-wrapper">
+      <div class="review__form-group">
+
+        <div class="review__form-element">
+          <label class="review__label" for="review__creator">Creator</label>
+          <input class="review__input" id="review__creator" maxlength="100" type="text" name="creator" v-model="ideaCreator" placeholder="Creator" autofocus disabled>
+        </div>
+
+        <div class="review__form-element">
+          <label class="review__label" for="review__title">Title</label>
+          <input class="review__input" id="review__title" maxlength="100" type="text" name="title" v-model="ideaTitle" placeholder="Title" autofocus disabled>
+        </div>
+
+        <div class="review__form-element">
+          <label class="review__label" for="review__desc">Description</label>
+          <textarea id="review__desc" name="description" class="review__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaDesc" placeholder="Description" disabled></textarea>
+        </div>
+
+        <div class="review__form-tags">
+          <label class="review__label" for="review__tags">Tags</label>
+          <div class="review__tag-wrap" id="review__tags">
+            <span class="review__form-tag" v-for="(tag, index) in ideaTags" v-bind:key="index">
+              <span class="review__tag" >
+                <span class="review__tag__label" role="option" aria-selected="true">
+                  {{tag}}
+                  <span class="tag-aria-only">&nbsp;</span>
+                </span>
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <div class="review__form-element">
+          <label class="review__label" for="review__links">Links</label>
+          <div id="review__links" class="create__form__link" v-for="(link, index) in ideaLinks" v-bind:key="index">
+            <div class="review__link">
+              <a :href="link.url" target="_blank">{{link.url_description}}</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="review__form-element">
+          <label class="review__label" for="create__type">Type</label>
+          <div class="review__radio-group">
+            <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === PUBLIC_IDEA }" @mouseover="upHere = PUBLIC_IDEA" @mouseleave="upHere = -1">
+              <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC_IDEA" v-model="ideaTypeCode" disable>
+              <div class="review__type-title tooltip">Public
+                <span class="review__type-desc tooltiptext" v-if="upHere == PUBLIC_IDEA">Anyone can read and give feedback</span>
+              </div>
+            </div>
+            <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === PRIVATE_IDEA }" @mouseover="upHere = PRIVATE_IDEA" @mouseleave="upHere = -1">
+              <input type="radio" name="ideatype" :value="PRIVATE_IDEA" v-model="ideaTypeCode" disable>
+              <div class="review__type-title tooltip">Private
+                <span class="review__type-desc tooltiptext" v-if="upHere == PRIVATE_IDEA">Only visible to people who agree to the license</span>
+              </div>
+            </div>
+            <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL_IDEA }" @mouseover="upHere = COMMERCIAL_IDEA" @mouseleave="upHere = -1">
+              <input type="radio" name="ideatype" :value="COMMERCIAL_IDEA" v-model="ideaTypeCode" disable>
+              <div class="review__type-title tooltip">Custom
+                <span class="review__type-desc tooltiptext" v-if="upHere == COMMERCIAL_IDEA">Customise the license and choose who can see the idea</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="review__form-element" v-show="this.ideaTypeCode">
+          <label class="review__label" for="review__agreement">Agreement</label>
+          <textarea id="review__agreement" name="agreement" class="review__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement" disabled></textarea>
+        </div>
+
+        <div class="review__form-element">
+          <label class="review__label" for="review__reviews">Reviews</label>
+          <section class="review__results">
+            <table class="review__table">
+              <tr class="review__tr">
+                <th class="review__th">Reviewer</th>
+                <th class="review__th">Assigned</th>
+                <th class="review__th">Updated</th>
+                <th class="review__th">Comments</th>
+              </tr>
+              <tr class="review__tr" v-for="review in ideaReviews" v-bind:key="review.reviewer">
+                <td class="review__td">{{review.reviewer}}</td> 
+                <td class="review__td">{{new Date(review.assigned_ts).toLocaleDateString()}}</td>
+                <td class="review__td">{{new Date(review.updated_ts).toLocaleDateString()}}</td>
+                <td class="review__td">{{review.comments}}</td>
+              </tr>
+            </table>
+          </section>
+        </div>
+
+      </div>
+
+      <div class="review__button-wrap">
+        <button class="btn btn__primary profile__button review__button--btm" @click="editIdea">{{editButtonText}}</button>
+      </div>
+    </section>
+  </div>
 </template>
 
 <script>
@@ -26,6 +127,10 @@ export default {
       ideaReviews: [],
       ideaTypeCode: '0',
       upHere: '-1',
+      // Constants
+      PUBLIC_IDEA: 0,
+      PRIVATE_IDEA: 1,
+      COMMERCIAL_IDEA: 2,
     };
   },
   mounted() {
@@ -45,13 +150,13 @@ export default {
           this.ideaType = response.data[0].type;
           switch (response.data[0].type) {
             case 'public':
-              this.ideaTypeCode = 0;
+              this.ideaTypeCode = this.PUBLIC_IDEA;
               break;
             case 'private':
-              this.ideaTypeCode = 1;
+              this.ideaTypeCode = this.PRIVATE_IDEA;
               break;
             case 'commercial':
-              this.ideaTypeCode = 2;
+              this.ideaTypeCode = this.COMMERCIAL_IDEA;
               break;
             default:
               throw new Error(`Invalid idea type field value: ${response.data[0].type}`);
