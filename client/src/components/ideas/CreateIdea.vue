@@ -14,9 +14,11 @@
 
         <div class="create__form-element">
           <label class="create__label" for="create__desc">Description</label>
-          <textarea id="create__desc" name="description" class="create__textarea" cols="80" rows="13" maxlength="1000" v-if="!previewDesc" v-model="ideaDesc" placeholder="Description" ></textarea>
-          <div class="create__preview create__textarea" v-else v-html="ideaDescMarked"></div>
-          <button class="btn btn__primary profile__button create__button--btm" @click="previewDesc = !previewDesc">Preview</button>
+          <textarea id="create__desc" name="description" class="create__textarea" cols="80" rows="13" maxlength="1000" v-if="!previewDesc" v-model="ideaDesc" placeholder="Idea Description (Accepts Markdown)" ></textarea>
+          <div class="create__preview" v-else v-html="ideaDescMarked"></div>
+          <div class="create__button-wrap create__button-wrap-preview">
+            <button class="btn btn__primary profile__button create__button--btm" @click="previewDesc = !previewDesc">Toggle Preview</button>
+          </div>
         </div>
 
         <div class="create__form-tags">
@@ -221,6 +223,12 @@ export default {
 
 .create
 
+  &__form-element
+    margin-top 10px
+
+  &__preview
+    padding 20px 0
+
   &__form-wrapper
     width 100%
     max-width 600px
@@ -341,6 +349,10 @@ export default {
     justify-content center
     margin 20px auto
 
+  &__button-wrap-preview
+    justify-content flex-end
+    margin 0 auto
+
   &__button
 
     &--btm
@@ -364,13 +376,13 @@ export default {
     line-height: 1.4;
     background-color: transparent;
     border-radius: 2px;
-    border: 1px solid rgba(124,72,194, 0.25);
+    border: 1px solid $gray_bkgrd;
     margin-right: 10px;
     margin-top: 5px;
     vertical-align: top;
 
     &:hover
-      border: 1px solid rgba(124,72,194, 1);
+      border: 1px solid $aqua;
 
 
     &__label

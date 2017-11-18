@@ -18,7 +18,7 @@
     "axios": "^0.16.2",
     "jwt-decode": "^2.2.0",
     "lodash.debounce": "^4.0.8",
-    "marked": "^0.3.6",    
+    "marked": "^0.3.6",
     "postcss": "^6.0.13",
     "stylelint": "^8.2.0",
     "stylus": "^0.54.5",
