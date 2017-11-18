@@ -48,19 +48,19 @@
         <div class="view__form-element">
           <label class="view__label" for="create__type">Type</label>
           <div class="view__radio-group">
-            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === 0 }" @mouseover="upHere = 0" @mouseleave="upHere = -1">
+            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === PUBLIC_IDEA }" @mouseover="upHere = 0" @mouseleave="upHere = -1">
               <input type="radio" name="ideatype" v-validate="'required'" value="0" v-model="ideaTypeCode" disable>
               <div class="view__type-title tooltip">Public
                 <span class="view__type-desc tooltiptext" v-if="upHere == 0">Anyone can read and give feedback</span>
               </div>
             </div>
-            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === 1 }" @mouseover="upHere = 1" @mouseleave="upHere = -1">
+            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === PRIVATE_IDEA }" @mouseover="upHere = 1" @mouseleave="upHere = -1">
               <input type="radio" name="ideatype" value="1" v-model="ideaTypeCode" disable>
               <div class="view__type-title tooltip">Private
                 <span class="view__type-desc tooltiptext" v-if="upHere == 1">Only visible to people who agree to the license</span>
               </div>
             </div>
-            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === 2 }" @mouseover="upHere = 2" @mouseleave="upHere = -1">
+            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL_IDEA }" @mouseover="upHere = 2" @mouseleave="upHere = -1">
               <input type="radio" name="ideatype" value="2" v-model="ideaTypeCode" disable>
               <div class="view__type-title tooltip">Custom
                 <span class="view__type-desc tooltiptext" v-if="upHere == 2">Customise the license and choose who can see the idea</span>
@@ -74,9 +74,9 @@
           <textarea id="view__agreement" name="agreement" class="view__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement" disabled></textarea>
         </div>
 
-        <div class="view__form-element">
+        <div class="view__form-element" v-show="this.ideaReviews.length">
           <label class="view__label" for="view__reviews">Reviews</label>
-          <section class="view__results" v-show="this.ideaReviews.length">
+          <section class="view__results">
             <table class="view__table">
               <tr class="view__tr">
                 <th class="view__th">Reviewer</th>
@@ -127,6 +127,10 @@ export default {
       ideaReviews: [],
       ideaTypeCode: '0',
       upHere: '-1',
+      // Constants
+      PUBLIC_IDEA: 0,
+      PRIVATE_IDEA: 1,
+      COMMERCIAL_IDEA: 2,
     };
   },
   mounted() {
@@ -146,13 +150,13 @@ export default {
           this.ideaType = response.data[0].type;
           switch (response.data[0].type) {
             case 'public':
-              this.ideaTypeCode = 0;
+              this.ideaTypeCode = this.PUBLIC_IDEA;
               break;
             case 'private':
-              this.ideaTypeCode = 1;
+              this.ideaTypeCode = this.PRIVATE_IDEA;
               break;
             case 'commercial':
-              this.ideaTypeCode = 2;
+              this.ideaTypeCode = this.COMMERCIAL_IDEA;
               break;
             default:
               throw new Error(`Invalid idea type field value: ${response.data[0].type}`);
