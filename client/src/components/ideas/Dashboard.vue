@@ -8,7 +8,7 @@
         <li class="dashboard__idealist-item" v-bind:key="index" v-for="(idea, index) in ideas">
           <div class="dashboard__idealist-title">{{ idea.title }}</div>
           <div class="dashboard__idealist-reviewcount">{{ idea.reviews.length }}</div>
-          <div class="dashboard__idealist-quicklook">//Insert Eye Symbol Here//</div>
+          <div class="dashboard__idealist-quicklook"><img src="../../assets/eye-sym.svg"></div>
         </li>
       </ul>
     </section>
