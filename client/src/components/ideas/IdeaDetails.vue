@@ -19,7 +19,7 @@
 
         <div class="view__form-element">
           <label class="view__label" for="view__desc">Description</label>
-          <textarea id="view__desc" name="description" class="view__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaDesc" placeholder="Description" disabled></textarea>
+          <div id="view__desc" name="description" class="view__textarea" >{{ideaDesc}}</div>
         </div>
 
         <div class="view__form-tags">
@@ -38,34 +38,19 @@
 
         <div class="view__form-element">
           <label class="view__label" for="view__links">Links</label>
-          <div id="view__links" class="create__form__link" v-for="(link, index) in ideaLinks" v-bind:key="index">
-            <div class="view__link">
-              <a :href="link.url" target="_blank">{{link.url_description}}</a>
-            </div>
-          </div>
+          <div class="view__link-wrap">
+            <span id="view__links" class="view__links" v-for="(link, index) in ideaLinks" v-bind:key="index">
+              <span class="view__link">
+                <a :href="link.url" target="_blank">{{link.url_description}}</a>
+              </span>
+            </span>
+        </div>
         </div>
 
         <div class="view__form-element">
           <label class="view__label" for="create__type">Type</label>
-          <div class="view__radio-group">
-            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === 0 }" @mouseover="upHere = 0" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" v-validate="'required'" value="0" v-model="ideaTypeCode" disable>
-              <div class="view__type-title tooltip">Public
-                <span class="view__type-desc tooltiptext" v-if="upHere == 0">Anyone can read and give feedback</span>
-              </div>
-            </div>
-            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === 1 }" @mouseover="upHere = 1" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" value="1" v-model="ideaTypeCode" disable>
-              <div class="view__type-title tooltip">Private
-                <span class="view__type-desc tooltiptext" v-if="upHere == 1">Only visible to people who agree to the license</span>
-              </div>
-            </div>
-            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === 2 }" @mouseover="upHere = 2" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" value="2" v-model="ideaTypeCode" disable>
-              <div class="view__type-title tooltip">Custom
-                <span class="view__type-desc tooltiptext" v-if="upHere == 2">Customise the license and choose who can see the idea</span>
-              </div>
-            </div>
+          <div class="view__input">
+            {{ ideaTypeCode === 0 ? 'Public' : ideaTypeCode === 1 ? 'Private' : 'Custom'}}
           </div>
         </div>
 
@@ -85,7 +70,7 @@
                 <th class="view__th">Comments</th>
               </tr>
               <tr class="view__tr" v-for="review in ideaReviews" v-bind:key="review.reviewer">
-                <td class="view__td">{{review.reviewer}}</td> 
+                <td class="view__td">{{review.reviewer}}</td>
                 <td class="view__td">{{new Date(review.assigned_ts).toLocaleDateString()}}</td>
                 <td class="view__td">{{new Date(review.updated_ts).toLocaleDateString()}}</td>
                 <td class="view__td">{{review.comments}}</td>
@@ -140,6 +125,8 @@ export default {
         // Retrieve the idea identified by the URL paramaters
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
+          console.log('IdeaDetails.vue > 143');
+          console.log(response.data[0]);
           this.ideaCreator = response.data[0].creator;
           this.ideaTitle = response.data[0].title;
           // TODO: Calculate this as a virtual database field in Mongoose
@@ -277,10 +264,11 @@ export default {
 
 
   &__input
-    padding 10px
+    padding 0 0 20px
     width 100%
-    font-size 1em
-    border 1px solid $purple
+    font-size 1.5em
+    color $purple
+    border 0px transparent
 
     &:focus
       -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
@@ -289,13 +277,12 @@ export default {
 
   &__textarea
     width 100%
-    padding 10px
-    font-size 1em
+    padding 10px 0 20px
     font-family: 'Titillium Web', Helvetica, Arial, sans-serif
-    color: $gray_text
+    font-size 1.2em
+    color $purple
+    border 0px transparent
     letter-spacing: 1px
-    line-height: 1.5em
-    border 1px solid $purple
     margin-bottom 10px
 
     &:focus
@@ -307,8 +294,30 @@ export default {
     display inline-block
     width 33%
 
-  &__link
-    margin 10px 0
+  &__link-wrap
+    display flex
+    flex-wrap wrap
+    margin-bottom 20px
+
+  &__links
+    margin 10px
+
+    &:first-child
+      margin-left 0
+
+    &:last-child
+      margin-right 0
+
+  &__link a
+    color $purple
+    text-decoration none
+    border-bottom 1px dotted $purple
+
+    &:hover, &:focus
+      color $aqua
+      text-decoration none
+      border-bottom 1px dotted $aqua
+
 
   &__radio-group
     display flex
@@ -342,20 +351,20 @@ export default {
     line-height: 1.4;
     background-color: transparent;
     border-radius: 2px;
-    border: 1px solid rgba(0, 126, 255, 0.24);
+    border: 1px solid $gray_bkgrd;
     margin-right: 10px;
     margin-top: 5px;
     vertical-align: top;
 
     &:hover
-      border: 1px solid $gray_bkgrd;
+      border: 1px solid $aqua;
 
 
     &__label
       border-bottom-right-radius: 2px;
       border-top-right-radius: 2px;
       cursor: default;
-      padding: 1px 5px 4px 5px;
+      padding: 2px 3px 3px 9px;
       display: inline-block;
       vertical-align: middle;
 

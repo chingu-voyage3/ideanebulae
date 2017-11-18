@@ -322,6 +322,7 @@ export default {
     text-decoration none
     color $purple
     border-bottom 1px dotted $purple
+    cursor pointer
     &:hover, &:focus, &:active
       color $aqua
       border-bottom 1px dotted $aqua
@@ -468,13 +469,13 @@ export default {
     line-height: 1.4;
     background-color: transparent;
     border-radius: 2px;
-    border: 1px solid rgba(124,72,194, 0.25);
+    border: 1px solid $gray_bkgrd;
     margin-right: 10px;
     margin-top: 5px;
     vertical-align: top;
 
     &:hover
-      border: 1px solid rgba(124,72,194, 1);
+      border: 1px solid $aqua;
 
 
     &__label
