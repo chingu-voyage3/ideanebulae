@@ -2,11 +2,6 @@ import mongoose, { Schema } from 'mongoose';
 import userMethods from './methods/userMethods';
 
 const userSchema = new Schema({
-  // Create the schema for the User collection
-  _id: {
-    type: Schema.Types.ObjectId,
-  },
-
   // Unique intneranl Auth0 user identifier (Auth0 sub field)
   user_id: {
     type: String,
