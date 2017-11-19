@@ -62,17 +62,27 @@ router.route('/idea/:creator(*):title(*):type(*)')
     .catch(err => res.send(err));
 });
 
-// Add a new review to the idea document identified by the specified creator, title, and type.
-// TODO: Change get to put
-router.route('/idea/addreviewer/:creator(*):title(*):type(*):reviewer(*)')
+// Add a new reviewer to the idea document identified by the specified creator, title,
+// and type.
+router.route('/idea/addreviewer/:creator(*):title(*):type(*):review(*)')
 .put((req, res) => {
-  Idea.addIdeaReviewer(req.query.creator, req.query.title, req.query.type, req.query.reviewer)
+  Idea.addIdeaReview(req.query.creator, req.query.title, req.query.type, req.query.review)
     .then(idea => {
       res.json(idea)
     })
     .catch(err => res.send(err));
 });
 
+// Update an existing review to the idea document identified by the specified creator,
+// title, and type.
+router.route('/idea/updatereview/:creator(*):title(*):type(*):review(*)')
+.put((req, res) => {
+  Idea.updateIdeaReview(req.query.creator, req.query.title, req.query.type, req.query.review)
+    .then(idea => {
+      res.json(idea)
+    })
+    .catch(err => res.send(err));
+});
 
 // Retrieve the idea document identified by the specified creator, title, and type.
 router.route('/idea/:creator(*):title(*):type(*)')
