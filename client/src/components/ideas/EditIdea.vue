@@ -94,7 +94,7 @@
         <label class="edit__label" for="edit__agreement">Agreement</label>
         <textarea id="edit__agreement" name="agreement" class="edit__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement"></textarea>
       </div>
- 
+
       <div class="edit__button-wrap">
         <a class="btn btn__primary profile__button edit__button--btm" href="/dashboard">Cancel</a>
         <button class="btn btn__primary profile__button edit__button--btm" @click="updateIdea">Update</button>
@@ -447,13 +447,13 @@ export default {
     line-height: 1.4;
     background-color: transparent;
     border-radius: 2px;
-    border: 1px solid rgba(124,72,194, 0.25);
+    border: 1px solid $gray_bkgrd;
     margin-right: 10px;
     margin-top: 5px;
     vertical-align: top;
 
     &:hover
-      border: 1px solid rgba(124,72,194, 1);
+      border: 1px solid $aqua;
 
 
     &__label
