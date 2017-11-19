@@ -6,13 +6,15 @@
     <section class="dashboard__idealist" >
       <ul class="dashboard__idealist-wrapper">
         <li class="dashboard__idealist-item" v-bind:key="index" v-for="(idea, index) in ideas">
-          <div class="dashboard__idealist-left">
-            <div class="dashboard__idealist-title">{{ idea.title }}</div>
-          </div>
-          <div class="dashboard__idealist-right">
-            <div class="dashboard__idealist-reviewcount">{{ idea.reviews.length }}</div>
-            <div class="dashboard__idealist-quicklook" @mouseover="hoverOver=index" @mouseout="hoverOver=-1"><img src="../../assets/eye-sym.svg" height="10" width="10"></div>
-          </div>
+          <router-link :to="`/ideas/${idea.creator}/${idea.title}/${idea.type}`">
+            <div class="dashboard__idealist-left">
+              <div class="dashboard__idealist-title">{{ idea.title }}</div>
+            </div>
+            <div class="dashboard__idealist-right">
+              <div class="dashboard__idealist-reviewcount">{{ idea.reviews.length }}</div>
+              <div class="dashboard__idealist-quicklook" @mouseover="hoverOver=index" @mouseout="hoverOver=-1"><img src="../../assets/eye-sym.svg" height="10" width="10"></div>
+            </div>
+          </router-link>
         </li>
       </ul>
       <div class="dashboard__idealist-hover" v-if="hoverOver!=-1">
