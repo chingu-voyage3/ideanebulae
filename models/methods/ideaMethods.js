@@ -85,7 +85,7 @@ export default class ideaMethods {
    * @memberof agreementMethods
    */
   static async listIdeas() {
-    return await this.find().populate('creator').exec();
+    return await this.find().exec();
   }
 
   /**
@@ -257,8 +257,9 @@ export default class ideaMethods {
           agreement: newIdea.agreement, 
           agreement_version: 0,
         };
-        Agreement.updateAgreement(agreement)
+        Agreement.saveAgreement(agreement)
         .then(updateAgreementResult => {
+          newIdea.agreement = updateAgreementResult._id;
           deferredAgreement.resolve(updateAgreementResult);
         })
         .catch(err => {
