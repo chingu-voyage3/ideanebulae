@@ -106,7 +106,6 @@
 
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
-// import debounce from 'lodash.debounce';
 import localstorage from '@/utils/localstorage';
 import http from '../../api/index';
 
@@ -143,12 +142,6 @@ export default {
     if (savedState != null) {
       Object.assign(this.$data, savedState);
     }
-    /*
-    this.$watch('$data',
-      debounce(this.updateIdea, 1500, { trailing: true }),
-      { deep: true },
-    );
-    */
     // Get the profile for the currently logged in (i.e. session) user
     if (getAccessToken()) {
       getUserProfile()
@@ -279,17 +272,12 @@ export default {
       if (this.ideaDocuments.length > 0) {
         newIdea.documents = this.ideaDocuments;
       }
-      console.log(`ideaAgreement - value: ${this.ideaAgreement}`);
-      if (this.ideaAgreement && this.ideaAgreement.length > 0) {
+      if (this.ideaAgreement !== null && this.ideaAgreement.length > 0) {
         newIdea.agreement = this.ideaAgreement.trim();
       }
       if (this.ideaReviews.length > 0) {
         newIdea.reviews = this.ideaReviews;
       }
-      console.log('updateIdea - ideaCreator: ', this.ideaCreator,
-                  '\n origTitle: ', this.origTitle,
-                  '\n origType: ', this.origType,
-                  '\n newIdea: ', newIdea);
       http.put('/ideas', {
         origCreator: this.ideaCreator,
         origTitle: this.origTitle,
@@ -298,7 +286,6 @@ export default {
       })
       .then((response) => {
         if (response === null) {
-          console.log('update response: ', response);
           throw new Error(`Updating idea: ${response}`);
         } else {
           console.log('Idea Updated');
