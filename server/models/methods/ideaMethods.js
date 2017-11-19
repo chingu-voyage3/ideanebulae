@@ -192,11 +192,6 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async updateIdea(origCreator, origTitle, origType, newIdea) {
-    console.log('updateIdea - origCreator: ', origCreator,
-      '\n origTitle: ', origTitle,
-      '\n origType: ', origType,
-      '\n newIdea: ', newIdea);
-
     // Verify that the creator hasn't changed and a User document exists for it.
     if (origCreator !== newIdea.creator) {
       throw new Error(`The creator field of an idea is not allowed to change. origCreator: ${origCreator} newIdea.creator: ${newIdea.creator}`);

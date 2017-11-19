@@ -69,19 +69,19 @@
           <label class="edit__label" for="create__type">Type</label>
           <div class="edit__radio-group">
             <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === PUBLIC_IDEA }" @mouseover="upHere = 0" @mouseleave="upHere = -1" @click="typeToggle(0)">
-              <input type="radio" name="ideatype" v-validate="'required'" value="0" v-model="ideaTypeCode">
+              <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC_IDEA" v-model="ideaTypeCode">
               <div class="edit__type-title tooltip">Public
                 <span class="edit__type-desc tooltiptext" v-if="upHere == 0">Anyone can read and give feedback</span>
               </div>
             </div>
             <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === PRIVATE_IDEA }" @mouseover="upHere = 1" @mouseleave="upHere = -1" @click="typeToggle(1)">
-              <input type="radio" name="ideatype" value="1" v-model="ideaTypeCode">
+              <input type="radio" name="ideatype" :value="PRIVATE_IDEA" v-model="ideaTypeCode">
               <div class="edit__type-title tooltip">Private
                 <span class="edit__type-desc tooltiptext" v-if="upHere == 1">Only visible to people who agree to the license</span>
               </div>
             </div>
             <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL_IDEA }" @mouseover="upHere = 2" @mouseleave="upHere = -1" @click="typeToggle(2)">
-              <input type="radio" name="ideatype" value="2" v-model="ideaTypeCode">
+              <input type="radio" name="ideatype" :value="COMMERCIAL_IDEA" v-model="ideaTypeCode">
               <div class="edit__type-title tooltip">Custom
                 <span class="edit__type-desc tooltiptext" v-if="upHere == 2">Customise the license and choose who can see the idea</span>
               </div>
@@ -129,7 +129,7 @@ export default {
       origType: '',
       linkText: '',
       tagText: '',
-      ideaTypeCode: '0',
+      ideaTypeCode: this.PUBLIC_IDEA,
       upHere: '-1',
       addLinkError: false,
       // Constants
