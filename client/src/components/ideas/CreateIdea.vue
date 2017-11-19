@@ -151,10 +151,8 @@ export default {
           if (!/^http[s]?:\/\/.+/.test(newVal)) {
             newVal = `https://${newVal}`;
           }
-          if (this.linkText === '') {
-            this.linkText = newVal;
-          }
-          this.ideaDocuments.push({ url_description: this.linkText, url: `${newVal}` });
+          this.linkText = '';
+          this.ideaDocuments.push({ url_description: newVal, url: `${newVal}` });
         }
       });
     },
@@ -209,6 +207,8 @@ export default {
       .then((response) => {
         if (response.statusText !== 'OK') {
           throw new Error(`Error adding new idea document. ${response}`);
+        } else {
+          this.$router.push('/dashboard');
         }
       }).catch((err) => {
         throw new Error(`Error adding new idea document: ${err}`);
