@@ -140,14 +140,11 @@ export default {
     if (getAccessToken()) {
       getUserProfile()
       .then((profile) => {
-        console.log('profile: ', profile);
         this.currentUser = profile.sub;
 
         // Retrieve the idea identified by the URL paramaters
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
-          console.log('IdeaDetails.vue > 143');
-          console.log(response.data[0]);
           this.ideaCreator = response.data[0].creator;
           this.ideaTitle = response.data[0].title;
           // TODO: Calculate this as a virtual database field in Mongoose

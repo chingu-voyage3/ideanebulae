@@ -246,7 +246,7 @@ export default {
       const newVal = this.selectedTag.trim();
       // Add the new tag to the array only if it hasn't been previously added
       const searchResult = this.searchForTags.find(currentTag =>
-        currentTag === newVal.trim(),
+        currentTag === newVal,
       );
       if (searchResult === undefined) {
         this.searchForTags.push(newVal.trim());

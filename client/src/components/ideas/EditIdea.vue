@@ -287,8 +287,6 @@ export default {
       .then((response) => {
         if (response === null) {
           throw new Error(`Updating idea: ${response}`);
-        } else {
-          console.log('Idea Updated');
         }
       })
       .catch((err) => {

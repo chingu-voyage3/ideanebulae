@@ -142,7 +142,6 @@ export default {
     if (getAccessToken()) {
       getUserProfile()
       .then((profile) => {
-        console.log('profile: ', profile);
         this.currentUser = profile.sub;
 
         // Retrieve the idea identified by the URL paramaters
@@ -202,9 +201,8 @@ export default {
         }).catch((err) => {
           throw new Error(`Error adding an idea review: ${err}`);
         });
-      } 
+      } else {
       // Update and existing review
-      else {
         http.put(`/idea/updatereview/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}&review=${review}`)
         .then((response) => {
           if (response.ok && response.nModified) {
@@ -216,7 +214,6 @@ export default {
         }).catch((err) => {
           throw new Error(`Error updating an idea review: ${err}`);
         });
-
       }
     },
   },
