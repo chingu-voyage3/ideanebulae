@@ -85,7 +85,7 @@ export default class ideaMethods {
    * @memberof agreementMethods
    */
   static async listIdeas() {
-    return await this.find().populate('creator').exec();
+    return await this.find().exec();
   }
 
   /**
