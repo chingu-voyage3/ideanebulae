@@ -14,12 +14,10 @@ export default class ideaMethods {
    * @returns  {Promise} The updated idea document when resolved
    * @memberof ideaMethods
    */
-  static async addIdeaReviewer(creator, title, type, reviewer) {
+  static async addIdeaReview(creator, title, type, review) {
+    console.log(`addIdeaReview - creator: ${creator}, title: ${title}, type: ${type}, review: `, review);
     // TODO: Validate that reviewer doesn't already have an entry in the 'reviews' field.
     // It is expected that the reviews field will contain one and only one review per reviewer 
-    const review = {
-      "reviewer": reviewer,
-    };
     return await this.updateOne(
       {
         creator: creator,
