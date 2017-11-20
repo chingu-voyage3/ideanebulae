@@ -22,51 +22,18 @@ router.get('/private', authCheck, (req, res) => {
   res.json('You must be authenticated to see this route');
 });
 
-// Returns a list of all the users
-router.route('/users')
-  .get((req, res) => {
-    User.listUsers()
-      .then(users => res.json(users))
-      .catch(err => res.send(err));
-  });
+// ----------------------------------------------------------------------------
+// Agreement Routes
+// ----------------------------------------------------------------------------
 
-// Retrieve the user profile for the specified user name
-router.get('/profile/:username(*)', (req, res) => {
-  User.findUser(req.query.username)
-  .then(user => {
-    res.json(user);
-  })
-  .catch(err => res.send(err));
-});
-
-// Add or update the user profile for the specified user.
-//router.put('/profile/:username(*)', authCheck, (req, res) => {
-router.put('/profile/:userId(*)', (req, res) => {
-  User.createOrUpdateUser(req.params.userId, req.body.profile)
-  .then((doc) => {
-    res.json('User profile created/updated');
-  })
-  .catch((err) => {
-    console.log('Error: ', err);
-    res.json(err);
-  })
-});
+// ----------------------------------------------------------------------------
+// Idea Routes
+// ----------------------------------------------------------------------------
 
 // Retrieve the idea document identified by the specified creator, title, and type.
 router.route('/idea/:creator(*):title(*):type(*)')
 .get((req, res) => {
   Idea.findIdea(req.query.creator, req.query.title, req.query.type)
-    .then(idea => {
-      res.json(idea)
-    })
-    .catch(err => res.send(err));
-});
-
-// Add a new reviewer to the idea document identified by the specified creator, title,
-// and type.
-router.route('/idea/addreviewer/:creator(*):title(*):type(*):review(*)')
-.put((req, res) => {
-  Idea.addIdeaReview(req.query.creator, req.query.title, req.query.type, req.query.review)
     .then(idea => {
       res.json(idea)
     })
@@ -140,7 +107,7 @@ router.route('/ideas')
   Idea.updateIdea(req.body.origCreator, req.body.origTitle, req.body.origType, req.body.newIdea)
   .then(idea => {
     console.log('Idea Updated ', idea);
-    res.json(idea)
+    res.json(idea);
   })
   .catch(err => res.send(err));
 });
@@ -150,7 +117,7 @@ router.route('/ideas/getAllTags')
 .get((req, res) => {
     Idea.getAllTags()
       .then(ideaTags => {
-        res.json(ideaTags)
+        res.json(ideaTags);
       })
       .catch(err => res.send(err));
   });
@@ -160,9 +127,59 @@ router.route('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)')
 .get((req, res) => {
   Idea.searchIdeas(req.query.currUser, req.query.searchForTags, req.query.searchForKeywords)
     .then(ideas => {
-      res.json(ideas)
+      res.json(ideas);
     })
     .catch(err => res.send(err));
+});
+
+// ----------------------------------------------------------------------------
+// Review Routes
+// ----------------------------------------------------------------------------
+
+// Add a new reviewer to the idea document identified by the specified creator, title,
+// and type.
+router.route('/review/:creator(*):title(*):type(*)')
+.put((req, res) => {
+  console.log('Add Review Route - req: ', req);
+  Idea.addIdeaReview(req.query.creator, req.query.title, req.query.type, req.body)
+    .then(idea => {
+      res.json(idea)
+    })
+    .catch(err => res.send(err));
+});
+
+// ----------------------------------------------------------------------------
+// User Routes
+// ----------------------------------------------------------------------------
+
+// Returns a list of all the users
+router.route('/users')
+  .get((req, res) => {
+    User.listUsers()
+      .then(users => res.json(users))
+      .catch(err => res.send(err));
+  });
+
+// Retrieve the user profile for the specified user name
+router.get('/profile/:username(*)', (req, res) => {
+  User.findUser(req.query.username)
+  .then(user => {
+    res.json(user);
+  })
+  .catch(err => res.send(err));
+});
+
+// Add or update the user profile for the specified user.
+//router.put('/profile/:username(*)', authCheck, (req, res) => {
+router.put('/profile/:userId(*)', (req, res) => {
+  User.createOrUpdateUser(req.params.userId, req.body.profile)
+  .then((doc) => {
+    res.json('User profile created/updated');
+  })
+  .catch((err) => {
+    console.log('Error: ', err);
+    res.json(err);
+  })
 });
 
 export default router;

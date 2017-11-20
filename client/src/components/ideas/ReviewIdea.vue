@@ -62,14 +62,14 @@
             </div>
             <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL_IDEA }" @mouseover="upHere = COMMERCIAL_IDEA" @mouseleave="upHere = -1">
               <input type="radio" name="ideatype" :value="COMMERCIAL_IDEA" v-model="ideaTypeCode" disable>
-              <div class="review__type-title tooltip">Custom
+              <div class="review__type-title tooltip">Commercial
                 <span class="review__type-desc tooltiptext" v-if="upHere == COMMERCIAL_IDEA">Customise the license and choose who can see the idea</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="review__form-element" v-show="this.ideaTypeCode">
+        <div class="review__form-element" v-show="this.ideaTypeCode !== this.PUBLIC_IDEA">
           <label class="review__label" for="review__agreement">Agreement</label>
           <textarea id="review__agreement" name="agreement" class="review__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement" disabled></textarea>
         </div>
@@ -131,9 +131,9 @@ export default {
       COMMERCIAL_IDEA: 2,
       NEW_REVIEW: -1,
       IDEA_TYPES: [
-        { type: this.COMMERCIAL_IDEA, name: 'commercial' },
-        { type: this.PRIVATE_IDEA, name: 'private' },
         { type: this.PUBLIC_IDEA, name: 'public' },
+        { type: this.PRIVATE_IDEA, name: 'private' },
+        { type: this.COMMERCIAL_IDEA, name: 'commercial' },
       ],
     };
   },
@@ -190,7 +190,7 @@ export default {
       // Add a new review
       if (this.reviewIndex === this.NEW_REVIEW) {
         review.assigned_ts = Date.now();
-        http.put(`/idea/addreviewer/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}&review=${review}`)
+        http.put(`/review/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}`, review)
         .then((response) => {
           if (response.ok && response.nModified) {
             this.showModal = false;
@@ -203,7 +203,7 @@ export default {
         });
       } else {
       // Update and existing review
-        http.put(`/idea/updatereview/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}&review=${review}`)
+        http.post(`/review/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}`, review)
         .then((response) => {
           if (response.ok && response.nModified) {
             this.showModal = false;

@@ -163,7 +163,10 @@ export default {
   },
   methods: {
     acceptAgreement() {
-      http.put(`/idea/addreviewer/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}&reviewer=${this.currentUser}`)
+      const review = {
+        reviewer: this.currentUser,
+      };
+      http.put(`/review/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}`, review)
       .then((response) => {
         if (response.ok && response.nModified) {
           this.showModal = false;
@@ -182,10 +185,10 @@ export default {
       if (newVal.length !== 0) {
         // Add the new keyword to the array only if it hasn't been previously added
         const searchResult = this.searchForKeywords.find(currentKeyword =>
-          currentKeyword === newVal.trim(),
+          currentKeyword === newVal,
         );
         if (searchResult === undefined) {
-          this.searchForKeywords.push(newVal.trim());
+          this.searchForKeywords.push(newVal);
         }
         this.newKeywords = '';
       }
