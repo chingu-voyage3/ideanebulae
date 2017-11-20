@@ -190,29 +190,24 @@ export default {
       // Add a new review
       if (this.reviewIndex === this.NEW_REVIEW) {
         review.assigned_ts = Date.now();
-        http.put(`/review/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}`, review)
+        http.put(`/review/?creator=${this.ideaCreator}&title=${this.ideaTitle}&type=${this.ideaType}`, review)
         .then((response) => {
-          if (response.ok && response.nModified) {
-            this.showModal = false;
-            this.transferToDetails(this.selectedIdea);
-          } else {
-            throw new Error(`Error adding review to idea document. ${response}`);
+          console.log('After add review - response: ', response);
+          if (response.data.ok !== 1) {
+            throw new Error('Failed to add a review to idea document. ', response.data);
           }
         }).catch((err) => {
-          throw new Error(`Error adding an idea review: ${err}`);
+          throw new Error('Failed to add an idea review: ', err);
         });
       } else {
       // Update and existing review
-        http.post(`/review/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}`, review)
+        http.post(`/review/?creator=${this.ideaCreator}&title=${this.ideaTitle}&type=${this.ideaType}`, review)
         .then((response) => {
-          if (response.ok && response.nModified) {
-            this.showModal = false;
-            this.transferToDetails(this.selectedIdea);
-          } else {
-            throw new Error(`Error updating an idea document. ${response}`);
+          if (response.data.ok !== 1 && response.data.nModified < 1) {
+            throw new Error('Failed to update an idea document. ', response.data);
           }
         }).catch((err) => {
-          throw new Error(`Error updating an idea review: ${err}`);
+          throw new Error('Failed to update an idea review: ', err);
         });
       }
     },

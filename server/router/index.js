@@ -136,16 +136,30 @@ router.route('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)')
 // Review Routes
 // ----------------------------------------------------------------------------
 
-// Add a new reviewer to the idea document identified by the specified creator, title,
-// and type.
 router.route('/review/:creator(*):title(*):type(*)')
+// Add a new reviewer to an idea document identified by the specified creator, title,
+// and type.
 .put((req, res) => {
-  console.log('Add Review Route - req: ', req);
-  Idea.addIdeaReview(req.query.creator, req.query.title, req.query.type, req.body)
+  console.log('Add Review Route - req.query: ', req.query, ' req.body: ', req.body);
+  Idea.addReview(req.query.creator, req.query.title, req.query.type, req.body)
     .then(idea => {
       res.json(idea)
     })
     .catch(err => res.send(err));
+})
+// Update an existing review in an dentified by the specified creator, title,
+// and type.
+.post((req,res) => {
+  console.log('Update Review Route - req.query: ', req.query, ' req.body: ', req.body);
+  Idea.updateReview(req.query.creator, req.query.title, req.query.type, req.body)
+    .then(idea => {
+      console.log('Updated idea: ', idea);
+      res.json(idea)
+    })
+    .catch(err => {
+      console.log('Update error. err: ', err);
+      res.send(err);
+    });
 });
 
 // ----------------------------------------------------------------------------
