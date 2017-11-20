@@ -4,14 +4,17 @@
       <h1 class="create__title">Create Idea</h1>
     </header>
 
+    <!-- Idea form for inputs -->
     <section class="create__form-wrapper">
       <div class="create__form-group">
 
+        <!-- Title -->
         <div class="create__form-element">
           <label class="create__label" for="create__title">Title</label>
           <input class="create__input" id="create__title" maxlength="100" type="text" name="title" v-model="ideaTitle" placeholder="Title" autofocus>
         </div>
 
+        <!-- Description -->
         <div class="create__form-element">
           <label class="create__label" for="create__desc">Description</label>
           <textarea id="create__desc" name="description" class="create__textarea" cols="80" rows="13" maxlength="1000" v-if="!previewDesc" v-model="ideaDesc" placeholder="Idea Description (Accepts Markdown)" ></textarea>
@@ -21,6 +24,7 @@
           </div>
         </div>
 
+        <!-- Tags -->
         <div class="create__form-tags">
           <div class="create__tag-wrap">
             <span class="create__form-tag" v-for="(tag, index) in ideaTags" v-bind:key="index">
@@ -50,6 +54,7 @@
           </div>
         </div>
 
+        <!-- Links -->
         <div class="create__form-element">
           <div id="create__links" class="create__form__link" v-for="(link, index) in ideaDocuments" v-bind:key="index">
             <div class="create__link">
@@ -69,6 +74,7 @@
           </div>
         </div>
 
+        <!-- Idea type -->
         <div class="create__form-element">
           <label class="create__label" for="create__type">Type</label>
           <div class="create__radio-group">
@@ -93,6 +99,8 @@
           </div>
         </div>
       </div>
+
+      <!-- Submission button -->
       <div class="create__button-wrap">
         <a class="btn btn__primary profile__button create__button--btm" href="/dashboard">Cancel</a>
         <button class="btn btn__primary profile__button create__button--btm" @click="submitIdea">Submit</button>
