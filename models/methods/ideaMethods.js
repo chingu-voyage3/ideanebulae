@@ -9,14 +9,25 @@ export default class ideaMethods {
    * @param {String} creator The creator of the idea
    * @param {String} title The ideas title
    * @param {String} type The ideas type value
-   * @param {Object} {"reviewer": reviewer, "assigned_ts": assigned_ts, "updated_ts": updated_ts, "comments": comments} The An object containing the properties and values in the
-   * new reviews field entry of the idea schema.
+   * @param {String} reviewer The reviewer id
+   * @param {String} comments The reviewers comments on the idea
    * @returns  {Promise} The updated idea document when resolved
    * @memberof ideaMethods
    */
-  static async addReview(creator, title, type, review) {
-    // TODO: Validate that reviewer doesn't already have an entry in the 'reviews' field.
-    // It is expected that the reviews field will contain one and only one review per reviewer 
+  static async addReview(creator, title, type, reviewer, comments) {
+    // Verify that the reviewer hasn't already reviewed this idea
+    const indexOfReview = idea.reviews.findIndex(element => element.reviewer === reviewer);
+    if (indexOfReview !== -1) {
+      throw new Error('Add cannot be completed. Reviewer already in reviews: ', idea.reviews[indexOfReview]);
+    }
+
+    // Add the review to the idea
+    const review = {
+      reviewer: reviewer,
+      assigned_ts: Date.now(),
+      updated_ts: Date.now(),
+      comments: comments
+    };
     return await this.updateOne(
       {
         creator: creator,
@@ -36,24 +47,45 @@ export default class ideaMethods {
    * @param {String} creator The creator of the idea
    * @param {String} title The ideas title
    * @param {String} type The ideas type value
-   * @param {Object} {"reviewer": reviewer, "comments": comments} The An object containing the properties and values in the
-   * new reviews field entry of the idea schema.
+   * @param {String} reviewer The reviewer id
+   * @param {String} comments The reviewers comments on the idea
    * @returns  {Promise} The updated idea document when resolved
    * @memberof ideaMethods
    */
-  static async updateReview(creator, title, type, review) {
-    console.log(`updateReview - creator: ${creator}, title: ${title}, type: ${type}, review: `, review);
-    return await this.findIdea(creator, title, type)
+  static async updateReview(creator, title, type, reviewer, comments) {
+    console.log(`updateReview - creator: ${creator}, title: ${title}, type: ${type}, reviewer: ${reviewer} comments: `, comments);
+    let deferredUpdate = null;
+    let updatePromise = new Promise((resolve, reject) => {
+      deferredUpdate = ({resolve: resolve, reject: reject});
+    })
+    this.findIdea(creator, title, type)
     .then(idea => {
       console.log('Idea to update: ', idea);
-      const indexOfReview = idea.reviews.findIndex(element => element.reviewer === creator);
-      if (indexOfReview === -1) {
-        throw new Error('Update cannot be completed. Review not found in reviews: ', idea.reviews);
-      }
+      this.updateOne(
+        {
+          creator: creator,
+          title: title,
+          type: type,
+          "reviews.reviewer": reviewer
+        },
+        { $set: {
+            "reviews.$.updated_ts" : Date.now(),
+            "reviews.$.comments" : comments
+          }
+        },
+        { upsert: false, new: true, runValidators: true }
+      )
+      .then(idea => {
+        deferredUpdate.resolve(idea);
+      })
+      .catch(err => {
+        throw new Error('001 Attempting to update idea document: ', err);            
+      });
     })
     .catch(err => {
-      throw new Error('Attempting to update review document: ', err);            
+      throw new Error('002 Attempting to update review document: ', err);            
     });
+    return await updatePromise;
   } 
 
   /**

@@ -140,8 +140,8 @@ router.route('/review/:creator(*):title(*):type(*)')
 // Add a new reviewer to an idea document identified by the specified creator, title,
 // and type.
 .put((req, res) => {
-  console.log('Add Review Route - req.query: ', req.query, ' req.body: ', req.body);
-  Idea.addReview(req.query.creator, req.query.title, req.query.type, req.body)
+  console.log('Add Review Route - req.query: ', req.query, ' req.body.reviewer: ', req.body.reviewer, ' req.body.comments: ', req.body.comment);
+  Idea.addReview(req.query.creator, req.query.title, req.query.type, req.body.reviewer, req.body.comment)
     .then(idea => {
       res.json(idea)
     })
@@ -150,8 +150,8 @@ router.route('/review/:creator(*):title(*):type(*)')
 // Update an existing review in an dentified by the specified creator, title,
 // and type.
 .post((req,res) => {
-  console.log('Update Review Route - req.query: ', req.query, ' req.body: ', req.body);
-  Idea.updateReview(req.query.creator, req.query.title, req.query.type, req.body)
+  console.log('Add Review Route - req.query: ', req.query, ' req.body.reviewer: ', req.body.reviewer, ' req.body.comments: ', req.body.comment);
+  Idea.updateReview(req.query.creator, req.query.title, req.query.type, req.body.reviewer, req.body.comment)
     .then(idea => {
       console.log('Updated idea: ', idea);
       res.json(idea)
