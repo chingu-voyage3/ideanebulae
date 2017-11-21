@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "auth0-js": "^8.10.1",
+    "autosize": "^4.0.0",
     "axios": "^0.16.2",
     "jwt-decode": "^2.2.0",
     "lodash.debounce": "^4.0.8",
