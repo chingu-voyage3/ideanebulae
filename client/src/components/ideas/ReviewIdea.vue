@@ -169,7 +169,12 @@ export default {
           this.reviewIndex = this.ideaReviews.findIndex(element =>
             element.reviewer === this.currentUser,
           );
-          this.reviewButtonText = (this.reviewIndex === -1) ? 'Add Review' : 'Update Review';
+          if (this.reviewIndex === -1) {
+            this.reviewButtonText = 'Add Review';
+          } else {
+            this.reviewButtonText = 'Update Review';
+            this.reviewComments = this.ideaReviews[this.reviewIndex].comments;
+          }
         })
         .catch((err) => {
           throw new Error(`Locating idea: ${err}`);
@@ -186,7 +191,6 @@ export default {
       if (this.reviewIndex === this.NEW_REVIEW) {
         http.put(`/review/?creator=${this.ideaCreator}&title=${this.ideaTitle}&type=${this.ideaType}`, { reviewer: this.currentUser, comment: this.reviewComments })
         .then((response) => {
-          console.log('After add review - response: ', response);
           if (response.data.ok !== 1) {
             throw new Error('Failed to add a review to idea document. ', response.data);
           }
