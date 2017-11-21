@@ -14,7 +14,7 @@
 
         <div class="create__form-element">
           <label class="create__label" for="create__desc">Description</label>
-          <textarea id="create__desc" name="description" class="create__textarea" cols="80" rows="13" maxlength="1000" v-if="!previewDesc" v-model="ideaDesc" placeholder="Idea Description (Accepts Markdown)" ></textarea>
+          <AutosizeTextarea id="create__desc" name="description" class="create__textarea" maxlength="1000" v-if="!previewDesc" :value="ideaDesc" @update="updateIdeaDesc" placeholder="Idea Description (Accepts Markdown)" ></AutosizeTextarea>
           <div class="create__preview" v-else v-html="ideaDescMarked"></div>
           <div class="create__button-wrap create__button-wrap-preview">
             <button class="btn btn__primary profile__button create__button--btm" @click="previewDesc = !previewDesc">Toggle Preview</button>
@@ -104,6 +104,7 @@
 <script>
 import debounce from 'lodash.debounce';
 import marked from 'marked';
+import AutosizeTextarea from '@/components/misc/AutosizeTextarea';
 import localstorage from '@/utils/localstorage';
 import http from '../../api/index';
 
@@ -214,7 +215,11 @@ export default {
         throw new Error(`Error adding new idea document: ${err}`);
       });
     },
+    updateIdeaDesc(v) {
+      this.ideaDesc = v;
+    },
   },
+  components: { AutosizeTextarea },
 };
 </script>
 
