@@ -40,17 +40,6 @@ router.route('/idea/:creator(*):title(*):type(*)')
     .catch(err => res.send(err));
 });
 
-// Update an existing review to the idea document identified by the specified creator,
-// title, and type.
-router.route('/idea/updatereview/:creator(*):title(*):type(*):review(*)')
-.put((req, res) => {
-  Idea.updateIdeaReview(req.query.creator, req.query.title, req.query.type, req.query.review)
-    .then(idea => {
-      res.json(idea)
-    })
-    .catch(err => res.send(err));
-});
-
 // Retrieve the idea document identified by the specified creator, title, and type.
 router.route('/idea/:creator(*):title(*):type(*)')
   .get((req, res) => {
@@ -140,24 +129,22 @@ router.route('/review/:creator(*):title(*):type(*)')
 // Add a new reviewer to an idea document identified by the specified creator, title,
 // and type.
 .put((req, res) => {
-  console.log('Add Review Route - req.query: ', req.query, ' req.body.reviewer: ', req.body.reviewer, ' req.body.comments: ', req.body.comment);
   Idea.addReview(req.query.creator, req.query.title, req.query.type, req.body.reviewer, req.body.comment)
     .then(idea => {
       res.json(idea)
     })
-    .catch(err => res.send(err));
+    .catch(err => {
+      res.send(err)
+    });
 })
 // Update an existing review in an dentified by the specified creator, title,
 // and type.
 .post((req,res) => {
-  console.log('Add Review Route - req.query: ', req.query, ' req.body.reviewer: ', req.body.reviewer, ' req.body.comments: ', req.body.comment);
   Idea.updateReview(req.query.creator, req.query.title, req.query.type, req.body.reviewer, req.body.comment)
     .then(idea => {
-      console.log('Updated idea: ', idea);
       res.json(idea)
     })
     .catch(err => {
-      console.log('Update error. err: ', err);
       res.send(err);
     });
 });

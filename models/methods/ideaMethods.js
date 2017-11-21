@@ -15,30 +15,50 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async addReview(creator, title, type, reviewer, comments) {
-    // Verify that the reviewer hasn't already reviewed this idea
-    const indexOfReview = idea.reviews.findIndex(element => element.reviewer === reviewer);
-    if (indexOfReview !== -1) {
-      throw new Error('Add cannot be completed. Reviewer already in reviews: ', idea.reviews[indexOfReview]);
-    }
+    let deferredAdd = null;
+    let addPromise = new Promise((resolve, reject) => {
+      deferredAdd = ({resolve: resolve, reject: reject});
+    })
+    this.findIdea(creator, title, type)
+    .then(idea => {
+      const theIdea = JSON.stringify(idea[0]);
+      // Verify that the reviewer hasn't already reviewed this idea
+      const indexOfReview = idea[0].reviews.findIndex(element => {
+        element.viewer === reviewer;
+      });
+      if (indexOfReview !== -1) {
+        throw new Error('Add cannot be completed. Reviewer already in reviews: ', idea.reviews[indexOfReview]);
+      }
 
-    // Add the review to the idea
-    const review = {
-      reviewer: reviewer,
-      assigned_ts: Date.now(),
-      updated_ts: Date.now(),
-      comments: comments
-    };
-    return await this.updateOne(
-      {
-        creator: creator,
-        title: title,
-        type: type
-      },
-      {
-        $push: { "reviews": review }
-      },
-      { upsert: false, new: true, runValidators: true }
-    );
+      // Add the review to the idea
+      const review = {
+        reviewer: reviewer,
+        assigned_ts: Date.now(),
+        updated_ts: Date.now(),
+        comments: comments
+      };
+      this.updateOne(
+        {
+          creator: creator,
+          title: title,
+          type: type
+        },
+        {
+          $push: { "reviews": review }
+        },
+        { upsert: false, new: true, runValidators: true }
+      )
+      .then(updatedIdea => {
+        deferredAdd.resolve(updatedIdea);
+      })
+      .catch(err => {
+        throw new Error('Failure attempting to update idea document: ', err);            
+      });
+    })
+    .catch(err => {
+      throw new Error('Failure reading the idea the review is to be added to: ', err);            
+    });
+    return await addPromise;
   }
 
   /**
@@ -53,14 +73,12 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async updateReview(creator, title, type, reviewer, comments) {
-    console.log(`updateReview - creator: ${creator}, title: ${title}, type: ${type}, reviewer: ${reviewer} comments: `, comments);
     let deferredUpdate = null;
     let updatePromise = new Promise((resolve, reject) => {
       deferredUpdate = ({resolve: resolve, reject: reject});
     })
     this.findIdea(creator, title, type)
     .then(idea => {
-      console.log('Idea to update: ', idea);
       this.updateOne(
         {
           creator: creator,
@@ -79,11 +97,11 @@ export default class ideaMethods {
         deferredUpdate.resolve(idea);
       })
       .catch(err => {
-        throw new Error('001 Attempting to update idea document: ', err);            
+        throw new Error('Failure updating idea document: ', err);            
       });
     })
     .catch(err => {
-      throw new Error('002 Attempting to update review document: ', err);            
+      throw new Error('Failure to read the idea containing the review to be updated: ', err);            
     });
     return await updatePromise;
   } 
@@ -112,6 +130,7 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async findIdea(creator, title, type) {
+    console.log(`findIdea - creator: ${creator} title: ${title} type: ${type}`);
     return await this.find({
       creator: creator,
       title: title,
