@@ -18,7 +18,7 @@ const ideaSchema = new Schema({
   type: {
     type: String,
     enum: ['public', 'private', 'commercial',],
-    required: true,
+    required: false,
     unique: false
   },
 
