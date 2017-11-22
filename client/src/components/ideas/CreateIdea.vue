@@ -179,19 +179,6 @@ export default {
     },
     typeToggle(type) {
       this.ideaTypeCode = type;
-      switch (this.ideaTypeCode) {
-        case this.PUBLIC_IDEA:
-          this.ideaType = 'public';
-          break;
-        case this.PRIVATE_IDEA:
-          this.ideaType = 'private';
-          break;
-        case this.COMMERCIAL_IDEA:
-          this.ideaType = 'commercial';
-          break;
-        default:
-          throw new Error(`Invalid internal type code detected: ${this.type}`);
-      }
     },
     saveIdea() {
       localstorage.setObject('create-idea-save', this.$data);
@@ -203,7 +190,7 @@ export default {
       localStorage.removeItem('create-idea-save');
       const payload = {
         title: this.ideaTitle,
-        type: this.ideaType,
+        typeCode: this.ideaTypeCode,
         description: this.ideaDesc,
         documents: this.ideaDocuments,
         tags: this.ideaTags,

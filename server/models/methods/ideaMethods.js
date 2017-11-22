@@ -196,12 +196,12 @@ export default class ideaMethods {
    * @memberof agreementMethods
    */
   static async saveIdea(body, userId) {
-    let { title, type, description, documents, tags } = body;
+    let { title, typeCode, description, documents, tags } = body;
 
     let idea = new this();
     idea.creator = userId;
     idea.title = title;
-    idea.type = type;
+    idea.typeCode = typeCode;
     idea.description = description;
     idea.documents = documents;
     idea.tags = tags;
