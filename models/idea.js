@@ -92,12 +92,52 @@ const ideaSchema = new Schema({
   toJSON: { virtuals: true }
 });
 
+// Constants required by virtual typeCode field getter and setter
+const PUBLIC_IDEA = 0;
+const PRIVATE_IDEA = 1;
+const COMMERCIAL_IDEA = 2;
+const IDEA_TYPES = [
+  { type: PUBLIC_IDEA, name: 'public' },
+  { type: PRIVATE_IDEA, name: 'private' },
+  { type: COMMERCIAL_IDEA, name: 'commercial' },
+];
+
+ideaSchema.virtual('typeCode')
+.get(function() {
+  /**
+   * @description Return a numeric code representing the idea type.
+   * @returns {String} typeCode A numeric type code cooresponding to the idea type in the
+   * idea document.
+   * @memberof ideaSchema
+   */
+  const typeIndex = IDEA_TYPES.findIndex(element =>
+    element.name === this.type,
+  );
+  if (typeIndex === -1) {
+    throw new Error(`Invalid idea type encountered calculating virtual typeCode. type: ${this.type}`);
+  }
+  return IDEA_TYPES[typeIndex].type;
+})
+.set(function(valueToSet) {
+  /**
+   * @description Set the idea type in this document based on its cooresponding numeric type code.
+   * @memberof ideaSchema
+   */
+  const typeIndex = IDEA_TYPES.findIndex(element =>
+    element.type === valueToSet,
+  );
+  if (typeIndex === -1) {
+    throw new Error(`Invalid type code encountered setting idea document type. valueToSet: ${valueToSet}`);
+  }
+  this.type = IDEA_TYPES[typeIndex].name;
+});
+
 
 /**
  * @description Produce the idea's current status as a virtual field in the
  * schema. By design there is no cooresponding setter function so this field should
  * not be used for updates.
- * @returns {String} The sttus value: 'Created', 'Assigned', or 'Reviewed'.
+ * @returns {String} The status value: 'Created', 'Assigned', or 'Reviewed'.
  * @memberof ideaSchema
  */
 ideaSchema.virtual('status')

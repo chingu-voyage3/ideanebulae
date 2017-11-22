@@ -130,7 +130,6 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async findIdea(creator, title, type) {
-    console.log(`findIdea - creator: ${creator} title: ${title} type: ${type}`);
     return await this.find({
       creator: creator,
       title: title,
