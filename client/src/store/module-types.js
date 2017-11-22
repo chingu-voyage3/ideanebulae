@@ -1,0 +1,2 @@
+export const SET_PROFILE_DATA = 'SET_PROFILE_DATA';
+export const BEST_THING_EVER = 'EMPANADAS';
