@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import ideaMethods from './methods/ideaMethods';
+import {PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES} from './ideaConstants';
 
 // Create the schema for the Ideas collection
 const ideaSchema = new Schema({
@@ -92,16 +93,6 @@ const ideaSchema = new Schema({
   toJSON: { virtuals: true }
 });
 
-// Constants required by virtual typeCode field getter and setter
-const PUBLIC_IDEA = 0;
-const PRIVATE_IDEA = 1;
-const COMMERCIAL_IDEA = 2;
-const IDEA_TYPES = [
-  { type: PUBLIC_IDEA, name: 'public' },
-  { type: PRIVATE_IDEA, name: 'private' },
-  { type: COMMERCIAL_IDEA, name: 'commercial' },
-];
-
 ideaSchema.virtual('typeCode')
 .get(function() {
   /**
@@ -130,8 +121,8 @@ ideaSchema.virtual('typeCode')
     throw new Error(`Invalid type code encountered setting idea document type. valueToSet: ${valueToSet}`);
   }
   this.type = IDEA_TYPES[typeIndex].name;
+  console.log('Got here! type: ', this.type);
 });
-
 
 /**
  * @description Produce the idea's current status as a virtual field in the
