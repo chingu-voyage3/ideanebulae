@@ -118,6 +118,7 @@ export default {
       ideaCreator: '',
       ideaTitle: '',
       ideaType: '',
+      ideaTypeCode: '',
       ideaDesc: '',
       ideaTags: [],
       ideaDocuments: [''],
@@ -128,7 +129,6 @@ export default {
       origType: '',
       linkText: '',
       tagText: '',
-      ideaTypeCode: this.PUBLIC_IDEA,
       upHere: '-1',
       addLinkError: false,
       // Constants
@@ -154,25 +154,9 @@ export default {
           this.ideaCreator = response.data[0].creator;
           this.ideaTitle = response.data[0].title;
           this.origTitle = response.data[0].title;
-          // TODO: Calculate this as a virtual database field in Mongoose
           this.ideaType = response.data[0].type;
           this.origType = response.data[0].type;
-          switch (response.data[0].type) {
-            case 'public':
-              this.ideaTypeCode = this.PUBLIC_IDEA;
-              this.ideaAgreement = '';
-              break;
-            case 'private':
-              this.ideaTypeCode = this.PRIVATE_IDEA;
-              this.ideaAgreement = ' ';
-              break;
-            case 'commercial':
-              this.ideaTypeCode = this.COMMERCIAL_IDEA;
-              this.ideaAgreement = ' ';
-              break;
-            default:
-              throw new Error(`Invalid idea type field value: ${response.data[0].type}`);
-          }
+          this.ideaTypeCode = response.data[0].typeCode;
 
           // eslint-disable-next-line no-underscore-dangle
           this.idea_id = response.data[0]._id;
@@ -181,7 +165,7 @@ export default {
           this.ideaTags = response.data[0].tags;
           if (response.data[0].agreement === null) {
             this.ideaAgreement = null;
-          } else {
+          } else if (this.ideaTypeCode !== this.PUBLIC_IDEA) {
             this.ideaAgreement = response.data[0].agreement.agreement;
           }
           this.ideaReviews = response.data[0].reviews;
@@ -236,22 +220,6 @@ export default {
     },
     typeToggle(type) {
       this.ideaTypeCode = type;
-      switch (this.ideaTypeCode) {
-        case this.PUBLIC_IDEA:
-          this.ideaType = 'public';
-          this.ideaAgreement = '';
-          break;
-        case this.PRIVATE_IDEA:
-          this.ideaType = 'private';
-          this.ideaAgreement = ' ';
-          break;
-        case this.COMMERCIAL_IDEA:
-          this.ideaType = 'commercial';
-          this.ideaAgreement = ' ';
-          break;
-        default:
-          throw new Error(`Invalid ideaTypeCode encountered: ${this.ideaTypeCode}`);
-      }
       this.ideaAgreement = (this.ideaTypeCode === this.PUBLIC_IDEA) ? '' : ' ';
     },
     saveIdea() {
@@ -262,7 +230,7 @@ export default {
       const newIdea = {
         creator: this.ideaCreator,
         title: this.ideaTitle,
-        type: this.ideaType,
+        typeCode: this.ideaTypeCode,
         description: this.ideaDesc,
       };
 
