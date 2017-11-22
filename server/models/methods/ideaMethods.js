@@ -9,30 +9,103 @@ export default class ideaMethods {
    * @param {String} creator The creator of the idea
    * @param {String} title The ideas title
    * @param {String} type The ideas type value
-   * @param {Object} {"reviewer": reviewer, "assigned_ts": assigned_ts, "updated_ts": updated_ts, "comments": comments} The An object containing the properties and values in the
-   * new reviews field entry of the idea schema.
+   * @param {String} reviewer The reviewer id
+   * @param {String} comments The reviewers comments on the idea
    * @returns  {Promise} The updated idea document when resolved
    * @memberof ideaMethods
    */
-  static async addIdeaReviewer(creator, title, type, reviewer) {
-    // TODO: Validate that reviewer doesn't already have an entry in the 'reviews' field.
-    // It is expected that the reviews field will contain one and only one review per reviewer 
-    const review = {
-      "reviewer": reviewer,
-    };
-    return await this.updateOne(
-      {
-        creator: creator,
-        title: title,
-        type: type
-      },
-      {
-        $push: { "reviews": review }
-      },
-      { upsert: false, new: true, runValidators: true }
-    );
+  static async addReview(creator, title, type, reviewer, comments) {
+    let deferredAdd = null;
+    let addPromise = new Promise((resolve, reject) => {
+      deferredAdd = ({resolve: resolve, reject: reject});
+    })
+    this.findIdea(creator, title, type)
+    .then(idea => {
+      const theIdea = JSON.stringify(idea[0]);
+      // Verify that the reviewer hasn't already reviewed this idea
+      const indexOfReview = idea[0].reviews.findIndex(element => {
+        element.viewer === reviewer;
+      });
+      if (indexOfReview !== -1) {
+        throw new Error('Add cannot be completed. Reviewer already in reviews: ', idea.reviews[indexOfReview]);
+      }
+
+      // Add the review to the idea
+      const review = {
+        reviewer: reviewer,
+        assigned_ts: Date.now(),
+        updated_ts: Date.now(),
+        comments: comments
+      };
+      this.updateOne(
+        {
+          creator: creator,
+          title: title,
+          type: type
+        },
+        {
+          $push: { "reviews": review }
+        },
+        { upsert: false, new: true, runValidators: true }
+      )
+      .then(updatedIdea => {
+        deferredAdd.resolve(updatedIdea);
+      })
+      .catch(err => {
+        throw new Error('Failure attempting to update idea document: ', err);            
+      });
+    })
+    .catch(err => {
+      throw new Error('Failure reading the idea the review is to be added to: ', err);            
+    });
+    return await addPromise;
   }
-  
+
+  /**
+   * @description Update a review in an existing idea. 
+   * @static
+   * @param {String} creator The creator of the idea
+   * @param {String} title The ideas title
+   * @param {String} type The ideas type value
+   * @param {String} reviewer The reviewer id
+   * @param {String} comments The reviewers comments on the idea
+   * @returns  {Promise} The updated idea document when resolved
+   * @memberof ideaMethods
+   */
+  static async updateReview(creator, title, type, reviewer, comments) {
+    let deferredUpdate = null;
+    let updatePromise = new Promise((resolve, reject) => {
+      deferredUpdate = ({resolve: resolve, reject: reject});
+    })
+    this.findIdea(creator, title, type)
+    .then(idea => {
+      this.updateOne(
+        {
+          creator: creator,
+          title: title,
+          type: type,
+          "reviews.reviewer": reviewer
+        },
+        { $set: {
+            "reviews.$.updated_ts" : Date.now(),
+            "reviews.$.comments" : comments
+          }
+        },
+        { upsert: false, new: true, runValidators: true }
+      )
+      .then(idea => {
+        deferredUpdate.resolve(idea);
+      })
+      .catch(err => {
+        throw new Error('Failure updating idea document: ', err);            
+      });
+    })
+    .catch(err => {
+      throw new Error('Failure to read the idea containing the review to be updated: ', err);            
+    });
+    return await updatePromise;
+  } 
+
   /**
    * @description Retrieve an idea document based on its '_id' field
    * @static
@@ -57,6 +130,7 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async findIdea(creator, title, type) {
+    console.log(`findIdea - creator: ${creator} title: ${title} type: ${type}`);
     return await this.find({
       creator: creator,
       title: title,
@@ -192,11 +266,6 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async updateIdea(origCreator, origTitle, origType, newIdea) {
-    console.log('updateIdea - origCreator: ', origCreator,
-      '\n origTitle: ', origTitle,
-      '\n origType: ', origType,
-      '\n newIdea: ', newIdea);
-
     // Verify that the creator hasn't changed and a User document exists for it.
     if (origCreator !== newIdea.creator) {
       throw new Error(`The creator field of an idea is not allowed to change. origCreator: ${origCreator} newIdea.creator: ${newIdea.creator}`);

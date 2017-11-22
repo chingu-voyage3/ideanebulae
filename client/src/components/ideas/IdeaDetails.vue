@@ -49,8 +49,25 @@
 
         <div class="view__form-element">
           <label class="view__label" for="create__type">Type</label>
-          <div class="view__input">
-            {{ ideaTypeCode === 0 ? 'Public' : ideaTypeCode === 1 ? 'Private' : 'Custom'}}
+          <div class="view__radio-group">
+            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === PUBLIC_IDEA }" @mouseover="upHere = 0" @mouseleave="upHere = -1">
+              <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC_IDEA" v-model="ideaTypeCode" disable>
+              <div class="view__type-title tooltip">Public
+                <span class="view__type-desc tooltiptext" v-if="upHere == PUBLIC_IDEA">Anyone can read and give feedback</span>
+              </div>
+            </div>
+            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === PRIVATE_IDEA }" @mouseover="upHere = 1" @mouseleave="upHere = -1">
+              <input type="radio" name="ideatype" :value="PRIVATE_IDEA" v-model="ideaTypeCode" disable>
+              <div class="view__type-title tooltip">Private
+                <span class="view__type-desc tooltiptext" v-if="upHere == PRIVATE_IDEA">Only visible to people who agree to the license</span>
+              </div>
+            </div>
+            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL_IDEA }" @mouseover="upHere = 2" @mouseleave="upHere = -1">
+              <input type="radio" name="ideatype" :value="COMMERCIAL_IDEA" v-model="ideaTypeCode" disable>
+              <div class="view__type-title tooltip">Custom
+                <span class="view__type-desc tooltiptext" v-if="upHere == COMMERCIAL_IDEA">Customise the license and choose who can see the idea</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -123,14 +140,11 @@ export default {
     if (getAccessToken()) {
       getUserProfile()
       .then((profile) => {
-        console.log('profile: ', profile);
         this.currentUser = profile.sub;
 
         // Retrieve the idea identified by the URL paramaters
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
-          console.log('IdeaDetails.vue > 143');
-          console.log(response.data[0]);
           this.ideaCreator = response.data[0].creator;
           this.ideaTitle = response.data[0].title;
           // TODO: Calculate this as a virtual database field in Mongoose
@@ -177,7 +191,7 @@ export default {
       if (this.userRole === 'creator') {
         this.$router.push({ path: `/edit/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
       } else {
-        this.$router.replace({ path: `review/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
+        this.$router.push({ path: `/review/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
       }
     },
   },
