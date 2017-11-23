@@ -17,6 +17,7 @@
     "auth0-js": "^8.10.1",
     "autosize": "^4.0.0",
     "axios": "^0.16.2",
+    "json-stable-stringify": "^1.0.1",
     "jwt-decode": "^2.2.0",
     "lodash.debounce": "^4.0.8",
     "marked": "^0.3.6",
