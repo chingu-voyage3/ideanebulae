@@ -1,6 +1,6 @@
 {
   "name": "ideanebulae-api",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "The API powering IdeaNebulae",
   "main": "server.js",
   "scripts": {
