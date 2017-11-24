@@ -6,7 +6,7 @@ import { getAccessToken } from '@/auth';
 /* eslint-disable */
 const apiHost = (process.env.API_HOST) ? process.env.API_HOST : null;
 const apiPort = (process.env.API_PORT) ? process.env.API_PORT : null;
-const apiURL = '';
+let apiURL = '';
 if (apiHost) {
   apiURL = (apiPort) ? `${apiHost}:${apiPort}` : apiHost;
 } else {
