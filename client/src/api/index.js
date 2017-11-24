@@ -10,7 +10,7 @@ let apiURL = '';
 if (apiHost) {
   apiURL = (apiPort) ? `${apiHost}:${apiPort}` : apiHost;
 } else {
-  apiURL = `http://localhost:${port}/api`;
+  apiURL = 'http://localhost:7000/api';
 }
 console.log(`apiHost: ${apiHost} apiPort: ${apiPort} resulting apiURL: ${apiURL}`);
 const http = new axios.create({
