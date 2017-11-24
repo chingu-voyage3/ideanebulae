@@ -1,6 +1,6 @@
 {
   "name": "ideabox",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A webapp to post and get feedback on your ideas",
   "author": "Parminder Singh <parmsingh129@gmail.com>",
   "private": true,
