@@ -24,7 +24,6 @@ const router = new Router({
 });
 
 export function login() {
-  console.log(`REDIRECT: ${REDIRECT}`);
   auth.authorize({
     responseType: 'token id_token',
     redirectUri: REDIRECT,
@@ -98,6 +97,7 @@ export function requireAuth(to, from, next) {
 
 // eslint-disable-next-line
 export function getUserProfile() {
+  console.log(`REDIRECT: ${REDIRECT}`);
   const accessToken = getAccessToken();
 
   if (accessToken) {
