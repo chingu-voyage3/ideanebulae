@@ -11,7 +11,6 @@ const ACCESS_TOKEN_KEY = 'access_token';
 const CLIENT_ID = '54kq1Kx1717k52deTJ55CUHzaq77fJQy';
 const CLIENT_DOMAIN = 'ideanebulae.auth0.com';
 const REDIRECT = process.env.REDIRECT || 'http://localhost:8080/callback';
-console.log(`REDIRECT: ${REDIRECT}`);
 const SCOPE = 'openid profile';
 const AUDIENCE = 'https://ideanebulae.auth0.com/api/v2/';
 
@@ -48,6 +47,7 @@ export function getIdToken() {
 
 // Get the access token from the localStorage
 export function getAccessToken() {
+  console.log(`REDIRECT: ${REDIRECT}`);
   return window.localStorage.getItem(ACCESS_TOKEN_KEY);
 }
 
