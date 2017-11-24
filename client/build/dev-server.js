@@ -1,6 +1,7 @@
 require('./check-versions')()
 
 var config = require('../config')
+console.log('NODE_ENV: ', NODE_ENV);
 if (!process.env.NODE_ENV) {
   process.env.NODE_ENV = JSON.parse(config.dev.env.NODE_ENV)
 }
