@@ -1,10 +1,37 @@
 require('./check-versions')()
 
 var config = require('../config')
-console.log('NODE_ENV: ', process.env.NODE_ENV);
-if (!process.env.NODE_ENV) {
-  process.env.NODE_ENV = JSON.parse(config.dev.env.NODE_ENV)
+
+// Evaluate environment variables and assign development system default values
+// if their values have not been defined.
+if (!process.env.API_HOST) {
+  process.env.API_HOST = 'http://localhost:7000/api';
 }
+if (!process.env.AUDIENCE) {
+  process.env.AUDIENCE = 'https://ideanebulae.auth0.com/api/v2/';
+}
+if (!process.env.CLIENT_ID) {
+  process.env.CLIENT_ID = '54kq1Kx1717k52deTJ55CUHzaq77fJQy';
+}
+if (!process.env.CLIENT_DOMAIN) {
+  process.env.CLIENT_DOMAIN = 'ideanebulae.auth0.com';
+}
+if (!process.env.NODE_ENV) {
+  process.env.NODE_ENV = JSON.parse(config.dev.env.NODE_ENV);
+}
+if (process.env.NODE_ENV === 'production') {
+  process.env.REDIRECT = `${window.location.protocol}//${window.location.hostname}/callback`;
+} else {
+  process.env.REDIRECT = 'http://localhost:8080/callback';
+}
+
+console.log(`process.env.API_HOST:${process.env.API_HOST}`);
+console.log(`process.env.AUDIENCE:${process.env.AUDIENCE}`);
+console.log(`process.env.CLIENT_ID:${process.env.CLIENT_ID}`);
+console.log(`process.env.CLIENT_DOMAIN:${process.env.CLIENT_DOMAIN}`);
+console.log(`process.env.NODE_ENV:${process.env.NODE_ENV}`);
+console.log(`process.env.REDIRECT:${process.env.REDIRECT}`);
+
 
 var opn = require('opn')
 var path = require('path')

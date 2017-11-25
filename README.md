@@ -87,11 +87,6 @@ defined:
 |:---------------|:-------------------------------------|
 | DBUSERID       | User id of the MongoDB instance containing the application data |
 | DBPASSWD       | Associated password for the database user id |
-| CLIENTID       | Auth0 client secret |
-| CLIENTDOMAIN   | Auth0 client URL |
-| REDIRECT       | Application callback URL |
-| SCOPE          | Data items to be returned for authenticated users |
-| AUDIENCE       | URL of the Auth0 API |
 
 This is accomplished by including the following in the `.env` files located in
 the root of the server directory. The `.env` file must never be
@@ -103,12 +98,6 @@ The `/server/.env` file must contain the following:
 # MongoDB Authentication 
 DBUSERID=userid
 DBPASSWD=password
-# Auth0 Authentication
-CLIENTID=client-secret
-CLIENTDOMAIN=auth0-client-url
-REDIRECT=auth0-callback-url
-SCOPE=auth0-return-data
-AUDIENCE=auth0-api-url
 ```
 
 ### Configuration
@@ -127,8 +116,6 @@ The IdeaNebulae project folder is organized in the following manner:
 | `/static`        | Static files                          |
 | `/test`          | Test scripts                          |
 | `directory root` | License, readme, index, and package files |
-
-
 
 ## Runtime
 
@@ -166,8 +153,8 @@ deployed from.
 | heroku buildpacks --app ideanebulaeas | Verify ideanebulaeas is a NodeJS app |
 | | |
 | heroku config:set AUDIENCE=https://ideanebulae.auth0.com/api/v2/ --app ideanebulae | Setup Heroku configuration variables for the Client Services component |
-| heroku config:set CLIENTDOMAIN=ideanebulae.auth0.com --app ideanebulae | |
-| heroku config:set CLIENTID=xxxxxxxxxxxxxxxxxxxx --app ideanebulae | |
+| heroku config:set CLIENT_DOMAIN=ideanebulae.auth0.com --app ideanebulae | |
+| heroku config:set CLIENT_ID=xxxxxxxxxxxxxxxxxxxx --app ideanebulae | |
 | heroku config:set NODE_ENV=production --app ideanebulae | |
 | heroku config:set NPM_CONFIG_PRODUCTION=true --app ideanebulae | |
 | heroku config:set REDIRECT=https://ideanebulae.herokuapp.com/callback --app ideanebulae | |
