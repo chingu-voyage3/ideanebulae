@@ -132,6 +132,75 @@ The IdeaNebulae project folder is organized in the following manner:
 
 ## Runtime
 
+![IdeaNebulae Runtime Architecture](../server/documentation/IdeaNebulae Runtime Architecture.jpg)
+
+### Heroku Deployment
+
+Since the application consists of a single git repo, but two runtime
+servers `git subtree push` is used to push one part of the repo to the Client
+Services app (ideanebulae) on Heroku and a second part of the repo to the API
+Server app (ideanebulaeas) also on Heroku. Doing this requires setting up two
+separate git remote names for these two destinations and using the `--prefix`
+option of the `git subtree push` command to identify specifically which two
+parts of the repo are to be pushed.
+
+#### Initial Setup
+
+| Command                             | Comments                              |
+|:------------------------------------|:--------------------------------------|
+| cd local-repo-root-directory   | Navigate to your apps root directory, where your local git repo resides, on your PC |
+| heroku login | Remotely login to Heroku |
+| heroku git:remote -a ideanebulae | Set up git repo in Heroku for the Client Services component |
+| git remote add ideanebulae https://git.heroku.com/ideanebulae.git | Define a name in the local repo for the Client Services repo on Heroku |
+| heroku git:remote -a ideanebulaeas | Set up git repo in Heroku for the API Server component |
+| git remote add ideanebulaeas https://git.heroku.com/ideanebulaeas.git | Define a name in the local repo for the API Server repo on Heroku |
+| git remote -v | Verify the remote names have been established |
+| heroku buildpacks:set https://github.com/heroku/heroku-buildpack-nodejs -a ideanebulae
+| Define the Client Services component as a NodeJS app |
+| heroku buildpacks --app ideanebulae | Verify ideanebulae is a NodeJS app |
+| heroku buildpacks:set https://github.com/heroku/heroku-buildpack-nodejs -a ideanebulaeas
+| Define the API Server component as a NodeJS app |
+| heroku buildpacks --app ideanebulaeas | Verify ideanebulaeas is a NodeJS app |
+| | |
+| heroku config:set AUDIENCE=https://ideanebulae.auth0.com/api/v2/ --app ideanebulae | Setup Heroku configuration variables for the Client Services component |
+| heroku config:set CLIENTDOMAIN=ideanebulae.auth0.com --app ideanebulae | |
+| heroku config:set CLIENTID=xxxxxxxxxxxxxxxxxxxx --app ideanebulae | |
+| heroku config:set DBPASSWD=xxxxxxxxxxxxxxxxxxxx --app ideanebulae | |
+| heroku config:set DBUSERID=xxxxxxxx --app ideanebulae | |
+| heroku config:set NODE_ENV=production --app ideanebulae | |
+| heroku config:set NPM_CONFIG_PRODUCTION=true --app ideanebulae | |
+| heroku config:set REDIRECT=https://ideanebulae.herokuapp.com/callback --app ideanebulae | |
+| heroku config:set SCOPE=openid --app ideanebulae | |
+| heroku config:set API_HOST=http://ideanebulaeas.herokuapp.com --app ideanebulae | |
+| heroku config --app ideanebulae | Verify the config variables have been set |
+| | |
+| heroku config:set AUDIENCE=https://ideanebulae.auth0.com/api/v2/ --app ideanebulaeas | Setup Heroku configuration variables for the API Server component |
+| heroku config:set CLIENTDOMAIN=ideanebulae.auth0.com --app ideanebulaeas | |
+| heroku config:set CLIENTID=xxxxxxxxxxxxxxxxxxxx --app ideanebulaeas | |
+| heroku config:set DBPASSWD=xxxxxxxxxxxxxxxxxxxx --app ideanebulaeas | |
+| heroku config:set DBUSERID=xxxxxxxx --app ideanebulaeas | |
+| heroku config:set NODE_ENV=production --app ideanebulaeas | |
+| heroku config:set NPM_CONFIG_PRODUCTION=true --app ideanebulaeas | |
+| heroku config:set REDIRECT=https://ideanebulae.herokuapp.com/callback --app ideanebulaeas | |
+| heroku config:set SCOPE=openid --app ideanebulaeas | |
+| heroku config --app ideanebulaeas | Verify the config variables have been set |
+
+#### Deployment Steps
+
+| Objective       | Command            | Comments                    |
+|:----------------|:-------------------|:----------------------------|
+| Prepare the Client Services | cd client | Build the Client Services app component | 
+| | npm run-script build |
+| Prepare the API Server | cd server | Build the API Server app component |
+| | npm run-script build |
+| Commit changes to your local repo | cd local-repo-root-directory | Ensure that you have the current app source for the branch you wish to deploy |
+| | git checkout development | Add any changes you have made and commit to your local branch |
+| | git pull origin development | |
+| | git add . | |
+| | git commit -m "Deploy to Heroku" | |
+| Deploy to Heroku | heroku login | Login to establish a connection between your PC and your apps on Heroku |
+| | git subtree push --prefix=client ideanebulae master | Push the client and server portions of the app to the corresponding Heroku app |
+|| git subtree push --prefix=server ideanebulaeas master | |
 
 ## Authors
 
