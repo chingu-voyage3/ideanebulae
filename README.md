@@ -146,6 +146,9 @@ parts of the repo are to be pushed.
 
 #### Initial Setup
 
+These steps are to be executed once for each computer the app will be 
+deployed from.
+
 | Command                             | Comments                              |
 |:------------------------------------|:--------------------------------------|
 | cd local-repo-root-directory   | Navigate to your apps root directory, where your local git repo resides, on your PC |
@@ -186,6 +189,11 @@ parts of the repo are to be pushed.
 | heroku config --app ideanebulaeas | Verify the config variables have been set |
 
 #### Deployment Steps
+
+Follow these steps each time you wish to deploy a new release of the application
+to Heroku. It is assumed that you will be deploying from your `development`
+branch in Github. If this is not the case then some modification will be
+required to the steps below.
 
 | Objective       | Command            | Comments                    |
 |:----------------|:-------------------|:----------------------------|
