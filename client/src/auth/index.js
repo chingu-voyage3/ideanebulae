@@ -17,6 +17,11 @@ const AUDIENCE = process.env.AUDIENCE;
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_DOMAIN = process.env.CLIENT_DOMAIN;
 const ID_TOKEN_KEY = 'id_token';
+if (process.env.NODE_ENV === 'production') {
+  process.env.REDIRECT = `${window.location.protocol}//${window.location.hostname}/callback`;
+} else {
+
+}
 const REDIRECT = process.env.REDIRECT;
 const SCOPE = 'openid profile';
 
