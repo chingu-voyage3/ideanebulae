@@ -5,24 +5,14 @@ import Router from 'vue-router';
 
 import { isTokenExpired } from './utils';
 
-console.log(`process.env.API_HOST:${process.env.API_HOST}`);
-console.log(`process.env.AUDIENCE:${process.env.AUDIENCE}`);
-console.log(`process.env.CLIENT_ID:${process.env.CLIENT_ID}`);
-console.log(`process.env.CLIENT_DOMAIN:${process.env.CLIENT_DOMAIN}`);
-console.log(`process.env.NODE_ENV:${process.env.NODE_ENV}`);
-console.log(`process.env.REDIRECT:${process.env.REDIRECT}`);
-
 const ACCESS_TOKEN_KEY = 'access_token';
 const AUDIENCE = process.env.AUDIENCE;
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_DOMAIN = process.env.CLIENT_DOMAIN;
 const ID_TOKEN_KEY = 'id_token';
-if (process.env.NODE_ENV === 'production') {
-  process.env.REDIRECT = `${window.location.protocol}//${window.location.hostname}/callback`;
-} else {
-
-}
-const REDIRECT = process.env.REDIRECT;
+const REDIRECT = (process.env.NODE_ENV === 'production')
+  ? `${window.location.protocol}//${window.location.hostname}/callback`
+  : 'http://localhost:8080/callback';
 const SCOPE = 'openid profile';
 
 const auth = new auth0.WebAuth({
