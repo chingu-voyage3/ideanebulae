@@ -8,6 +8,7 @@ import { getAccessToken } from '@/auth';
 // TODO: Determine why the following doesn't work. The only variable in process.env
 // is NODE_ENV. All other config variables are undefined.
 
+/*
 console.log('API_HOST: ', process.env.API_HOST, ' API_PORT: ',process.env.API_PORT);
 const apiHost = process.env.API_HOST;
 const apiPort = (process.env.API_PORT) ? process.env.API_PORT : null;
@@ -20,7 +21,9 @@ if (apiHost !== '') {
   apiURL = 'http://localhost:7000/api';
 }
 console.log(`apiHost: ${apiHost} apiPort: ${apiPort} resulting apiURL: ${apiURL}`);
+*/
 
+const apiURL = 'http://ideanebulaeas.herokuapp.com';
 const http = new axios.create({
   baseURL: apiURL,
   timeout: 5000,
