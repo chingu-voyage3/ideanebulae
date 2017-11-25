@@ -76,4 +76,11 @@ module.exports = {
       }
     ]
   },
-}
+  plugins: [
+    new webpack.DefinePlugin( {
+      'process.env': {
+        API_HOST: JSON.stringify(process.env.API_HOST),
+      },
+    }),
+  ],
+};

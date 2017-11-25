@@ -5,21 +5,6 @@ console.log('NODE_ENV: ', process.env.NODE_ENV);
 if (!process.env.NODE_ENV) {
   process.env.NODE_ENV = JSON.parse(config.dev.env.NODE_ENV)
 }
-console.log('API_HOST: ', process.env.API_HOST, ' API_PORT: ',process.env.API_PORT);
-console.log('process.env: ', process.env);
-/*
-const apiHost = process.env.API_HOST;
-const apiPort = (process.env.API_PORT) ? process.env.API_PORT : null;
-console.log(`apiHost: ${apiHost} apiPort: ${apiPort}`);
-console.log('process.env: ', process.env);
-let apiURL = '';
-if (apiHost !== '') {
-  apiURL = (apiPort !== '') ? `${apiHost}:${apiPort}` : apiHost;
-} else {
-  apiURL = 'http://localhost:7000/api';
-}
-console.log(`apiHost: ${apiHost} apiPort: ${apiPort} resulting apiURL: ${apiURL}`);
-*/
 
 var opn = require('opn')
 var path = require('path')

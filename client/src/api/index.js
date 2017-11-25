@@ -4,6 +4,7 @@ import { getAccessToken } from '@/auth';
 // Create http object to send the access token
 // along with every single request
 /* eslint-disable */
+console.log(`API_HOST: ${process.env.API_HOST}`);
 const apiURL = 'http://ideanebulaeas.herokuapp.com/api';
 const http = new axios.create({
   baseURL: apiURL,
