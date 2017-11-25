@@ -132,7 +132,7 @@ The IdeaNebulae project folder is organized in the following manner:
 
 ## Runtime
 
-![IdeaNebulae Runtime Architecture](../server/documentation/IdeaNebulae Runtime Architecture.jpg)
+![IdeaNebulae Runtime Architecture](https://github.com/chingu-coders/Voyage2-Bears-27/blob/refactor/server-deploy/server/documentation/IdeaNebulae%20Runtime%20Architecture.jpg)
 
 ### Heroku Deployment
 
