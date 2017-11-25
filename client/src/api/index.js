@@ -23,7 +23,7 @@ if (apiHost !== '') {
 console.log(`apiHost: ${apiHost} apiPort: ${apiPort} resulting apiURL: ${apiURL}`);
 */
 
-const apiURL = 'http://ideanebulaeas.herokuapp.com:80';
+const apiURL = 'http://ideanebulaeas.herokuapp.com/api';
 const http = new axios.create({
   baseURL: apiURL,
   timeout: 5000,
