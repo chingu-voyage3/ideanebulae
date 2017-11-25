@@ -22,7 +22,7 @@ from their peers. Furthermore, IdeaNebulae supports flexible searching so that
 over time it is a suitable starting point to determine whether an idea has
 already been proposed. 
 
-You can find IdeaNebulae at [www.tbd.com](http://www.tbd.com).
+You can find IdeaNebulae at [ideanebulae.herokuapp.com](http://ideanebulae.herokuapp.com).
 
 [Features](#features) | [Development](#development) | [Runtime](#runtime) | [Authors](#authors) |
 [License](#license) | [Release Notes](releasenotes.md)
