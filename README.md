@@ -159,7 +159,7 @@ deployed from.
 | heroku config:set NPM_CONFIG_PRODUCTION=true --app ideanebulae | |
 | heroku config:set REDIRECT=https://ideanebulae.herokuapp.com/callback --app ideanebulae | |
 | heroku config:set SCOPE=openid --app ideanebulae | |
-| heroku config:set API_HOST=http://ideanebulaeas.herokuapp.com --app ideanebulae | |
+| heroku config:set API_HOST=http://ideanebulaeas.herokuapp.com/api --app ideanebulae | |
 | heroku config --app ideanebulae | Verify the config variables have been set |
 | | |
 | heroku config:set DBPASSWD=xxxxxxxxxxxxxxxxxxxx --app ideanebulaeas | Setup Heroku configuration variables for the API Server component |
