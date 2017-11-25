@@ -4,7 +4,7 @@ import { getAccessToken } from '@/auth';
 // Create http object to send the access token
 // along with every single request
 /* eslint-disable */
-console.log(`API_HOST: ${process.env.API_HOST} API_PORT: ${process.env.API_PORT}`);
+console.log(`API_HOST: ${env('API_HOST')} API_PORT: ${env('API_PORT')}`);
 const apiHost = (process.env.API_HOST) ? process.env.API_HOST : null;
 const apiPort = (process.env.API_PORT) ? process.env.API_PORT : null;
 console.log(`apiHost: ${apiHost} apiPort: ${apiPort}`);
