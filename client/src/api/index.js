@@ -8,8 +8,9 @@ import { getAccessToken } from '@/auth';
 // TODO: Determine why the following doesn't work. The only variable in process.env
 // is NODE_ENV. All other config variables are undefined.
 
-/*
 console.log('API_HOST: ', process.env.API_HOST, ' API_PORT: ',process.env.API_PORT);
+console.log('process.env: ', process.env);
+/*
 const apiHost = process.env.API_HOST;
 const apiPort = (process.env.API_PORT) ? process.env.API_PORT : null;
 console.log(`apiHost: ${apiHost} apiPort: ${apiPort}`);
