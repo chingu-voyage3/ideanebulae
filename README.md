@@ -168,8 +168,6 @@ deployed from.
 | heroku config:set AUDIENCE=https://ideanebulae.auth0.com/api/v2/ --app ideanebulae | Setup Heroku configuration variables for the Client Services component |
 | heroku config:set CLIENTDOMAIN=ideanebulae.auth0.com --app ideanebulae | |
 | heroku config:set CLIENTID=xxxxxxxxxxxxxxxxxxxx --app ideanebulae | |
-| heroku config:set DBPASSWD=xxxxxxxxxxxxxxxxxxxx --app ideanebulae | |
-| heroku config:set DBUSERID=xxxxxxxx --app ideanebulae | |
 | heroku config:set NODE_ENV=production --app ideanebulae | |
 | heroku config:set NPM_CONFIG_PRODUCTION=true --app ideanebulae | |
 | heroku config:set REDIRECT=https://ideanebulae.herokuapp.com/callback --app ideanebulae | |
@@ -177,15 +175,10 @@ deployed from.
 | heroku config:set API_HOST=http://ideanebulaeas.herokuapp.com --app ideanebulae | |
 | heroku config --app ideanebulae | Verify the config variables have been set |
 | | |
-| heroku config:set AUDIENCE=https://ideanebulae.auth0.com/api/v2/ --app ideanebulaeas | Setup Heroku configuration variables for the API Server component |
-| heroku config:set CLIENTDOMAIN=ideanebulae.auth0.com --app ideanebulaeas | |
-| heroku config:set CLIENTID=xxxxxxxxxxxxxxxxxxxx --app ideanebulaeas | |
-| heroku config:set DBPASSWD=xxxxxxxxxxxxxxxxxxxx --app ideanebulaeas | |
+| heroku config:set DBPASSWD=xxxxxxxxxxxxxxxxxxxx --app ideanebulaeas | Setup Heroku configuration variables for the API Server component |
 | heroku config:set DBUSERID=xxxxxxxx --app ideanebulaeas | |
 | heroku config:set NODE_ENV=production --app ideanebulaeas | |
 | heroku config:set NPM_CONFIG_PRODUCTION=true --app ideanebulaeas | |
-| heroku config:set REDIRECT=https://ideanebulae.herokuapp.com/callback --app ideanebulaeas | |
-| heroku config:set SCOPE=openid --app ideanebulaeas | |
 | heroku config --app ideanebulaeas | Verify the config variables have been set |
 
 #### Deployment Steps
