@@ -8,6 +8,7 @@ console.log('API_HOST: ', process.env.API_HOST, ' API_PORT: ',process.env.API_PO
 const apiHost = process.env.API_HOST;
 const apiPort = (process.env.API_PORT) ? process.env.API_PORT : null;
 console.log(`apiHost: ${apiHost} apiPort: ${apiPort}`);
+console.log('process.env: ', process.env);
 
 let apiURL = '';
 if (apiHost) {
