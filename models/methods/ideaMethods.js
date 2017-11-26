@@ -1,5 +1,6 @@
 import Agreement from '../agreement';
 import User from '../user';
+import {PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES} from '../ideaConstants';
 
 export default class ideaMethods {
 
@@ -130,7 +131,6 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async findIdea(creator, title, type) {
-    console.log(`findIdea - creator: ${creator} title: ${title} type: ${type}`);
     return await this.find({
       creator: creator,
       title: title,
@@ -197,17 +197,16 @@ export default class ideaMethods {
    * @memberof agreementMethods
    */
   static async saveIdea(body, userId) {
-    let { title, type, description, documents, tags } = body;
+    let { title, typeCode, description, documents, tags } = body;
 
     let idea = new this();
     idea.creator = userId;
     idea.title = title;
-    idea.type = type;
+    idea.typeCode = typeCode;
     idea.description = description;
     idea.documents = documents;
     idea.tags = tags;
     idea.created_ts = Date.now();
-    // TODO: Handle Agreement properly by setting to null or creating and linking agreement document
     idea.agreement = null;
     return await idea.save();
   }
@@ -284,16 +283,21 @@ export default class ideaMethods {
 
     User.findUserBySub(origCreator)
     .then(user => {
+      const newType = IDEA_TYPES[newIdea.typeCode].name;
+
       // If the original idea type was changed from 'private' or 'commercial' to 'public'
       // delete the associated Agreement document.
       if (['commercial', 'private'].includes(origType) &&
-          newIdea.type === 'public') {
+          newType === 'public') {
+        // Explicitly setting type is require since idea.updateOne doesn't fire middleware,
+        // resulting in the setter not being invoked.
+        newIdea.type = newType; 
         Agreement.deleteAgreement(origCreator, origTitle, origType)
         .then(deleteAgreementResult => {
           if (!deleteAgreementResult.result.ok) {
             throw new Error(`Attempting to delete agreement document: ${err}`);
           }
-          newIdea.agreement = '';
+          newIdea.agreement = null;
           deferredAgreement.resolve(deleteAgreementResult);
         })
         .catch(err => {
@@ -308,7 +312,7 @@ export default class ideaMethods {
         const agreement =  { 
           creator: newIdea.creator, 
           title: newIdea.title, 
-          type: newIdea.type, 
+          type: newType, 
           agreement: newIdea.agreement, 
           agreement_version: 0,
         };
@@ -327,7 +331,7 @@ export default class ideaMethods {
         const agreement =  { 
           creator: newIdea.creator, 
           title: newIdea.title, 
-          type: newIdea.type, 
+          type: origType, 
           agreement: newIdea.agreement, 
           agreement_version: 0,
         };
@@ -347,6 +351,7 @@ export default class ideaMethods {
 
       // Update the Idea document with the new values
       agreementPromise.then(result => {
+        console.log(`orig keya: ${origCreator} / ${origTitle} / ${origType} newIdea: `, newIdea);
         this.updateOne(
           {
             creator: origCreator,
