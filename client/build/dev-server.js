@@ -23,14 +23,6 @@ if (process.env.NODE_ENV !== 'production') {
   process.env.REDIRECT = 'http://localhost:8080/callback';
 }
 
-console.log(`process.env.API_HOST:${process.env.API_HOST}`);
-console.log(`process.env.AUDIENCE:${process.env.AUDIENCE}`);
-console.log(`process.env.CLIENT_ID:${process.env.CLIENT_ID}`);
-console.log(`process.env.CLIENT_DOMAIN:${process.env.CLIENT_DOMAIN}`);
-console.log(`process.env.NODE_ENV:${process.env.NODE_ENV}`);
-console.log(`process.env.REDIRECT:${process.env.REDIRECT}`);
-
-
 var opn = require('opn')
 var path = require('path')
 var express = require('express')
