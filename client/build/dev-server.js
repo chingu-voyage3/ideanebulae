@@ -1,8 +1,26 @@
 require('./check-versions')()
 
 var config = require('../config')
+
+// Evaluate environment variables and assign development system default values
+// if their values have not been defined.
+if (!process.env.API_HOST) {
+  process.env.API_HOST = 'http://localhost:7000/api';
+}
+if (!process.env.AUDIENCE) {
+  process.env.AUDIENCE = 'https://ideanebulae.auth0.com/api/v2/';
+}
+if (!process.env.CLIENT_ID) {
+  process.env.CLIENT_ID = '54kq1Kx1717k52deTJ55CUHzaq77fJQy';
+}
+if (!process.env.CLIENT_DOMAIN) {
+  process.env.CLIENT_DOMAIN = 'ideanebulae.auth0.com';
+}
 if (!process.env.NODE_ENV) {
-  process.env.NODE_ENV = JSON.parse(config.dev.env.NODE_ENV)
+  process.env.NODE_ENV = JSON.parse(config.dev.env.NODE_ENV);
+}
+if (process.env.NODE_ENV !== 'production') {
+  process.env.REDIRECT = 'http://localhost:8080/callback';
 }
 
 var opn = require('opn')

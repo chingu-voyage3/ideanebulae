@@ -5,14 +5,15 @@ import Router from 'vue-router';
 
 import { isTokenExpired } from './utils';
 
-const ID_TOKEN_KEY = 'id_token';
 const ACCESS_TOKEN_KEY = 'access_token';
-
-const CLIENT_ID = '54kq1Kx1717k52deTJ55CUHzaq77fJQy';
-const CLIENT_DOMAIN = 'ideanebulae.auth0.com';
-const REDIRECT = 'http://localhost:8080/callback';
+const AUDIENCE = process.env.AUDIENCE;
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_DOMAIN = process.env.CLIENT_DOMAIN;
+const ID_TOKEN_KEY = 'id_token';
+const REDIRECT = (process.env.NODE_ENV === 'production')
+  ? `${window.location.protocol}//${window.location.hostname}/callback`
+  : 'http://localhost:8080/callback';
 const SCOPE = 'openid profile';
-const AUDIENCE = 'https://ideanebulae.auth0.com/api/v2/';
 
 const auth = new auth0.WebAuth({
   clientID: CLIENT_ID,
@@ -47,6 +48,7 @@ export function getIdToken() {
 
 // Get the access token from the localStorage
 export function getAccessToken() {
+  console.log(`REDIRECT: ${REDIRECT}`);
   return window.localStorage.getItem(ACCESS_TOKEN_KEY);
 }
 

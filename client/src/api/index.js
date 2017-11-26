@@ -3,9 +3,9 @@ import { getAccessToken } from '@/auth';
 
 // Create http object to send the access token
 // along with every single request
-/* eslint-disable */
+// eslint-disable-next-line new-cap
 const http = new axios.create({
-  baseURL: 'http://localhost:7000/api',
+  baseURL: process.env.API_HOST,
   timeout: 5000,
   headers: {
     Authorization: `Bearer ${getAccessToken()}`,

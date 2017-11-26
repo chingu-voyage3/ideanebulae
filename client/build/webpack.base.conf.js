@@ -76,4 +76,20 @@ module.exports = {
       }
     ]
   },
-}
+  plugins: [
+    new webpack.DefinePlugin( {
+      'process.env': {
+        // Heroku environment variables
+        API_HOST: JSON.stringify(process.env.API_HOST),
+        // Auth0 environment variables
+        AUDIENCE: JSON.stringify(process.env.AUDIENCE),
+        CLIENT_ID: JSON.stringify(process.env.CLIENT_ID),
+        CLIENT_DOMAIN: JSON.stringify(process.env.CLIENT_DOMAIN),
+        REDIRECT: JSON.stringify(process.env.REDIRECT),
+        // MLab environment variables
+        DBUSERID: JSON.stringify(process.env.DBUSERID),
+        DBPASSWD: JSON.stringify(process.env.DBPASSWD),
+      },
+    }),
+  ],
+};
