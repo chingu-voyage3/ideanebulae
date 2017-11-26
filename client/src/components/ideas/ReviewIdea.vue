@@ -118,7 +118,7 @@ export default {
       ideaLinks: [''],
       ideaAgreement: '',
       ideaReviews: [],
-      ideaTypeCode: this.PUBLIC_IDEA,
+      ideaTypeCode: '',
       upHere: '-1',
       // Review information
       reviewIndex: this.NEW_REVIEW,
@@ -126,15 +126,14 @@ export default {
       reviewUpdated: '',
       reviewComments: '',
       // Constants
+      // These constants coorespond to the numeric idea type code values defined in the
+      // idea schema. They are defined here at the cost of code duplication to eliminate
+      // a dependency between the server and the client.
       PUBLIC_IDEA: 0,
       PRIVATE_IDEA: 1,
       COMMERCIAL_IDEA: 2,
+
       NEW_REVIEW: -1,
-      IDEA_TYPES: [
-        { type: this.PUBLIC_IDEA, name: 'public' },
-        { type: this.PRIVATE_IDEA, name: 'private' },
-        { type: this.COMMERCIAL_IDEA, name: 'commercial' },
-      ],
     };
   },
   mounted() {
@@ -149,11 +148,8 @@ export default {
         .then((response) => {
           this.ideaCreator = response.data[0].creator;
           this.ideaTitle = response.data[0].title;
-          // TODO: Calculate this as a virtual database field in Mongoose
           this.ideaType = response.data[0].type;
-          this.ideaTypeCode = this.IDEA_TYPES.findIndex(element =>
-            element.name === this.ideaType,
-          );
+          this.ideaTypeCode = response.data[0].typeCode;
 
           // eslint-disable-next-line no-underscore-dangle
           this.idea_id = response.data[0]._id;

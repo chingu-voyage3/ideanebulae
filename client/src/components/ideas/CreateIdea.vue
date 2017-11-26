@@ -72,19 +72,19 @@
         <div class="create__form-element">
           <label class="create__label" for="create__type">Type</label>
           <div class="create__radio-group">
-            <div class="create__radio create__option" v-bind:class="{ active: ideaTypeCode === PUBLIC_IDEA }" @mouseover="upHere = 0" @mouseleave="upHere = -1" @click="typeToggle(0)">
+            <div class="create__radio create__option" v-bind:class="{ active: ideaTypeCode === PUBLIC_IDEA }" @mouseover="upHere = PUBLIC_IDEA" @mouseleave="upHere = -1" @click="typeToggle(0)">
               <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC_IDEA" v-model="ideaTypeCode">
               <div class="create__type-title tooltip">Public
                 <span class="create__type-desc tooltiptext" v-if="upHere == PUBLIC_IDEA">Anyone can read and give feedback</span>
               </div>
             </div>
-            <div class="create__radio create__option" v-bind:class="{ active: ideaTypeCode === PRIVATE_IDEA }" @mouseover="upHere = 1" @mouseleave="upHere = -1" @click="typeToggle(1)">
+            <div class="create__radio create__option" v-bind:class="{ active: ideaTypeCode === PRIVATE_IDEA }" @mouseover="upHere = PRIVATE_IDEA" @mouseleave="upHere = -1" @click="typeToggle(1)">
               <input type="radio" name="ideatype" :value="PRIVATE_IDEA" v-model="ideaTypeCode">
               <div class="create__type-title tooltip">Private
                 <span class="create__type-desc tooltiptext" v-if="upHere == PRIVATE_IDEA">Only visible to people who agree to the license</span>
               </div>
             </div>
-            <div class="create__radio create__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL_IDEA }" @mouseover="upHere = 2" @mouseleave="upHere = -1" @click="typeToggle(2)">
+            <div class="create__radio create__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL_IDEA }" @mouseover="upHere = COMMERCIAL_IDEA" @mouseleave="upHere = -1" @click="typeToggle(2)">
               <input type="radio" name="ideatype" :value="COMMERCIAL_IDEA" v-model="ideaTypeCode">
               <div class="create__type-title tooltip">Custom
                 <span class="create__type-desc tooltiptext" v-if="upHere == COMMERCIAL_IDEA">Customise the license and choose who can see the idea</span>
@@ -179,19 +179,6 @@ export default {
     },
     typeToggle(type) {
       this.ideaTypeCode = type;
-      switch (this.ideaTypeCode) {
-        case this.PUBLIC_IDEA:
-          this.ideaType = 'public';
-          break;
-        case this.PRIVATE_IDEA:
-          this.ideaType = 'private';
-          break;
-        case this.COMMERCIAL_IDEA:
-          this.ideaType = 'commercial';
-          break;
-        default:
-          throw new Error(`Invalid internal type code detected: ${this.type}`);
-      }
     },
     saveIdea() {
       localstorage.setObject('create-idea-save', this.$data);
@@ -203,7 +190,7 @@ export default {
       localStorage.removeItem('create-idea-save');
       const payload = {
         title: this.ideaTitle,
-        type: this.ideaType,
+        typeCode: this.ideaTypeCode,
         description: this.ideaDesc,
         documents: this.ideaDocuments,
         tags: this.ideaTags,
