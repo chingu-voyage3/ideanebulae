@@ -121,7 +121,7 @@ export default {
       ideaTypeCode: '',
       ideaDesc: '',
       ideaTags: [],
-      ideaDocuments: [''],
+      ideaDocuments: [],
       ideaAgreement: '',
       ideaReviews: [],
       // Page work variables
@@ -193,8 +193,8 @@ export default {
           if (!/^http[s]?:\/\/.+/.test(newVal)) {
             newVal = `https://${newVal}`;
           }
-
-          this.ideaDocuments.url.push(newVal);
+          console.log(`newVal: ${newVal}`);
+          this.ideaDocuments.push({ url_description: newVal, url: newVal });
           this.linkText = '';
         }
       });
