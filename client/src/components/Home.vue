@@ -10,6 +10,13 @@
       <div class="splash__button-wrap">
         <router-link to="create" class="btn btn__primary splash__button">Start Ideation</router-link>
       </div>
+      <div class="splash__button-wrap">
+        <button
+          class="btn splash__scroller"
+          aria-label="scroll down"
+          @click="()=>{scroll('features')}"
+        ></button>
+      </div>
     </header>
 
     <section id="features" class="splash__features">
@@ -54,6 +61,13 @@
           </div>
         </div>
       </div>
+      <div class="splash__button-wrap">
+        <button
+          class="btn splash__scroller"
+          aria-label="scroll down"
+          @click="()=>{scroll('idea-count')}"
+        ></button>
+      </div>
     </section>
 
     <section id="idea-count" class="splash__counter">
@@ -66,6 +80,8 @@
 </template>
 
 <script>
+import scrollIt from '../utils/scrollIt';
+
 export default {
   name: 'Home',
   methods: {
@@ -77,6 +93,9 @@ export default {
       e.target.children[0].classList.remove('flip');
       e.target.children[1].classList.remove('flip');
     },
+    scroll: (id) => {
+      scrollIt(document.getElementById(id), 300, 'easeOutQuad');
+    },
   },
 };
 </script>
@@ -85,6 +104,16 @@ export default {
 @import '~stylus_var'
 
 .splash
+  &__scroller
+    width: 24px;
+    height: 24px;
+    margin-left: -12px;
+    border-left: 1px solid $purple;
+    border-bottom: 1px solid $purple;
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    box-sizing: border-box;
+    border-radius: 0 !important;
 
   &__header
     height calc(100vh - 84px)
