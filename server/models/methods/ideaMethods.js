@@ -82,7 +82,8 @@ export default class ideaMethods {
     this.findIdea(ideaId)
     .then(idea => {
       console.log('deleteIdea - idea retrieved');
-      // Attempt to delete the associated agreement if one exists
+      // If an Agreement document is associated with this Idea delete it before
+      // attempting to delete its parent Idea document
       let deferredAgreement = null;
       let agreementPromise = new Promise((resolve, reject) => {
         deferredAgreement = ({resolve: resolve, reject: reject});
@@ -103,6 +104,7 @@ export default class ideaMethods {
           deferredAgreement.resolve(err);
         });
       }
+      // Attempt to delete the Idea document
       agreementPromise
       .then((result) => {
         this.deleteOne({

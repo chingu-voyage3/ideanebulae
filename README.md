@@ -1,4 +1,5 @@
 # IdeaNebulae
+[![Waffle.io - Issues in progress](https://badge.waffle.io/chingu-coders/Voyage2-Bears-27.png?label=in%20progress&title=In%20Progress)](http://waffle.io/chingu-coders/Voyage2-Bears-27)
 
 IdeaNebulae makes it easy for Web Devs to propose ideas and  get feedback from
 their peers. In the modern world of Web Development many team members work
