@@ -289,6 +289,8 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async updateIdea(origCreator, origTitle, origType, newIdea) {
+    console.log(`Entered updateIdea - ${origCreator} / ${origType} / ${newIdea}`);
+    console.log('...newIdea:\n', newIdea);
     // Verify that the creator hasn't changed and a User document exists for it.
     if (origCreator !== newIdea.creator) {
       throw new Error(`The creator field of an idea is not allowed to change. origCreator: ${origCreator} newIdea.creator: ${newIdea.creator}`);
@@ -313,6 +315,7 @@ export default class ideaMethods {
       // delete the associated Agreement document.
       if (['commercial', 'private'].includes(origType) &&
           newType === 'public') {
+        console.log('Starting delete of agreement...');
         // Explicitly setting type is require since idea.updateOne doesn't fire middleware,
         // resulting in the setter not being invoked.
         newIdea.type = newType; 
@@ -325,7 +328,8 @@ export default class ideaMethods {
           deferredAgreement.resolve(deleteAgreementResult);
         })
         .catch(err => {
-          throw new Error(`Attempting to delete agreement document: ${err}`);            
+          throw new Error(`Attempting to delete agreement document: ${err}`);
+          deferredAgreement.reject('Delete of agreement failed');
         });
       }
       // If the original idea type was changed from 'public' to 'private' or
@@ -333,6 +337,7 @@ export default class ideaMethods {
       else if (origType === 'public' &&
                ['commercial', 'private'].includes(newIdea.type) &&
                newIdea.agreement !== undefined) {
+        console.log('Starting add of agreement...');
         const agreement =  { 
           creator: newIdea.creator, 
           title: newIdea.title, 
@@ -340,18 +345,22 @@ export default class ideaMethods {
           agreement: newIdea.agreement, 
           agreement_version: 0,
         };
+        console.log('Agreement to be added: ', agreement);        
         Agreement.saveAgreement(agreement)
         .then(addAgreementResult => {
           newIdea.agreement = addAgreementResult._id;
+          console.log('Agreement added: ', addAgreementResult);
           deferredAgreement.resolve(addAgreementResult);
         })
         .catch(err => {
-          throw new Error(`Adding new agreement document: ${err}`);            
+          throw new Error(`Adding new agreement document: ${err}`);
+          deferredAgreement.reject('Add of agreement failed');            
         });
       }
       // If the original idea type was not changed update the associated Agreement document
       else if (origType === newIdea.type &&
                newIdea.agreement !== undefined) {
+        console.log('Starting update of agreement...');
         const agreement =  { 
           creator: newIdea.creator, 
           title: newIdea.title, 
@@ -365,7 +374,8 @@ export default class ideaMethods {
           deferredAgreement.resolve(updateAgreementResult);
         })
         .catch(err => {
-          throw new Error(`Updating new agreement document: ${err}`);            
+          throw new Error(`Updating new agreement document: ${err}`);
+          deferredAgreement.reject('Agreement update failed');            
         });
       }
       // If no action is required against the Agreement simply resolve the deferred Promise
@@ -374,6 +384,7 @@ export default class ideaMethods {
       }
 
       // Update the Idea document with the new values
+      console.log('Starting update of idea...');
       agreementPromise.then(result => {
         this.updateOne(
           {
@@ -389,11 +400,13 @@ export default class ideaMethods {
         })
         .catch((err) => {
           throw new Error(`Attempting to update idea document: ${err}`);
+          deferredUpdate.reject(err);
         });
       });
     })
     .catch(err => { 
-      throw new Error(`User document not found for creator: ${origCreator} Error: ${err}`); 
+      throw new Error(`User document not found for creator: ${origCreator} Error: ${err}`);
+      deferredUpdate.reject(`User document not found for creator: ${origCreator}`);
     });
 
     return updatePromise;
