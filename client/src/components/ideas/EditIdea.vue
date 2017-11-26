@@ -193,7 +193,6 @@ export default {
           if (!/^http[s]?:\/\/.+/.test(newVal)) {
             newVal = `https://${newVal}`;
           }
-          console.log(`newVal: ${newVal}`);
           this.ideaDocuments.push({ url_description: newVal, url: newVal });
           this.linkText = '';
         }
@@ -210,7 +209,19 @@ export default {
       }
     },
     deleteIdea() {
-      // TODO: Remove the idea from the database
+      http.delete('/ideas', {
+        params: {
+          ideaId: this.idea_id,
+        },
+      })
+      .then((response) => {
+        if (response === null) {
+          throw new Error(`Deleting idea: ${response}`);
+        }
+      })
+      .catch((err) => {
+        throw new Error('Deleting idea: ', err);
+      });
     },
     removeLink(index) {
       this.ideaDocuments.splice(index, 1);

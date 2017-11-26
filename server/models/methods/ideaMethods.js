@@ -63,49 +63,71 @@ export default class ideaMethods {
   }
 
   /**
-   * @description Update a review in an existing idea. 
+   * @description Delete an idea document from the database. If the idea also
+   * has an associated agreement document it will be removed prior to deleting
+   * its owning idea document.
    * @static
-   * @param {String} creator The creator of the idea
-   * @param {String} title The ideas title
-   * @param {String} type The ideas type value
-   * @param {String} reviewer The reviewer id
-   * @param {String} comments The reviewers comments on the idea
-   * @returns  {Promise} The updated idea document when resolved
+   * @param {String} ideaId the '_id' value of the document to be deleted
+   * @returns {Promise} The idea document
    * @memberof ideaMethods
    */
-  static async updateReview(creator, title, type, reviewer, comments) {
-    let deferredUpdate = null;
-    let updatePromise = new Promise((resolve, reject) => {
-      deferredUpdate = ({resolve: resolve, reject: reject});
-    })
-    this.findIdea(creator, title, type)
+  static async deleteIdea(ideaId) {
+    console.log(`Entered deleteIdea: ${ideaId}`);
+    let deferredDelete= null;
+    let ideaPromise = new Promise((resolve, reject) => {
+      deferredDelete = ({resolve: resolve, reject: reject});
+    });
+
+    // Retrieve the idea document to determine if it owns and agreement
+    this.findIdea(ideaId)
     .then(idea => {
-      this.updateOne(
-        {
-          creator: creator,
-          title: title,
-          type: type,
-          "reviews.reviewer": reviewer
-        },
-        { $set: {
-            "reviews.$.updated_ts" : Date.now(),
-            "reviews.$.comments" : comments
+      console.log('deleteIdea - idea retrieved');
+      // Attempt to delete the associated agreement if one exists
+      let deferredAgreement = null;
+      let agreementPromise = new Promise((resolve, reject) => {
+        deferredAgreement = ({resolve: resolve, reject: reject});
+      });
+      if (idea.agreement === null) {
+        deferredAgreement.resolve('No agreement');
+      } else {
+        Agreement.deleteAgreement(idea.creator, idea.title, idea.type)
+        .then(deleteAgreementResult => {
+          if (!deleteAgreementResult.result.ok) {
+            throw new Error(`Attempting to delete agreement document: ${err}`);
           }
-        },
-        { upsert: false, new: true, runValidators: true }
-      )
-      .then(idea => {
-        deferredUpdate.resolve(idea);
+          idea.agreement = null;
+          deferredAgreement.resolve(deleteAgreementResult);
+        })
+        .catch(err => {
+          throw new Error(`Attempting to delete agreement document: ${err}`);            
+          deferredAgreement.resolve(err);
+        });
+      }
+      agreementPromise
+      .then((result) => {
+        this.deleteOne({
+            _id: ideaId,
+        })
+        .then((deleteResult) => {
+          deferredDelete.resolve(deleteResult);
+        })
+        .catch((err) => {
+          throw new Error(`Attempting to delete idea document: ${err}`);
+          deferredDelete.reject(err);
+        });
       })
-      .catch(err => {
-        throw new Error('Failure updating idea document: ', err);            
+      .catch((err) => {
+        throw new Error('Unable to delete associated agreement.');
+        deferredDelete.reject(err);
       });
     })
     .catch(err => {
-      throw new Error('Failure to read the idea containing the review to be updated: ', err);            
+      throw new Error(`Unable to retrieve idea by its id: ${ideaId}`);
+      deferredDelete.reject(err);
     });
-    return await updatePromise;
-  } 
+
+    return ideaPromise;
+  }
 
   /**
    * @description Retrieve an idea document based on its '_id' field
@@ -351,7 +373,6 @@ export default class ideaMethods {
 
       // Update the Idea document with the new values
       agreementPromise.then(result => {
-        console.log(`orig keya: ${origCreator} / ${origTitle} / ${origType} newIdea: `, newIdea);
         this.updateOne(
           {
             creator: origCreator,
@@ -375,5 +396,50 @@ export default class ideaMethods {
 
     return updatePromise;
   }
+
+  /**
+   * @description Update a review in an existing idea. 
+   * @static
+   * @param {String} creator The creator of the idea
+   * @param {String} title The ideas title
+   * @param {String} type The ideas type value
+   * @param {String} reviewer The reviewer id
+   * @param {String} comments The reviewers comments on the idea
+   * @returns  {Promise} The updated idea document when resolved
+   * @memberof ideaMethods
+   */
+  static async updateReview(creator, title, type, reviewer, comments) {
+    let deferredUpdate = null;
+    let updatePromise = new Promise((resolve, reject) => {
+      deferredUpdate = ({resolve: resolve, reject: reject});
+    })
+    this.findIdea(creator, title, type)
+    .then(idea => {
+      this.updateOne(
+        {
+          creator: creator,
+          title: title,
+          type: type,
+          "reviews.reviewer": reviewer
+        },
+        { $set: {
+            "reviews.$.updated_ts" : Date.now(),
+            "reviews.$.comments" : comments
+          }
+        },
+        { upsert: false, new: true, runValidators: true }
+      )
+      .then(idea => {
+        deferredUpdate.resolve(idea);
+      })
+      .catch(err => {
+        throw new Error('Failure updating idea document: ', err);            
+      });
+    })
+    .catch(err => {
+      throw new Error('Failure to read the idea containing the review to be updated: ', err);            
+    });
+    return await updatePromise;
+  } 
   
 }

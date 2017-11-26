@@ -121,7 +121,6 @@ ideaSchema.virtual('typeCode')
     throw new Error(`Invalid type code encountered setting idea document type. valueToSet: ${valueToSet}`);
   }
   this.type = IDEA_TYPES[typeIndex].name;
-  console.log('Got here! type: ', this.type);
 });
 
 /**
