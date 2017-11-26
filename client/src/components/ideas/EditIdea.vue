@@ -90,7 +90,7 @@
         </div>
       </div>
 
-      <div class="edit__form-element" v-show="this.ideaAgreement !== ''">
+      <div class="edit__form-element" v-show="this.ideaAgreement">
         <label class="edit__label" for="edit__agreement">Agreement</label>
         <textarea id="edit__agreement" name="agreement" class="edit__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement"></textarea>
       </div>
