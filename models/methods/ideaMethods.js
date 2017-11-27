@@ -92,7 +92,8 @@ export default class ideaMethods {
         Agreement.deleteAgreement(idea.creator, idea.title, idea.type)
         .then(deleteAgreementResult => {
           if (!deleteAgreementResult.result.ok) {
-            throw new Error(`Attempting to delete agreement document: ${err}`);
+            throw new Error('Attempting to delete agreement document');
+            deferredAgreement.reject('Attempting to delete agreement document');
           }
           deferredAgreement.resolve(deleteAgreementResult);
         })
