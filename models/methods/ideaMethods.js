@@ -72,7 +72,6 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async deleteIdea(ideaId) {
-    console.log(`Entered deleteIdea: ${ideaId}`);
     let deferredDelete= null;
     let ideaPromise = new Promise((resolve, reject) => {
       deferredDelete = ({resolve: resolve, reject: reject});
@@ -81,7 +80,6 @@ export default class ideaMethods {
     // Retrieve the idea document to determine if it owns and agreement
     this.findIdea(ideaId)
     .then(idea => {
-      console.log('deleteIdea - idea retrieved');
       // If an Agreement document is associated with this Idea delete it before
       // attempting to delete its parent Idea document
       let deferredAgreement = null;
@@ -96,7 +94,6 @@ export default class ideaMethods {
           if (!deleteAgreementResult.result.ok) {
             throw new Error(`Attempting to delete agreement document: ${err}`);
           }
-          idea.agreement = null;
           deferredAgreement.resolve(deleteAgreementResult);
         })
         .catch(err => {
@@ -289,8 +286,6 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async updateIdea(origCreator, origTitle, origType, newIdea) {
-    console.log(`Entered updateIdea - ${origCreator} / ${origType} / ${newIdea}`);
-    console.log('...newIdea:\n', newIdea);
     // Verify that the creator hasn't changed and a User document exists for it.
     if (origCreator !== newIdea.creator) {
       throw new Error(`The creator field of an idea is not allowed to change. origCreator: ${origCreator} newIdea.creator: ${newIdea.creator}`);
@@ -309,16 +304,10 @@ export default class ideaMethods {
 
     User.findUserBySub(origCreator)
     .then(user => {
-      const newType = IDEA_TYPES[newIdea.typeCode].name;
-
       // If the original idea type was changed from 'private' or 'commercial' to 'public'
       // delete the associated Agreement document.
       if (['commercial', 'private'].includes(origType) &&
-          newType === 'public') {
-        console.log('Starting delete of agreement...');
-        // Explicitly setting type is require since idea.updateOne doesn't fire middleware,
-        // resulting in the setter not being invoked.
-        newIdea.type = newType; 
+          newIdea.type === 'public') {
         Agreement.deleteAgreement(origCreator, origTitle, origType)
         .then(deleteAgreementResult => {
           if (!deleteAgreementResult.result.ok) {
@@ -334,22 +323,21 @@ export default class ideaMethods {
       }
       // If the original idea type was changed from 'public' to 'private' or
       // 'commercial' add a new Agreement document.
-      else if (origType === 'public' &&
-               ['commercial', 'private'].includes(newIdea.type) &&
-               newIdea.agreement !== undefined) {
-        console.log('Starting add of agreement...');
+      else if ( (origType === 'public' &&
+                  ['commercial', 'private'].includes(newIdea.type) &&
+                  newIdea.agreement !== undefined)  ||
+                (newIdea.agreement !== undefined)
+              ) {
         const agreement =  { 
           creator: newIdea.creator, 
           title: newIdea.title, 
-          type: newType, 
+          type: newIdea.type, 
           agreement: newIdea.agreement, 
           agreement_version: 0,
         };
-        console.log('Agreement to be added: ', agreement);        
         Agreement.saveAgreement(agreement)
         .then(addAgreementResult => {
           newIdea.agreement = addAgreementResult._id;
-          console.log('Agreement added: ', addAgreementResult);
           deferredAgreement.resolve(addAgreementResult);
         })
         .catch(err => {
@@ -384,7 +372,6 @@ export default class ideaMethods {
       }
 
       // Update the Idea document with the new values
-      console.log('Starting update of idea...');
       agreementPromise.then(result => {
         this.updateOne(
           {
