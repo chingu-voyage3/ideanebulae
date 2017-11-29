@@ -134,6 +134,8 @@ export default {
       upHere: '-1',
       addLinkError: false,
       // Constants
+      // Note that constants are imported from files to maintain consistency across the app
+      // but defined in this fashion so they are available to be referenced from HTML.
       PUBLIC: PUBLIC_IDEA,
       PRIVATE: PRIVATE_IDEA,
       COMMERCIAL: COMMERCIAL_IDEA,
