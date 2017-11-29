@@ -233,14 +233,12 @@ export default {
     removeTag(index) {
       this.ideaTags.splice(index, 1);
     },
-    typeToggle(type) {
-      this.ideaType = IDEA_TYPES.findIndex(element =>
-        element.type === type,
-      );
-      if (this.ideaType === -1) {
-        throw new Error(`Invalid idea type encountered editing idea details. type: ${type}`);
+    typeToggle(typeCode) {
+      if (typeCode === -1) {
+        throw new Error(`Invalid idea type encountered editing idea details. type: ${typeCode}`);
       }
-      this.ideaTypeCode = type;
+      this.ideaTypeCode = typeCode;
+      this.ideaType = IDEA_TYPES[typeCode].name;
       this.ideaAgreement = (this.ideaTypeCode === this.PUBLIC) ? '' : ' ';
     },
     saveIdea() {
