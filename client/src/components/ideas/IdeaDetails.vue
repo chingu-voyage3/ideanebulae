@@ -50,22 +50,22 @@
         <div class="view__form-element">
           <label class="view__label" for="create__type">Type</label>
           <div class="view__radio-group">
-            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === PUBLIC_IDEA }" @mouseover="upHere = 0" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC_IDEA" v-model="ideaTypeCode" disable>
+            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === PUBLIC }" @mouseover="upHere = PUBLIC" @mouseleave="upHere = -1">
+              <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC" v-model="ideaTypeCode" disable>
               <div class="view__type-title tooltip">Public
-                <span class="view__type-desc tooltiptext" v-if="upHere == PUBLIC_IDEA">Anyone can read and give feedback</span>
+                <span class="view__type-desc tooltiptext" v-if="upHere == PUBLIC">Anyone can read and give feedback</span>
               </div>
             </div>
-            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === PRIVATE_IDEA }" @mouseover="upHere = 1" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" :value="PRIVATE_IDEA" v-model="ideaTypeCode" disable>
+            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === PRIVATE }" @mouseover="upHere = PRIVATE" @mouseleave="upHere = -1">
+              <input type="radio" name="ideatype" :value="PRIVATE" v-model="ideaTypeCode" disable>
               <div class="view__type-title tooltip">Private
-                <span class="view__type-desc tooltiptext" v-if="upHere == PRIVATE_IDEA">Only visible to people who agree to the license</span>
+                <span class="view__type-desc tooltiptext" v-if="upHere == PRIVATE">Only visible to people who agree to the license</span>
               </div>
             </div>
-            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL_IDEA }" @mouseover="upHere = 2" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" :value="COMMERCIAL_IDEA" v-model="ideaTypeCode" disable>
+            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL }" @mouseover="upHere = COMMERCIAL" @mouseleave="upHere = -1">
+              <input type="radio" name="ideatype" :value="COMMERCIAL" v-model="ideaTypeCode" disable>
               <div class="view__type-title tooltip">Custom
-                <span class="view__type-desc tooltiptext" v-if="upHere == COMMERCIAL_IDEA">Customise the license and choose who can see the idea</span>
+                <span class="view__type-desc tooltiptext" v-if="upHere == COMMERCIAL">Customise the license and choose who can see the idea</span>
               </div>
             </div>
           </div>
@@ -108,6 +108,7 @@
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
 import http from '../../api/index';
+import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../../../../server/models/ideaConstants';
 
 export default {
   name: 'IdeaDetails',
@@ -130,9 +131,11 @@ export default {
       ideaTypeCode: '0',
       upHere: '-1',
       // Constants
-      PUBLIC_IDEA: 0,
-      PRIVATE_IDEA: 1,
-      COMMERCIAL_IDEA: 2,
+      // Note that constants are imported from files to maintain consistency across the app
+      // but defined in this fashion so they are available to be referenced from HTML.
+      PUBLIC: PUBLIC_IDEA,
+      PRIVATE: PRIVATE_IDEA,
+      COMMERCIAL: COMMERCIAL_IDEA,
     };
   },
   mounted() {
@@ -147,20 +150,12 @@ export default {
         .then((response) => {
           this.ideaCreator = response.data[0].creator;
           this.ideaTitle = response.data[0].title;
-          // TODO: Calculate this as a virtual database field in Mongoose
           this.ideaType = response.data[0].type;
-          switch (response.data[0].type) {
-            case 'public':
-              this.ideaTypeCode = this.PUBLIC_IDEA;
-              break;
-            case 'private':
-              this.ideaTypeCode = this.PRIVATE_IDEA;
-              break;
-            case 'commercial':
-              this.ideaTypeCode = this.COMMERCIAL_IDEA;
-              break;
-            default:
-              throw new Error(`Invalid idea type field value: ${response.data[0].type}`);
+          this.ideaTypeCode = IDEA_TYPES.findIndex(element =>
+            element.name === this.ideaType,
+          );
+          if (this.ideaTypeCode === -1) {
+            throw new Error(`Invalid idea type encountered displaying idea details. type: ${this.ideaType}`);
           }
 
           // eslint-disable-next-line no-underscore-dangle
