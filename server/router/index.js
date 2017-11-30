@@ -99,6 +99,15 @@ router.route('/ideas')
     res.json(idea);
   })
   .catch(err => res.send(err));
+})
+// Delete an idea
+.delete((req, res) => {
+  Idea.deleteIdea(req.query.ideaId)
+  .then(idea => {
+    console.log('Idea Deleted ', idea);
+    res.json(idea);
+  })
+  .catch(err => res.send(err));
 });
 
 // Retrieve all unique idea tags that are currently assigned to ideas

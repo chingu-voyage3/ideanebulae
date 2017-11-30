@@ -1,4 +1,5 @@
 # IdeaNebulae
+[![Waffle.io - Columns and their card count](https://badge.waffle.io/chingu-voyage3/ideanebulae.svg?columns=all)](https://waffle.io/chingu-voyage3/ideanebulae)
 
 IdeaNebulae makes it easy for Web Devs to propose ideas and  get feedback from
 their peers. In the modern world of Web Development many team members work
@@ -68,25 +69,53 @@ the wiki for more details and examples.
 
 ### Usage
 
-| Command           | Purpose                           |
-|:------------------|:----------------------------------|
-| yarn start        | Start                             |
-| yarn build        | Build application                 |
-| yarn build:client | Build client                      |
-| yarn build:server | Build server                      |
-| yarn dev          | Start development client & server |
-| yarn dev:server   | Start development client          |
-| yarn dev:client   | Start development server          |
-| yarn analyzesize  | Analyze bundle sizes              |
-| yarn test         | Initiate tests and validations    |
+| Command                       | Purpose                           |
+|:------------------------------|:----------------------------------|
+| `npm run-script start`        | Start                             |
+| `npm run-script build`        | Build application                 |
+| `npm run-script build:client` | Build client                      |
+| `npm run-script build:server` | Build server                      |
+| `npm run-script dev`          | Start development client & server |
+| `npm run-script dev:server`   | Start development client          |
+| `npm run-script dev:client`   | Start development server          |
+| `npm run-script analyzesize`  | Analyze bundle sizes              |
+| `npm run-script test`         | Initiate tests and validations    |
 
-Note that before starting the server the following environment variables should be
-defined:
+### Configuration
+
+The IdeaNebulae project folder is organized in the following manner:
+
+| Location           | Purpose                                   |
+|:-------------------|:------------------------------------------|
+| `directory root`   | License, readme, index, and package files |
+| `/client`          | Client Services component                 |
+| `../build`         | Build files including Webpack files       |
+| `../config`        | Application configuration                 |
+| `../src`           | Application source files                  |
+| `../../api`        | App API interface to API Server (axios)   |
+| `../../assets`     | App graphics - svg, png, etc.             |
+| `../../auth`       | App authentication (Auth0)                |
+| `../../components` | App components (Vue)                      |
+| `../../router`     | App routes (Vue-router)                   |
+| `../../store`      | App store (Vuex)                          |
+| `../../utils`      | App utility functions                     |
+| `../../static`     | Static files                              |
+| `../../test`       | Test scripts                              |
+| `/server`          | API Server component                      |
+| `../documentation` | Documentation files including images      |
+| `../models`        | DB schemas and manipulation functions (Mongoose/Mongo) |
+| `../router`        | API route definitions                     |
+| `../utils`         | Utility functions                         |
+
+## Development Environment
+
+Before starting the server in your local development environment the following
+environment variables should be defined:
 
 | Variable Name  | Description                          |
 |:---------------|:-------------------------------------|
-| DBUSERID       | User id of the MongoDB instance containing the application data |
-| DBPASSWD       | Associated password for the database user id |
+| `DBUSERID`       | User id of the MongoDB instance containing the application data |
+| `DBPASSWD`       | Associated password for the database user id |
 
 This is accomplished by including the following in the `.env` files located in
 the root of the server directory. The `.env` file must never be
@@ -100,26 +129,9 @@ DBUSERID=userid
 DBPASSWD=password
 ```
 
-### Configuration
-
-The IdeaNebulae project folder is organized in the following manner:
-
-| Location         | Purpose                               |
-|:-----------------|:--------------------------------------|
-| `/build`         | Build files including Webpack files   |
-| `/config`        | Application configuration             |
-| `/src`           | Application source files              |
-| `../assets`      |   App graphics - svg, png, etc.       |
-| `../components`  |   App components (Vue)                |
-| `../router`      |   App routes (Vue-router)             |
-| `../store`       |   App store (Vuex)                    |
-| `/static`        | Static files                          |
-| `/test`          | Test scripts                          |
-| `directory root` | License, readme, index, and package files |
-
 ## Runtime
 
-![IdeaNebulae Runtime Architecture](https://github.com/chingu-coders/Voyage2-Bears-27/blob/refactor/server-deploy/server/documentation/IdeaNebulae%20Runtime%20Architecture.jpg)
+![IdeaNebulae Runtime Architecture](https://github.com/chingu-voyage3/ideanebulae/blob/development/server/documentation/IdeaNebulae%20Runtime%20Architecture.jpg)
 
 ### Heroku Deployment
 
@@ -138,35 +150,33 @@ deployed from.
 
 | Command                             | Comments                              |
 |:------------------------------------|:--------------------------------------|
-| cd local-repo-root-directory   | Navigate to your apps root directory, where your local git repo resides, on your PC |
-| heroku login | Remotely login to Heroku |
-| heroku git:remote -a ideanebulae | Set up git repo in Heroku for the Client Services component |
-| git remote add ideanebulae https://git.heroku.com/ideanebulae.git | Define a name in the local repo for the Client Services repo on Heroku |
-| heroku git:remote -a ideanebulaeas | Set up git repo in Heroku for the API Server component |
-| git remote add ideanebulaeas https://git.heroku.com/ideanebulaeas.git | Define a name in the local repo for the API Server repo on Heroku |
-| git remote -v | Verify the remote names have been established |
-| heroku buildpacks:set https://github.com/heroku/heroku-buildpack-nodejs -a ideanebulae
-| Define the Client Services component as a NodeJS app |
-| heroku buildpacks --app ideanebulae | Verify ideanebulae is a NodeJS app |
-| heroku buildpacks:set https://github.com/heroku/heroku-buildpack-nodejs -a ideanebulaeas
-| Define the API Server component as a NodeJS app |
-| heroku buildpacks --app ideanebulaeas | Verify ideanebulaeas is a NodeJS app |
+| `cd local-repo-root-directory`   | Navigate to your apps root directory, where your local git repo resides, on your PC |
+| `heroku login` | Remotely login to Heroku |
+| `heroku git:remote -a ideanebulae` | Set up git repo in Heroku for the Client Services component |
+| `git remote add ideanebulae https://git.heroku.com/ideanebulae.git` | Define a name in the local repo for the Client Services repo on Heroku |
+| `heroku git:remote -a ideanebulaeas` | Set up git repo in Heroku for the API Server component |
+| `git remote add ideanebulaeas https://git.heroku.com/ideanebulaeas.git` | Define a name in the local repo for the API Server repo on Heroku |
+| `git remote -v` | Verify the remote names have been established |
+| `heroku buildpacks:set https://github.com/heroku/heroku-buildpack-nodejs -a ideanebulae` | Define the Client Services component as a NodeJS app |
+| `heroku buildpacks --app ideanebulae | Verify ideanebulae is a NodeJS app` |
+| `heroku buildpacks:set https://github.com/heroku/heroku-buildpack-nodejs -a ideanebulaeas`| Define the API Server component as a NodeJS app |
+| `heroku buildpacks --app ideanebulaeas` | Verify ideanebulaeas is a NodeJS app |
 | | |
-| heroku config:set AUDIENCE=https://ideanebulae.auth0.com/api/v2/ --app ideanebulae | Setup Heroku configuration variables for the Client Services component |
-| heroku config:set CLIENT_DOMAIN=ideanebulae.auth0.com --app ideanebulae | |
-| heroku config:set CLIENT_ID=xxxxxxxxxxxxxxxxxxxx --app ideanebulae | |
-| heroku config:set NODE_ENV=production --app ideanebulae | |
-| heroku config:set NPM_CONFIG_PRODUCTION=true --app ideanebulae | |
-| heroku config:set REDIRECT=https://ideanebulae.herokuapp.com/callback --app ideanebulae | |
-| heroku config:set SCOPE=openid --app ideanebulae | |
-| heroku config:set API_HOST=http://ideanebulaeas.herokuapp.com/api --app ideanebulae | |
-| heroku config --app ideanebulae | Verify the config variables have been set |
+| `heroku config:set AUDIENCE=https://ideanebulae.auth0.com/api/v2/ --app ideanebulae` | Setup Heroku configuration variables for the Client Services component |
+| `heroku config:set CLIENT_DOMAIN=ideanebulae.auth0.com --app ideanebulae` | |
+| `heroku config:set CLIENT_ID=xxxxxxxxxxxxxxxxxxxx --app ideanebulae` | |
+| `heroku config:set NODE_ENV=production --app ideanebulae` | |
+| `heroku config:set NPM_CONFIG_PRODUCTION=true --app ideanebulae` | |
+| `heroku config:set REDIRECT=https://ideanebulae.herokuapp.com/callback --app ideanebulae` | |
+| `heroku config:set SCOPE=openid --app ideanebulae` | |
+| `heroku config:set API_HOST=http://ideanebulaeas.herokuapp.com/api --app ideanebulae` | |
+| `heroku config --app ideanebulae` | Verify the config variables have been set |
 | | |
-| heroku config:set DBPASSWD=xxxxxxxxxxxxxxxxxxxx --app ideanebulaeas | Setup Heroku configuration variables for the API Server component |
-| heroku config:set DBUSERID=xxxxxxxx --app ideanebulaeas | |
-| heroku config:set NODE_ENV=production --app ideanebulaeas | |
-| heroku config:set NPM_CONFIG_PRODUCTION=true --app ideanebulaeas | |
-| heroku config --app ideanebulaeas | Verify the config variables have been set |
+| `heroku config:set DBPASSWD=xxxxxxxxxxxxxxxxxxxx --app ideanebulaeas` | Setup Heroku configuration variables for the API Server component |
+| `heroku config:set DBUSERID=xxxxxxxx --app ideanebulaeas` | |
+| `heroku config:set NODE_ENV=production --app ideanebulaeas` | |
+| `heroku config:set NPM_CONFIG_PRODUCTION=true --app ideanebulaeas` | |
+| `heroku config --app ideanebulaeas` | Verify the config variables have been set |
 
 #### Deployment Steps
 
@@ -177,18 +187,18 @@ required to the steps below.
 
 | Objective       | Command            | Comments                    |
 |:----------------|:-------------------|:----------------------------|
-| Prepare the Client Services | cd client | Build the Client Services app component | 
-| | npm run-script build |
-| Prepare the API Server | cd server | Build the API Server app component |
-| | npm run-script build |
-| Commit changes to your local repo | cd local-repo-root-directory | Ensure that you have the current app source for the branch you wish to deploy |
-| | git checkout development | Add any changes you have made and commit to your local branch |
-| | git pull origin development | |
-| | git add . | |
-| | git commit -m "Deploy to Heroku" | |
-| Deploy to Heroku | heroku login | Login to establish a connection between your PC and your apps on Heroku |
-| | git subtree push --prefix=client ideanebulae master | Push the client and server portions of the app to the corresponding Heroku app |
-|| git subtree push --prefix=server ideanebulaeas master | |
+| Prepare the Client Services | `cd client` | Build the Client Services app component | 
+| | `npm run-script build` |
+| Prepare the API Server | `cd server` | Build the API Server app component |
+| | `npm run-script build` |
+| Commit changes to your local repo | `cd local-repo-root-directory` | Ensure that you have the current app source for the branch you wish to deploy |
+| | `git checkout development` | Add any changes you have made and commit to your local branch |
+| | `git pull origin development` | |
+| | `git add .` | |
+| | `git commit -m "Deploy to Heroku"` | |
+| Deploy to Heroku | `heroku login` | Login to establish a connection between your PC and your apps on Heroku |
+| | `git subtree push --prefix=client ideanebulae master` | Push the client and server portions of the app to the corresponding Heroku app |
+|| `git subtree push --prefix=server ideanebulaeas master` | |
 
 ## Authors
 
@@ -201,4 +211,4 @@ required to the steps below.
 
 [MIT](https://tldrlegal.com/license/mit-license)
 
-[ideanebulae-url]: https://github.com/Chingu-cohorts/Voyage2-bears-27
+[ideanebulae-url]: https://github.com/chingu-voyage3/ideanebulae

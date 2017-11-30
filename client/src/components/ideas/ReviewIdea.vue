@@ -48,28 +48,28 @@
         <div class="review__form-element">
           <label class="review__label" for="create__type">Type</label>
           <div class="review__radio-group">
-            <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === PUBLIC_IDEA }" @mouseover="upHere = PUBLIC_IDEA" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC_IDEA" v-model="ideaTypeCode" disable>
+            <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === PUBLIC }" @mouseover="upHere = PUBLIC" @mouseleave="upHere = -1">
+              <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC" v-model="ideaTypeCode" disable>
               <div class="review__type-title tooltip">Public
-                <span class="review__type-desc tooltiptext" v-if="upHere == PUBLIC_IDEA">Anyone can read and give feedback</span>
+                <span class="review__type-desc tooltiptext" v-if="upHere == PUBLIC">Anyone can read and give feedback</span>
               </div>
             </div>
-            <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === PRIVATE_IDEA }" @mouseover="upHere = PRIVATE_IDEA" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" :value="PRIVATE_IDEA" v-model="ideaTypeCode" disable>
+            <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === PRIVATE }" @mouseover="upHere = PRIVATE" @mouseleave="upHere = -1">
+              <input type="radio" name="ideatype" :value="PRIVATE" v-model="ideaTypeCode" disable>
               <div class="review__type-title tooltip">Private
-                <span class="review__type-desc tooltiptext" v-if="upHere == PRIVATE_IDEA">Only visible to people who agree to the license</span>
+                <span class="review__type-desc tooltiptext" v-if="upHere == PRIVATE">Only visible to people who agree to the license</span>
               </div>
             </div>
-            <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL_IDEA }" @mouseover="upHere = COMMERCIAL_IDEA" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" :value="COMMERCIAL_IDEA" v-model="ideaTypeCode" disable>
+            <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL }" @mouseover="upHere = COMMERCIAL" @mouseleave="upHere = -1">
+              <input type="radio" name="ideatype" :value="COMMERCIAL" v-model="ideaTypeCode" disable>
               <div class="review__type-title tooltip">Commercial
-                <span class="review__type-desc tooltiptext" v-if="upHere == COMMERCIAL_IDEA">Customise the license and choose who can see the idea</span>
+                <span class="review__type-desc tooltiptext" v-if="upHere == COMMERCIAL">Customise the license and choose who can see the idea</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="review__form-element" v-show="this.ideaTypeCode !== this.PUBLIC_IDEA">
+        <div class="review__form-element" v-show="this.ideaTypeCode !== this.PUBLIC">
           <label class="review__label" for="review__agreement">Agreement</label>
           <textarea id="review__agreement" name="agreement" class="review__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement" disabled></textarea>
         </div>
@@ -99,6 +99,7 @@
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
 import http from '../../api/index';
+import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA } from '../../../../server/models/ideaConstants';
 
 export default {
   name: 'ReviewIdea',
@@ -118,7 +119,7 @@ export default {
       ideaLinks: [''],
       ideaAgreement: '',
       ideaReviews: [],
-      ideaTypeCode: this.PUBLIC_IDEA,
+      ideaTypeCode: '',
       upHere: '-1',
       // Review information
       reviewIndex: this.NEW_REVIEW,
@@ -126,15 +127,13 @@ export default {
       reviewUpdated: '',
       reviewComments: '',
       // Constants
-      PUBLIC_IDEA: 0,
-      PRIVATE_IDEA: 1,
-      COMMERCIAL_IDEA: 2,
+      // Note that constants are imported from files to maintain consistency across the app
+      // but defined in this fashion so they are available to be referenced from HTML.
+      PUBLIC: PUBLIC_IDEA,
+      PRIVATE: PRIVATE_IDEA,
+      COMMERCIAL: COMMERCIAL_IDEA,
+
       NEW_REVIEW: -1,
-      IDEA_TYPES: [
-        { type: this.PUBLIC_IDEA, name: 'public' },
-        { type: this.PRIVATE_IDEA, name: 'private' },
-        { type: this.COMMERCIAL_IDEA, name: 'commercial' },
-      ],
     };
   },
   mounted() {
@@ -149,11 +148,8 @@ export default {
         .then((response) => {
           this.ideaCreator = response.data[0].creator;
           this.ideaTitle = response.data[0].title;
-          // TODO: Calculate this as a virtual database field in Mongoose
           this.ideaType = response.data[0].type;
-          this.ideaTypeCode = this.IDEA_TYPES.findIndex(element =>
-            element.name === this.ideaType,
-          );
+          this.ideaTypeCode = response.data[0].typeCode;
 
           // eslint-disable-next-line no-underscore-dangle
           this.idea_id = response.data[0]._id;
@@ -169,7 +165,7 @@ export default {
           this.reviewIndex = this.ideaReviews.findIndex(element =>
             element.reviewer === this.currentUser,
           );
-          if (this.reviewIndex === -1) {
+          if (this.reviewIndex === this.NEW_REVIEW) {
             this.reviewButtonText = 'Add Review';
           } else {
             this.reviewButtonText = 'Update Review';

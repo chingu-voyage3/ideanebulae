@@ -1,5 +1,6 @@
 import Agreement from '../agreement';
 import User from '../user';
+import {PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES} from '../ideaConstants';
 
 export default class ideaMethods {
 
@@ -62,49 +63,71 @@ export default class ideaMethods {
   }
 
   /**
-   * @description Update a review in an existing idea. 
+   * @description Delete an idea document from the database. If the idea also
+   * has an associated agreement document it will be removed prior to deleting
+   * its owning idea document.
    * @static
-   * @param {String} creator The creator of the idea
-   * @param {String} title The ideas title
-   * @param {String} type The ideas type value
-   * @param {String} reviewer The reviewer id
-   * @param {String} comments The reviewers comments on the idea
-   * @returns  {Promise} The updated idea document when resolved
+   * @param {String} ideaId the '_id' value of the document to be deleted
+   * @returns {Promise} The idea document
    * @memberof ideaMethods
    */
-  static async updateReview(creator, title, type, reviewer, comments) {
-    let deferredUpdate = null;
-    let updatePromise = new Promise((resolve, reject) => {
-      deferredUpdate = ({resolve: resolve, reject: reject});
-    })
-    this.findIdea(creator, title, type)
+  static async deleteIdea(ideaId) {
+    let deferredDelete= null;
+    let ideaPromise = new Promise((resolve, reject) => {
+      deferredDelete = ({resolve: resolve, reject: reject});
+    });
+
+    // Retrieve the idea document to determine if it owns and agreement
+    this.findIdea(ideaId)
     .then(idea => {
-      this.updateOne(
-        {
-          creator: creator,
-          title: title,
-          type: type,
-          "reviews.reviewer": reviewer
-        },
-        { $set: {
-            "reviews.$.updated_ts" : Date.now(),
-            "reviews.$.comments" : comments
+      // If an Agreement document is associated with this Idea delete it before
+      // attempting to delete its parent Idea document
+      let deferredAgreement = null;
+      let agreementPromise = new Promise((resolve, reject) => {
+        deferredAgreement = ({resolve: resolve, reject: reject});
+      });
+      if (idea.agreement === null) {
+        deferredAgreement.resolve('No agreement');
+      } else {
+        Agreement.deleteAgreement(idea.creator, idea.title, idea.type)
+        .then(deleteAgreementResult => {
+          if (!deleteAgreementResult.result.ok) {
+            throw new Error('Attempting to delete agreement document');
+            deferredAgreement.reject('Attempting to delete agreement document');
           }
-        },
-        { upsert: false, new: true, runValidators: true }
-      )
-      .then(idea => {
-        deferredUpdate.resolve(idea);
+          deferredAgreement.resolve(deleteAgreementResult);
+        })
+        .catch(err => {
+          throw new Error(`Attempting to delete agreement document: ${err}`);            
+          deferredAgreement.resolve(err);
+        });
+      }
+      // Attempt to delete the Idea document
+      agreementPromise
+      .then((result) => {
+        this.deleteOne({
+            _id: ideaId,
+        })
+        .then((deleteResult) => {
+          deferredDelete.resolve(deleteResult);
+        })
+        .catch((err) => {
+          throw new Error(`Attempting to delete idea document: ${err}`);
+          deferredDelete.reject(err);
+        });
       })
-      .catch(err => {
-        throw new Error('Failure updating idea document: ', err);            
+      .catch((err) => {
+        throw new Error('Unable to delete associated agreement.');
+        deferredDelete.reject(err);
       });
     })
     .catch(err => {
-      throw new Error('Failure to read the idea containing the review to be updated: ', err);            
+      throw new Error(`Unable to retrieve idea by its id: ${ideaId}`);
+      deferredDelete.reject(err);
     });
-    return await updatePromise;
-  } 
+
+    return ideaPromise;
+  }
 
   /**
    * @description Retrieve an idea document based on its '_id' field
@@ -130,7 +153,6 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async findIdea(creator, title, type) {
-    console.log(`findIdea - creator: ${creator} title: ${title} type: ${type}`);
     return await this.find({
       creator: creator,
       title: title,
@@ -197,17 +219,16 @@ export default class ideaMethods {
    * @memberof agreementMethods
    */
   static async saveIdea(body, userId) {
-    let { title, type, description, documents, tags } = body;
+    let { title, typeCode, description, documents, tags } = body;
 
     let idea = new this();
     idea.creator = userId;
     idea.title = title;
-    idea.type = type;
+    idea.typeCode = typeCode;
     idea.description = description;
     idea.documents = documents;
     idea.tags = tags;
     idea.created_ts = Date.now();
-    // TODO: Handle Agreement properly by setting to null or creating and linking agreement document
     idea.agreement = null;
     return await idea.save();
   }
@@ -293,18 +314,21 @@ export default class ideaMethods {
           if (!deleteAgreementResult.result.ok) {
             throw new Error(`Attempting to delete agreement document: ${err}`);
           }
-          newIdea.agreement = '';
+          newIdea.agreement = null;
           deferredAgreement.resolve(deleteAgreementResult);
         })
         .catch(err => {
-          throw new Error(`Attempting to delete agreement document: ${err}`);            
+          throw new Error(`Attempting to delete agreement document: ${err}`);
+          deferredAgreement.reject('Delete of agreement failed');
         });
       }
       // If the original idea type was changed from 'public' to 'private' or
       // 'commercial' add a new Agreement document.
-      else if (origType === 'public' &&
-               ['commercial', 'private'].includes(newIdea.type) &&
-               newIdea.agreement !== undefined) {
+      else if ( (origType === 'public' &&
+                  ['commercial', 'private'].includes(newIdea.type) &&
+                  newIdea.agreement !== undefined)  ||
+                (newIdea.agreement !== undefined)
+              ) {
         const agreement =  { 
           creator: newIdea.creator, 
           title: newIdea.title, 
@@ -318,16 +342,18 @@ export default class ideaMethods {
           deferredAgreement.resolve(addAgreementResult);
         })
         .catch(err => {
-          throw new Error(`Adding new agreement document: ${err}`);            
+          throw new Error(`Adding new agreement document: ${err}`);
+          deferredAgreement.reject('Add of agreement failed');            
         });
       }
       // If the original idea type was not changed update the associated Agreement document
       else if (origType === newIdea.type &&
                newIdea.agreement !== undefined) {
+        console.log('Starting update of agreement...');
         const agreement =  { 
           creator: newIdea.creator, 
           title: newIdea.title, 
-          type: newIdea.type, 
+          type: origType, 
           agreement: newIdea.agreement, 
           agreement_version: 0,
         };
@@ -337,7 +363,8 @@ export default class ideaMethods {
           deferredAgreement.resolve(updateAgreementResult);
         })
         .catch(err => {
-          throw new Error(`Updating new agreement document: ${err}`);            
+          throw new Error(`Updating new agreement document: ${err}`);
+          deferredAgreement.reject('Agreement update failed');            
         });
       }
       // If no action is required against the Agreement simply resolve the deferred Promise
@@ -361,14 +388,61 @@ export default class ideaMethods {
         })
         .catch((err) => {
           throw new Error(`Attempting to update idea document: ${err}`);
+          deferredUpdate.reject(err);
         });
       });
     })
     .catch(err => { 
-      throw new Error(`User document not found for creator: ${origCreator} Error: ${err}`); 
+      throw new Error(`User document not found for creator: ${origCreator} Error: ${err}`);
+      deferredUpdate.reject(`User document not found for creator: ${origCreator}`);
     });
 
     return updatePromise;
   }
+
+  /**
+   * @description Update a review in an existing idea. 
+   * @static
+   * @param {String} creator The creator of the idea
+   * @param {String} title The ideas title
+   * @param {String} type The ideas type value
+   * @param {String} reviewer The reviewer id
+   * @param {String} comments The reviewers comments on the idea
+   * @returns  {Promise} The updated idea document when resolved
+   * @memberof ideaMethods
+   */
+  static async updateReview(creator, title, type, reviewer, comments) {
+    let deferredUpdate = null;
+    let updatePromise = new Promise((resolve, reject) => {
+      deferredUpdate = ({resolve: resolve, reject: reject});
+    })
+    this.findIdea(creator, title, type)
+    .then(idea => {
+      this.updateOne(
+        {
+          creator: creator,
+          title: title,
+          type: type,
+          "reviews.reviewer": reviewer
+        },
+        { $set: {
+            "reviews.$.updated_ts" : Date.now(),
+            "reviews.$.comments" : comments
+          }
+        },
+        { upsert: false, new: true, runValidators: true }
+      )
+      .then(idea => {
+        deferredUpdate.resolve(idea);
+      })
+      .catch(err => {
+        throw new Error('Failure updating idea document: ', err);            
+      });
+    })
+    .catch(err => {
+      throw new Error('Failure to read the idea containing the review to be updated: ', err);            
+    });
+    return await updatePromise;
+  } 
   
 }

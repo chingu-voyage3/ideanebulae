@@ -68,20 +68,20 @@
         <div class="edit__form-element">
           <label class="edit__label" for="create__type">Type</label>
           <div class="edit__radio-group">
-            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === PUBLIC_IDEA }" @mouseover="upHere = 0" @mouseleave="upHere = -1" @click="typeToggle(0)">
-              <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC_IDEA" v-model="ideaTypeCode">
+            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === PUBLIC }" @mouseover="upHere = PUBLIC" @mouseleave="upHere = -1" @click="typeToggle(PUBLIC)">
+              <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC" v-model="ideaTypeCode">
               <div class="edit__type-title tooltip">Public
                 <span class="edit__type-desc tooltiptext" v-if="upHere == 0">Anyone can read and give feedback</span>
               </div>
             </div>
-            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === PRIVATE_IDEA }" @mouseover="upHere = 1" @mouseleave="upHere = -1" @click="typeToggle(1)">
-              <input type="radio" name="ideatype" :value="PRIVATE_IDEA" v-model="ideaTypeCode">
+            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === PRIVATE }" @mouseover="upHere = PRIVATE" @mouseleave="upHere = -1" @click="typeToggle(PRIVATE)">
+              <input type="radio" name="ideatype" :value="PRIVATE" v-model="ideaTypeCode">
               <div class="edit__type-title tooltip">Private
                 <span class="edit__type-desc tooltiptext" v-if="upHere == 1">Only visible to people who agree to the license</span>
               </div>
             </div>
-            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL_IDEA }" @mouseover="upHere = 2" @mouseleave="upHere = -1" @click="typeToggle(2)">
-              <input type="radio" name="ideatype" :value="COMMERCIAL_IDEA" v-model="ideaTypeCode">
+            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL }" @mouseover="upHere = COMMERCIAL" @mouseleave="upHere = -1" @click="typeToggle(COMMERCIAL)">
+              <input type="radio" name="ideatype" :value="COMMERCIAL" v-model="ideaTypeCode">
               <div class="edit__type-title tooltip">Custom
                 <span class="edit__type-desc tooltiptext" v-if="upHere == 2">Customise the license and choose who can see the idea</span>
               </div>
@@ -90,7 +90,7 @@
         </div>
       </div>
 
-      <div class="edit__form-element" v-show="this.ideaAgreement !== ''">
+      <div class="edit__form-element" v-show="this.ideaAgreement">
         <label class="edit__label" for="edit__agreement">Agreement</label>
         <textarea id="edit__agreement" name="agreement" class="edit__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement"></textarea>
       </div>
@@ -108,6 +108,8 @@
 import { getUserProfile, getAccessToken } from '@/auth';
 import localstorage from '@/utils/localstorage';
 import http from '../../api/index';
+// eslint-disable-next-line no-unused-vars
+import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../../../../server/models/ideaConstants';
 
 export default {
   name: 'EditIdea',
@@ -118,9 +120,10 @@ export default {
       ideaCreator: '',
       ideaTitle: '',
       ideaType: '',
+      ideaTypeCode: '',
       ideaDesc: '',
       ideaTags: [],
-      ideaDocuments: [''],
+      ideaDocuments: [],
       ideaAgreement: '',
       ideaReviews: [],
       // Page work variables
@@ -128,13 +131,14 @@ export default {
       origType: '',
       linkText: '',
       tagText: '',
-      ideaTypeCode: this.PUBLIC_IDEA,
       upHere: '-1',
       addLinkError: false,
       // Constants
-      PUBLIC_IDEA: 0,
-      PRIVATE_IDEA: 1,
-      COMMERCIAL_IDEA: 2,
+      // Note that constants are imported from files to maintain consistency across the app
+      // but defined in this fashion so they are available to be referenced from HTML.
+      PUBLIC: PUBLIC_IDEA,
+      PRIVATE: PRIVATE_IDEA,
+      COMMERCIAL: COMMERCIAL_IDEA,
     };
   },
   mounted() {
@@ -154,25 +158,9 @@ export default {
           this.ideaCreator = response.data[0].creator;
           this.ideaTitle = response.data[0].title;
           this.origTitle = response.data[0].title;
-          // TODO: Calculate this as a virtual database field in Mongoose
           this.ideaType = response.data[0].type;
           this.origType = response.data[0].type;
-          switch (response.data[0].type) {
-            case 'public':
-              this.ideaTypeCode = this.PUBLIC_IDEA;
-              this.ideaAgreement = '';
-              break;
-            case 'private':
-              this.ideaTypeCode = this.PRIVATE_IDEA;
-              this.ideaAgreement = ' ';
-              break;
-            case 'commercial':
-              this.ideaTypeCode = this.COMMERCIAL_IDEA;
-              this.ideaAgreement = ' ';
-              break;
-            default:
-              throw new Error(`Invalid idea type field value: ${response.data[0].type}`);
-          }
+          this.ideaTypeCode = response.data[0].typeCode;
 
           // eslint-disable-next-line no-underscore-dangle
           this.idea_id = response.data[0]._id;
@@ -181,7 +169,7 @@ export default {
           this.ideaTags = response.data[0].tags;
           if (response.data[0].agreement === null) {
             this.ideaAgreement = null;
-          } else {
+          } else if (this.ideaTypeCode !== this.PUBLIC) {
             this.ideaAgreement = response.data[0].agreement.agreement;
           }
           this.ideaReviews = response.data[0].reviews;
@@ -209,8 +197,7 @@ export default {
           if (!/^http[s]?:\/\/.+/.test(newVal)) {
             newVal = `https://${newVal}`;
           }
-
-          this.ideaDocuments.url.push(newVal);
+          this.ideaDocuments.push({ url_description: newVal, url: newVal });
           this.linkText = '';
         }
       });
@@ -226,7 +213,19 @@ export default {
       }
     },
     deleteIdea() {
-      // TODO: Remove the idea from the database
+      http.delete('/ideas', {
+        params: {
+          ideaId: this.idea_id,
+        },
+      })
+      .then((response) => {
+        if (response === null) {
+          throw new Error(`Deleting idea: ${response}`);
+        }
+      })
+      .catch((err) => {
+        throw new Error('Deleting idea: ', err);
+      });
     },
     removeLink(index) {
       this.ideaDocuments.splice(index, 1);
@@ -234,25 +233,13 @@ export default {
     removeTag(index) {
       this.ideaTags.splice(index, 1);
     },
-    typeToggle(type) {
-      this.ideaTypeCode = type;
-      switch (this.ideaTypeCode) {
-        case this.PUBLIC_IDEA:
-          this.ideaType = 'public';
-          this.ideaAgreement = '';
-          break;
-        case this.PRIVATE_IDEA:
-          this.ideaType = 'private';
-          this.ideaAgreement = ' ';
-          break;
-        case this.COMMERCIAL_IDEA:
-          this.ideaType = 'commercial';
-          this.ideaAgreement = ' ';
-          break;
-        default:
-          throw new Error(`Invalid ideaTypeCode encountered: ${this.ideaTypeCode}`);
+    typeToggle(typeCode) {
+      if (typeCode === -1) {
+        throw new Error(`Invalid idea type encountered editing idea details. type: ${typeCode}`);
       }
-      this.ideaAgreement = (this.ideaTypeCode === this.PUBLIC_IDEA) ? '' : ' ';
+      this.ideaTypeCode = typeCode;
+      this.ideaType = IDEA_TYPES[typeCode].name;
+      this.ideaAgreement = (this.ideaTypeCode === this.PUBLIC) ? '' : ' ';
     },
     saveIdea() {
       localstorage.setObject('edit-idea-save', this.$data);
