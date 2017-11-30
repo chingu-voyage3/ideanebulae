@@ -1,5 +1,5 @@
 # IdeaNebulae
-[![Waffle.io - Columns and their card count](https://badge.waffle.io/chingu-coders/Voyage2-Bears-27.svg?columns=all)](https://waffle.io/chingu-coders/Voyage2-Bears-27)
+[![Waffle.io - Columns and their card count](https://badge.waffle.io/chingu-voyage3/ideanebulae.svg?columns=all)](https://waffle.io/chingu-voyage3/ideanebulae)
 
 IdeaNebulae makes it easy for Web Devs to propose ideas and  get feedback from
 their peers. In the modern world of Web Development many team members work
@@ -131,7 +131,7 @@ DBPASSWD=password
 
 ## Runtime
 
-![IdeaNebulae Runtime Architecture](https://github.com/chingu-coders/Voyage2-Bears-27/blob/refactor/server-deploy/server/documentation/IdeaNebulae%20Runtime%20Architecture.jpg)
+![IdeaNebulae Runtime Architecture](https://github.com/chingu-voyage3/ideanebulae/blob/development/server/documentation/IdeaNebulae%20Runtime%20Architecture.jpg)
 
 ### Heroku Deployment
 
@@ -211,4 +211,4 @@ required to the steps below.
 
 [MIT](https://tldrlegal.com/license/mit-license)
 
-[ideanebulae-url]: https://github.com/Chingu-cohorts/Voyage2-bears-27
+[ideanebulae-url]: https://github.com/chingu-voyage3/ideanebulae
