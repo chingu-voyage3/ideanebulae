@@ -71,6 +71,8 @@
           </div>
         </div>
 
+        <IdeaType :type="this.ideaType"></IdeaType>
+
         <div class="view__form-element" v-show="this.ideaTypeCode">
           <label class="view__label" for="view__agreement">Agreement</label>
           <textarea id="view__agreement" name="agreement" class="view__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement" disabled></textarea>
@@ -108,10 +110,14 @@
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
 import http from '../../api/index';
+import IdeaType from './shared/IdeaType';
 import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../../../../server/models/ideaConstants';
 
 export default {
   name: 'IdeaDetails',
+  components: {
+    IdeaType,
+  },
   data() {
     return {
       // Session information

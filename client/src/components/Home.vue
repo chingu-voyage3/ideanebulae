@@ -98,7 +98,6 @@ export default {
       e.target.children[1].classList.remove('flip');
     },
     scroll: (id) => {
-      console.log(`scrolling to ${id}`);
       const el = document.getElementById(id);
       el.scrollIntoView({ behavior: 'smooth' });
     },
