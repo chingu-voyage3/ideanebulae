@@ -2,19 +2,19 @@
   <div class="view__form-element">
     <label class="view__label" for="create__type">Type</label>
     <div class="view__radio-group">
-      <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === PUBLIC }" @mouseover="upHere = PUBLIC" @mouseleave="upHere = -1">
+      <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === PUBLIC }" @mouseover="upHere = PUBLIC" @mouseleave="upHere = -1" @click="typeToggle(PUBLIC)">
         <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC" v-model="ideaTypeCode" disable>
         <div class="view__type-title tooltip">Public
           <span class="view__type-desc tooltiptext" v-if="upHere == PUBLIC">Anyone can read and give feedback</span>
         </div>
       </div>
-      <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === PRIVATE }" @mouseover="upHere = PRIVATE" @mouseleave="upHere = -1">
+      <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === PRIVATE }" @mouseover="upHere = PRIVATE" @mouseleave="upHere = -1" @click="typeToggle(PRIVATE)">
         <input type="radio" name="ideatype" :value="PRIVATE" v-model="ideaTypeCode" disable>
         <div class="view__type-title tooltip">Private
           <span class="view__type-desc tooltiptext" v-if="upHere == PRIVATE">Only visible to people who agree to the license</span>
         </div>
       </div>
-      <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL }" @mouseover="upHere = COMMERCIAL" @mouseleave="upHere = -1">
+      <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL }" @mouseover="upHere = COMMERCIAL" @mouseleave="upHere = -1" @click="typeToggle(COMMERCIAL)">
         <input type="radio" name="ideatype" :value="COMMERCIAL" v-model="ideaTypeCode" disable>
         <div class="view__type-title tooltip">Custom
           <span class="view__type-desc tooltiptext" v-if="upHere == COMMERCIAL">Customise the license and choose who can see the idea</span>
@@ -25,12 +25,13 @@
 </template>
 
 <script>
-import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../../../../../server/models/ideaConstants';
+import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../../../../server/models/ideaConstants';
 
 export default {
   name: 'IdeaType',
   props: {
     type: { type: String, required: true },
+    mode: { type: String, required: false },
   },
   data() {
     return {
@@ -51,6 +52,20 @@ export default {
       return IDEA_TYPES.findIndex(element =>
         element.name === this.type,
       );
+    },
+  },
+  methods: {
+    /* Process a user click to change the idea type only if we've been called in 'update' mode.
+     * Return an literal indicating that the type was changed along with the new type code and
+     * the name that's associated with it.
+     */
+    typeToggle(typeCode) {
+      if (this.mode === 'update') {
+        if (typeCode === -1) {
+          throw new Error(`Invalid idea type encountered editing idea details. type: ${typeCode}`);
+        }
+        this.$emit('typechange', typeCode, IDEA_TYPES[typeCode].name);
+      }
     },
   },
 };

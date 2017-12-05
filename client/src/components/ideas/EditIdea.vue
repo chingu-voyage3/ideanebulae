@@ -65,29 +65,8 @@
           </div>
         </div>
 
-        <div class="edit__form-element">
-          <label class="edit__label" for="create__type">Type</label>
-          <div class="edit__radio-group">
-            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === PUBLIC }" @mouseover="upHere = PUBLIC" @mouseleave="upHere = -1" @click="typeToggle(PUBLIC)">
-              <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC" v-model="ideaTypeCode">
-              <div class="edit__type-title tooltip">Public
-                <span class="edit__type-desc tooltiptext" v-if="upHere == 0">Anyone can read and give feedback</span>
-              </div>
-            </div>
-            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === PRIVATE }" @mouseover="upHere = PRIVATE" @mouseleave="upHere = -1" @click="typeToggle(PRIVATE)">
-              <input type="radio" name="ideatype" :value="PRIVATE" v-model="ideaTypeCode">
-              <div class="edit__type-title tooltip">Private
-                <span class="edit__type-desc tooltiptext" v-if="upHere == 1">Only visible to people who agree to the license</span>
-              </div>
-            </div>
-            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL }" @mouseover="upHere = COMMERCIAL" @mouseleave="upHere = -1" @click="typeToggle(COMMERCIAL)">
-              <input type="radio" name="ideatype" :value="COMMERCIAL" v-model="ideaTypeCode">
-              <div class="edit__type-title tooltip">Custom
-                <span class="edit__type-desc tooltiptext" v-if="upHere == 2">Customise the license and choose who can see the idea</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <IdeaType :mode="'update'" :type="this.ideaType" v-on:typechange="typeChange"></IdeaType>
+
       </div>
 
       <div class="edit__form-element" v-show="this.ideaAgreement">
@@ -108,11 +87,15 @@
 import { getUserProfile, getAccessToken } from '@/auth';
 import localstorage from '@/utils/localstorage';
 import http from '../../api/index';
+import IdeaType from '../shared/IdeaType';
 // eslint-disable-next-line no-unused-vars
 import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../../../../server/models/ideaConstants';
 
 export default {
   name: 'EditIdea',
+  components: {
+    IdeaType,
+  },
   data() {
     return {
       // Idea information
@@ -131,7 +114,6 @@ export default {
       origType: '',
       linkText: '',
       tagText: '',
-      upHere: '-1',
       addLinkError: false,
       // Constants
       // Note that constants are imported from files to maintain consistency across the app
@@ -233,12 +215,9 @@ export default {
     removeTag(index) {
       this.ideaTags.splice(index, 1);
     },
-    typeToggle(typeCode) {
-      if (typeCode === -1) {
-        throw new Error(`Invalid idea type encountered editing idea details. type: ${typeCode}`);
-      }
+    typeChange(typeCode, typeName) {
       this.ideaTypeCode = typeCode;
-      this.ideaType = IDEA_TYPES[typeCode].name;
+      this.ideaType = typeName;
       this.ideaAgreement = (this.ideaTypeCode === this.PUBLIC) ? '' : ' ';
     },
     saveIdea() {

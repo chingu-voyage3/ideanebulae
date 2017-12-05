@@ -86,7 +86,7 @@
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
 import http from '../../api/index';
-import IdeaType from './shared/IdeaType';
+import IdeaType from '../shared/IdeaType';
 import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../../../../server/models/ideaConstants';
 
 export default {
