@@ -69,29 +69,8 @@
           </div>
         </div>
 
-        <div class="create__form-element">
-          <label class="create__label" for="create__type">Type</label>
-          <div class="create__radio-group">
-            <div class="create__radio create__option" v-bind:class="{ active: ideaTypeCode === PUBLIC }" @mouseover="upHere = PUBLIC" @mouseleave="upHere = -1" @click="typeToggle(PUBLIC)">
-              <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC" v-model="ideaTypeCode">
-              <div class="create__type-title tooltip">Public
-                <span class="create__type-desc tooltiptext" v-if="upHere == PUBLIC">Anyone can read and give feedback</span>
-              </div>
-            </div>
-            <div class="create__radio create__option" v-bind:class="{ active: ideaTypeCode === PRIVATE }" @mouseover="upHere = PRIVATE" @mouseleave="upHere = -1" @click="typeToggle(PRIVATE)">
-              <input type="radio" name="ideatype" :value="PRIVATE" v-model="ideaTypeCode">
-              <div class="create__type-title tooltip">Private
-                <span class="create__type-desc tooltiptext" v-if="upHere == PRIVATE">Only visible to people who agree to the license</span>
-              </div>
-            </div>
-            <div class="create__radio create__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL }" @mouseover="upHere = COMMERCIAL" @mouseleave="upHere = -1" @click="typeToggle(COMMERCIAL)">
-              <input type="radio" name="ideatype" :value="COMMERCIAL" v-model="ideaTypeCode">
-              <div class="create__type-title tooltip">Custom
-                <span class="create__type-desc tooltiptext" v-if="upHere == COMMERCIAL">Customise the license and choose who can see the idea</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <IdeaType :mode="'update'" :type="this.ideaType" v-on:typechange="typeChange"></IdeaType>
+
       </div>
       <div class="create__button-wrap">
         <a class="btn btn__primary profile__button create__button--btm" href="/dashboard">Cancel</a>
@@ -107,10 +86,15 @@ import marked from 'marked';
 import AutosizeTextarea from '@/components/misc/AutosizeTextarea';
 import localstorage from '@/utils/localstorage';
 import http from '../../api/index';
+import IdeaType from '../shared/IdeaType';
 import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA } from '../../../../server/models/ideaConstants';
 
 export default {
   name: 'CreateIdea',
+  components: {
+    AutosizeTextarea,
+    IdeaType,
+  },
   data() {
     return {
       // Idea Document Fields
@@ -123,7 +107,6 @@ export default {
       linkText: '',
       tagText: '',
       ideaTypeCode: this.PUBLIC_IDEA,
-      upHere: '-1',
       addLinkError: false,
       ideaDescMarked: '',
       previewDesc: false,
@@ -180,9 +163,6 @@ export default {
     removeTag(index) {
       this.ideaTags.splice(index, 1);
     },
-    typeToggle(type) {
-      this.ideaTypeCode = type;
-    },
     saveIdea() {
       localstorage.setObject('create-idea-save', this.$data);
       this.ideaDescMarked = marked(this.ideaDesc, {
@@ -209,11 +189,14 @@ export default {
         throw new Error(`Error adding new idea document: ${err}`);
       });
     },
+    typeChange(typeCode, typeName) {
+      this.ideaTypeCode = typeCode;
+      this.ideaType = typeName;
+    },
     updateIdeaDesc(v) {
       this.ideaDesc = v;
     },
   },
-  components: { AutosizeTextarea },
 };
 </script>
 

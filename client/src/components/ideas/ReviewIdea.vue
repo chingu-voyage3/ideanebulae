@@ -45,29 +45,7 @@
           </div>
         </div>
 
-        <div class="review__form-element">
-          <label class="review__label" for="create__type">Type</label>
-          <div class="review__radio-group">
-            <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === PUBLIC }" @mouseover="upHere = PUBLIC" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC" v-model="ideaTypeCode" disable>
-              <div class="review__type-title tooltip">Public
-                <span class="review__type-desc tooltiptext" v-if="upHere == PUBLIC">Anyone can read and give feedback</span>
-              </div>
-            </div>
-            <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === PRIVATE }" @mouseover="upHere = PRIVATE" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" :value="PRIVATE" v-model="ideaTypeCode" disable>
-              <div class="review__type-title tooltip">Private
-                <span class="review__type-desc tooltiptext" v-if="upHere == PRIVATE">Only visible to people who agree to the license</span>
-              </div>
-            </div>
-            <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL }" @mouseover="upHere = COMMERCIAL" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" :value="COMMERCIAL" v-model="ideaTypeCode" disable>
-              <div class="review__type-title tooltip">Commercial
-                <span class="review__type-desc tooltiptext" v-if="upHere == COMMERCIAL">Customise the license and choose who can see the idea</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <IdeaType :type="this.ideaType"></IdeaType>
 
         <div class="review__form-element" v-show="this.ideaTypeCode !== this.PUBLIC">
           <label class="review__label" for="review__agreement">Agreement</label>
@@ -99,10 +77,14 @@
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
 import http from '../../api/index';
+import IdeaType from '../shared/IdeaType';
 import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA } from '../../../../server/models/ideaConstants';
 
 export default {
   name: 'ReviewIdea',
+  components: {
+    IdeaType,
+  },
   data() {
     return {
       // Session information
@@ -120,7 +102,6 @@ export default {
       ideaAgreement: '',
       ideaReviews: [],
       ideaTypeCode: '',
-      upHere: '-1',
       // Review information
       reviewIndex: this.NEW_REVIEW,
       reviewAssigned: '',

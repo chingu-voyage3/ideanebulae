@@ -110,8 +110,7 @@ export default {
       ideaLinks: [''],
       ideaAgreement: '',
       ideaReviews: [],
-      ideaTypeCode: '0',
-      upHere: '-1',
+      ideaTypeCode: '',
       // Constants
       // Note that constants are imported from files to maintain consistency across the app
       // but defined in this fashion so they are available to be referenced from HTML.
