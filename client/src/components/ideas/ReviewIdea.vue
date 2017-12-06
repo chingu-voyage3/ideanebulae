@@ -36,15 +36,7 @@
           </div>
         </div>
 
-        <div class="review__form-element">
-          <label class="review__label" for="review__links">Links</label>
-          <div id="review__links" class="create__form__link" v-for="(link, index) in ideaLinks" v-bind:key="index">
-            <div class="review__link">
-              <a :href="link.url" target="_blank">{{link.url_description}}</a>
-            </div>
-          </div>
-        </div>
-
+        <IdeaLinks :links="this.ideaLinks"></IdeaLinks>
         <IdeaType :type="this.ideaType"></IdeaType>
 
         <div class="review__form-element" v-show="this.ideaTypeCode !== this.PUBLIC">
@@ -77,12 +69,14 @@
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
 import http from '../../api/index';
+import IdeaLinks from '../shared/IdeaLinks';
 import IdeaType from '../shared/IdeaType';
 import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA } from '../../../../server/models/ideaConstants';
 
 export default {
   name: 'ReviewIdea',
   components: {
+    IdeaLinks,
     IdeaType,
   },
   data() {

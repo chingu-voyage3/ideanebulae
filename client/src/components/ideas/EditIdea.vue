@@ -46,25 +46,7 @@
           </div>
         </div>
 
-        <div class="edit__form-element">
-          <div id="edit__links" class="edit__form__link" v-for="(link, index) in ideaDocuments" v-bind:key="index">
-            <div class="edit__link">
-              <a class="edit__link-text" :href="link.url" target="_blank">{{link.url_description}}</a>
-              <button class="edit__remove-link" id="remove__link" @click="removeLink(index)"> &times; </button>
-            </div>
-          </div>
-
-          <div class="edit__addlink">
-            <div v-show="errors.has('newlink')">Invalid link</div>
-            <label class="edit__label" for="newlink">Add link</label>
-            <div class="edit__input-wrap">
-              <input class="edit__input" name="newlink" v-validate="'url'" data-vv-delay="1000" type="text" v-model="linkText" @keyup.enter="addLink" placeholder="Links to more information about your idea">
-              <button class="edit__add-button"
-            @click="addLink"> + </button>
-            </div>
-          </div>
-        </div>
-
+        <IdeaLinks :mode="'update'" :links="this.ideaDocuments" v-on:linkschange="linksChange"></IdeaLinks>
         <IdeaType :mode="'update'" :type="this.ideaType" v-on:typechange="typeChange"></IdeaType>
 
       </div>
@@ -87,6 +69,7 @@
 import { getUserProfile, getAccessToken } from '@/auth';
 import localstorage from '@/utils/localstorage';
 import http from '../../api/index';
+import IdeaLinks from '../shared/IdeaLinks';
 import IdeaType from '../shared/IdeaType';
 // eslint-disable-next-line no-unused-vars
 import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../../../../server/models/ideaConstants';
@@ -94,6 +77,7 @@ import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../../..
 export default {
   name: 'EditIdea',
   components: {
+    IdeaLinks,
     IdeaType,
   },
   data() {
@@ -114,7 +98,6 @@ export default {
       origType: '',
       linkText: '',
       tagText: '',
-      addLinkError: false,
       // Constants
       // Note that constants are imported from files to maintain consistency across the app
       // but defined in this fashion so they are available to be referenced from HTML.
@@ -166,24 +149,6 @@ export default {
     }
   },
   methods: {
-    addLink() {
-      let newVal = this.linkText.trim();
-
-      if (newVal.length === 0) {
-        return;
-      }
-
-      this.$validator.validate('newlink', newVal)
-      .then((result) => {
-        if (result) {
-          if (!/^http[s]?:\/\/.+/.test(newVal)) {
-            newVal = `https://${newVal}`;
-          }
-          this.ideaDocuments.push({ url_description: newVal, url: newVal });
-          this.linkText = '';
-        }
-      });
-    },
     addTag() {
       let newVal = this.tagText.trim();
       if (newVal[newVal.length - 1] === ',') {
@@ -209,11 +174,11 @@ export default {
         throw new Error('Deleting idea: ', err);
       });
     },
+    linksChange(updatedLinks) {
+      this.ideaDocuments = updatedLinks;
+    },
     removeLink(index) {
       this.ideaDocuments.splice(index, 1);
-    },
-    removeTag(index) {
-      this.ideaTags.splice(index, 1);
     },
     typeChange(typeCode, typeName) {
       this.ideaTypeCode = typeCode;

@@ -50,25 +50,7 @@
           </div>
         </div>
 
-        <div class="create__form-element">
-          <div id="create__links" class="create__form__link" v-for="(link, index) in ideaDocuments" v-bind:key="index">
-            <div class="create__link">
-              <a class="create__link-text" :href="link.url" target="_blank">{{link.url_description}}</a>
-              <button class="create__remove-link" id="remove__link" @click="removeLink(index)"> &times; </button>
-            </div>
-          </div>
-
-          <div class="create__addlink">
-            <div v-show="errors.has('newlink')">Invalid link</div>
-            <label class="create__label" for="newlink">Add link</label>
-            <div class="create__input-wrap">
-              <input class="create__input" name="newlink" v-validate="'url'" data-vv-delay="1000" type="text" v-model="linkText" @keyup.enter="addLink" placeholder="Links to more information about your idea">
-              <button class="create__add-button"
-            @click="addLink"> + </button>
-            </div>
-          </div>
-        </div>
-
+        <IdeaLinks :mode="'update'" :links="this.ideaDocuments" v-on:linkschange="linksChange"></IdeaLinks>
         <IdeaType :mode="'update'" :type="this.ideaType" v-on:typechange="typeChange"></IdeaType>
 
       </div>
@@ -86,6 +68,7 @@ import marked from 'marked';
 import AutosizeTextarea from '@/components/misc/AutosizeTextarea';
 import localstorage from '@/utils/localstorage';
 import http from '../../api/index';
+import IdeaLinks from '../shared/IdeaLinks';
 import IdeaType from '../shared/IdeaType';
 import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA } from '../../../../server/models/ideaConstants';
 
@@ -93,6 +76,7 @@ export default {
   name: 'CreateIdea',
   components: {
     AutosizeTextarea,
+    IdeaLinks,
     IdeaType,
   },
   data() {
@@ -107,7 +91,6 @@ export default {
       linkText: '',
       tagText: '',
       ideaTypeCode: this.PUBLIC_IDEA,
-      addLinkError: false,
       ideaDescMarked: '',
       previewDesc: false,
       // Constants
@@ -129,24 +112,6 @@ export default {
     );
   },
   methods: {
-    addLink() {
-      let newVal = this.linkText.trim();
-
-      if (newVal.length === 0) {
-        return;
-      }
-
-      this.$validator.validate('newlink', newVal)
-      .then((result) => {
-        if (result) {
-          if (!/^http[s]?:\/\/.+/.test(newVal)) {
-            newVal = `https://${newVal}`;
-          }
-          this.linkText = '';
-          this.ideaDocuments.push({ url_description: newVal, url: `${newVal}` });
-        }
-      });
-    },
     addTag() {
       let newVal = this.tagText.trim();
       if (newVal[newVal.length - 1] === ',') {
@@ -157,8 +122,8 @@ export default {
         this.tagText = '';
       }
     },
-    removeLink(index) {
-      this.ideaDocuments.splice(index, 1);
+    linksChange(updatedLinks) {
+      this.ideaDocuments = updatedLinks;
     },
     removeTag(index) {
       this.ideaTags.splice(index, 1);
