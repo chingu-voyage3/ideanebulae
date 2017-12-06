@@ -17,77 +17,10 @@
           <textarea id="edit__desc" name="description" class="edit__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaDesc" placeholder="Description" ></textarea>
         </div>
 
-        <div class="edit__form-tags">
-          <div class="edit__tag-wrap">
-            <span class="edit__form-tag" v-for="(tag, index) in ideaTags" v-bind:key="index">
-              <span class="edit__tag" >
-                <span class="edit__tag__icon" aria-hidden="true">
-                  <button
-                    class="edit__tag__button"
-                    @click="removeTag(index)">
-                      &times;
-                  </button>
-                </span>
-                <span class="edit__tag__label" role="option" aria-selected="true">
-                    {{tag}}
-                  <span class="tag-aria-only">&nbsp;</span>
-                </span>
-              </span>
-            </span>
-          </div>
+        <IdeaTags :mode="'update'" :tags="this.ideaTags" v-on:tagschanged="tagsChanged"></IdeaTags>
+        <IdeaLinks :mode="'update'" :links="this.ideaDocuments" v-on:linkschanged="linksChanged"></IdeaLinks>
+        <IdeaType :mode="'update'" :type="this.ideaType" v-on:typechanged="typeChanged"></IdeaType>
 
-          <div class="edit__addtag">
-            <label class="edit__label" for="newTag">Add Tag</label>
-            <div class="edit__input-wrap">
-              <input class="edit__input" name="newTag" type="text" v-model="tagText" @keyup.enter="addTag" @keyup.188="addTag" @keyup.tab="addTag" placeholder="Add tags to help other users find your idea">
-              <button class="edit__add-button"
-            @click="addTag"> + </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="edit__form-element">
-          <div id="edit__links" class="edit__form__link" v-for="(link, index) in ideaDocuments" v-bind:key="index">
-            <div class="edit__link">
-              <a class="edit__link-text" :href="link.url" target="_blank">{{link.url_description}}</a>
-              <button class="edit__remove-link" id="remove__link" @click="removeLink(index)"> &times; </button>
-            </div>
-          </div>
-
-          <div class="edit__addlink">
-            <div v-show="errors.has('newlink')">Invalid link</div>
-            <label class="edit__label" for="newlink">Add link</label>
-            <div class="edit__input-wrap">
-              <input class="edit__input" name="newlink" v-validate="'url'" data-vv-delay="1000" type="text" v-model="linkText" @keyup.enter="addLink" placeholder="Links to more information about your idea">
-              <button class="edit__add-button"
-            @click="addLink"> + </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="edit__form-element">
-          <label class="edit__label" for="create__type">Type</label>
-          <div class="edit__radio-group">
-            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === PUBLIC }" @mouseover="upHere = PUBLIC" @mouseleave="upHere = -1" @click="typeToggle(PUBLIC)">
-              <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC" v-model="ideaTypeCode">
-              <div class="edit__type-title tooltip">Public
-                <span class="edit__type-desc tooltiptext" v-if="upHere == 0">Anyone can read and give feedback</span>
-              </div>
-            </div>
-            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === PRIVATE }" @mouseover="upHere = PRIVATE" @mouseleave="upHere = -1" @click="typeToggle(PRIVATE)">
-              <input type="radio" name="ideatype" :value="PRIVATE" v-model="ideaTypeCode">
-              <div class="edit__type-title tooltip">Private
-                <span class="edit__type-desc tooltiptext" v-if="upHere == 1">Only visible to people who agree to the license</span>
-              </div>
-            </div>
-            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL }" @mouseover="upHere = COMMERCIAL" @mouseleave="upHere = -1" @click="typeToggle(COMMERCIAL)">
-              <input type="radio" name="ideatype" :value="COMMERCIAL" v-model="ideaTypeCode">
-              <div class="edit__type-title tooltip">Custom
-                <span class="edit__type-desc tooltiptext" v-if="upHere == 2">Customise the license and choose who can see the idea</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div class="edit__form-element" v-show="this.ideaAgreement">
@@ -108,11 +41,19 @@
 import { getUserProfile, getAccessToken } from '@/auth';
 import localstorage from '@/utils/localstorage';
 import http from '../../api/index';
+import IdeaLinks from '../shared/IdeaLinks';
+import IdeaTags from '../shared/IdeaTags';
+import IdeaType from '../shared/IdeaType';
 // eslint-disable-next-line no-unused-vars
 import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../../../../server/models/ideaConstants';
 
 export default {
   name: 'EditIdea',
+  components: {
+    IdeaLinks,
+    IdeaTags,
+    IdeaType,
+  },
   data() {
     return {
       // Idea information
@@ -129,10 +70,6 @@ export default {
       // Page work variables
       origTitle: '',
       origType: '',
-      linkText: '',
-      tagText: '',
-      upHere: '-1',
-      addLinkError: false,
       // Constants
       // Note that constants are imported from files to maintain consistency across the app
       // but defined in this fashion so they are available to be referenced from HTML.
@@ -184,34 +121,6 @@ export default {
     }
   },
   methods: {
-    addLink() {
-      let newVal = this.linkText.trim();
-
-      if (newVal.length === 0) {
-        return;
-      }
-
-      this.$validator.validate('newlink', newVal)
-      .then((result) => {
-        if (result) {
-          if (!/^http[s]?:\/\/.+/.test(newVal)) {
-            newVal = `https://${newVal}`;
-          }
-          this.ideaDocuments.push({ url_description: newVal, url: newVal });
-          this.linkText = '';
-        }
-      });
-    },
-    addTag() {
-      let newVal = this.tagText.trim();
-      if (newVal[newVal.length - 1] === ',') {
-        newVal = newVal.slice(0, -1);
-      }
-      if (newVal.length !== 0) {
-        this.ideaTags.push(newVal);
-        this.tagText = '';
-      }
-    },
     deleteIdea() {
       http.delete('/ideas', {
         params: {
@@ -227,18 +136,15 @@ export default {
         throw new Error('Deleting idea: ', err);
       });
     },
-    removeLink(index) {
-      this.ideaDocuments.splice(index, 1);
+    linksChanged(updatedLinks) {
+      this.ideaDocuments = updatedLinks;
     },
-    removeTag(index) {
-      this.ideaTags.splice(index, 1);
+    tagsChanged(updatedTags) {
+      this.ideaTags = updatedTags;
     },
-    typeToggle(typeCode) {
-      if (typeCode === -1) {
-        throw new Error(`Invalid idea type encountered editing idea details. type: ${typeCode}`);
-      }
+    typeChanged(typeCode, typeName) {
       this.ideaTypeCode = typeCode;
-      this.ideaType = IDEA_TYPES[typeCode].name;
+      this.ideaType = typeName;
       this.ideaAgreement = (this.ideaTypeCode === this.PUBLIC) ? '' : ' ';
     },
     saveIdea() {

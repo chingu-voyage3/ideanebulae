@@ -22,52 +22,9 @@
           <textarea id="review__desc" name="description" class="review__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaDesc" placeholder="Description" disabled></textarea>
         </div>
 
-        <div class="review__form-tags">
-          <label class="review__label" for="review__tags">Tags</label>
-          <div class="review__tag-wrap" id="review__tags">
-            <span class="review__form-tag" v-for="(tag, index) in ideaTags" v-bind:key="index">
-              <span class="review__tag" >
-                <span class="review__tag__label" role="option" aria-selected="true">
-                  {{tag}}
-                  <span class="tag-aria-only">&nbsp;</span>
-                </span>
-              </span>
-            </span>
-          </div>
-        </div>
-
-        <div class="review__form-element">
-          <label class="review__label" for="review__links">Links</label>
-          <div id="review__links" class="create__form__link" v-for="(link, index) in ideaLinks" v-bind:key="index">
-            <div class="review__link">
-              <a :href="link.url" target="_blank">{{link.url_description}}</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="review__form-element">
-          <label class="review__label" for="create__type">Type</label>
-          <div class="review__radio-group">
-            <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === PUBLIC }" @mouseover="upHere = PUBLIC" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC" v-model="ideaTypeCode" disable>
-              <div class="review__type-title tooltip">Public
-                <span class="review__type-desc tooltiptext" v-if="upHere == PUBLIC">Anyone can read and give feedback</span>
-              </div>
-            </div>
-            <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === PRIVATE }" @mouseover="upHere = PRIVATE" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" :value="PRIVATE" v-model="ideaTypeCode" disable>
-              <div class="review__type-title tooltip">Private
-                <span class="review__type-desc tooltiptext" v-if="upHere == PRIVATE">Only visible to people who agree to the license</span>
-              </div>
-            </div>
-            <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL }" @mouseover="upHere = COMMERCIAL" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" :value="COMMERCIAL" v-model="ideaTypeCode" disable>
-              <div class="review__type-title tooltip">Commercial
-                <span class="review__type-desc tooltiptext" v-if="upHere == COMMERCIAL">Customise the license and choose who can see the idea</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <IdeaTags :tags="this.ideaTags"></IdeaTags>
+        <IdeaLinks :links="this.ideaLinks"></IdeaLinks>
+        <IdeaType :type="this.ideaType"></IdeaType>
 
         <div class="review__form-element" v-show="this.ideaTypeCode !== this.PUBLIC">
           <label class="review__label" for="review__agreement">Agreement</label>
@@ -99,10 +56,18 @@
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
 import http from '../../api/index';
+import IdeaLinks from '../shared/IdeaLinks';
+import IdeaTags from '../shared/IdeaTags';
+import IdeaType from '../shared/IdeaType';
 import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA } from '../../../../server/models/ideaConstants';
 
 export default {
   name: 'ReviewIdea',
+  components: {
+    IdeaLinks,
+    IdeaTags,
+    IdeaType,
+  },
   data() {
     return {
       // Session information
@@ -120,7 +85,6 @@ export default {
       ideaAgreement: '',
       ideaReviews: [],
       ideaTypeCode: '',
-      upHere: '-1',
       // Review information
       reviewIndex: this.NEW_REVIEW,
       reviewAssigned: '',
