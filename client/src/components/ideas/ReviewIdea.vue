@@ -22,20 +22,7 @@
           <textarea id="review__desc" name="description" class="review__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaDesc" placeholder="Description" disabled></textarea>
         </div>
 
-        <div class="review__form-tags">
-          <label class="review__label" for="review__tags">Tags</label>
-          <div class="review__tag-wrap" id="review__tags">
-            <span class="review__form-tag" v-for="(tag, index) in ideaTags" v-bind:key="index">
-              <span class="review__tag" >
-                <span class="review__tag__label" role="option" aria-selected="true">
-                  {{tag}}
-                  <span class="tag-aria-only">&nbsp;</span>
-                </span>
-              </span>
-            </span>
-          </div>
-        </div>
-
+        <IdeaTags :tags="this.ideaTags"></IdeaTags>
         <IdeaLinks :links="this.ideaLinks"></IdeaLinks>
         <IdeaType :type="this.ideaType"></IdeaType>
 
@@ -70,6 +57,7 @@
 import { getUserProfile, getAccessToken } from '@/auth';
 import http from '../../api/index';
 import IdeaLinks from '../shared/IdeaLinks';
+import IdeaTags from '../shared/IdeaTags';
 import IdeaType from '../shared/IdeaType';
 import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA } from '../../../../server/models/ideaConstants';
 
@@ -77,6 +65,7 @@ export default {
   name: 'ReviewIdea',
   components: {
     IdeaLinks,
+    IdeaTags,
     IdeaType,
   },
   data() {

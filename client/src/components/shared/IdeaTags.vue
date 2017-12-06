@@ -1,155 +1,70 @@
-<template>
-  <div class="container view">
-    <header class="view__header">
-      <h1 class="view__title">Idea Details</h1>
-    </header>
+<template id="idea-links">
+  <div class="tags__form-tags">
+  <label class="tags__label" for="newTag" v-show="this.ideaTags.length > 0">Tags</label>
+    <div class="tags__tag-wrap">
+      <span class="tags__form-tag" v-for="(tag, index) in ideaTags" v-bind:key="index">
+        <span class="tags__tag" >
+          <div v-if="mode === 'update'">
+            <span class="tags__edit__icon" aria-hidden="true">
+              <button class="tags__edit__button" @click="removeTag(index)">
+                  &times;
+              </button>
+            </span>
+          </div>
+          <span class="tags__edit__label" role="option" aria-selected="true">
+              {{tag}}
+            <span class="tag-aria-only">&nbsp;</span>
+          </span>
+        </span>
+      </span>
+    </div>
 
-    <section class="view__form-wrapper">
-      <div class="view__form-group">
-
-        <div class="view__form-element">
-          <label class="view__label" for="view__creator">Creator</label>
-          <input class="view__input" id="view__creator" maxlength="100" type="text" name="creator" v-model="ideaCreator" placeholder="Creator" autofocus disabled>
+    <div v-if="mode === 'update'">
+      <div class="tags__addtag">
+        <label class="tags__label" for="newTag">Add Tag</label>
+        <div class="tags__input-wrap">
+          <input class="tags__input" name="newTag" type="text" v-model="tagText" @keyup.enter="addTag" @keyup.188="addTag" @keyup.tab="addTag" placeholder="Add tags to help other users find your idea">
+          <button class="tags__add-button" @click="addTag"> + </button>
         </div>
-
-        <div class="view__form-element">
-          <label class="view__label" for="view__title">Title</label>
-          <input class="view__input" id="view__title" maxlength="100" type="text" name="title" v-model="ideaTitle" placeholder="Title" autofocus disabled>
-        </div>
-
-        <div class="view__form-element">
-          <label class="view__label" for="view__desc">Description</label>
-          <div id="view__desc" name="description" class="view__textarea" >{{ideaDesc}}</div>
-        </div>
-
-        <IdeaTags :tags="this.ideaTags"></IdeaTags>
-        <IdeaLinks :links="this.ideaLinks"></IdeaLinks>
-        <IdeaType :type="this.ideaType"></IdeaType>
-
-        <div class="view__form-element" v-show="this.ideaTypeCode">
-          <label class="view__label" for="view__agreement">Agreement</label>
-          <textarea id="view__agreement" name="agreement" class="view__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement" disabled></textarea>
-        </div>
-
-        <div class="view__form-element" v-show="this.ideaReviews.length">
-          <label class="view__label" for="view__reviews">Reviews</label>
-          <section class="view__results">
-            <table class="view__table">
-              <tr class="view__tr">
-                <th class="view__th">Reviewer</th>
-                <th class="view__th">Assigned</th>
-                <th class="view__th">Updated</th>
-                <th class="view__th">Comments</th>
-              </tr>
-              <tr class="view__tr" v-for="review in ideaReviews" v-bind:key="review.reviewer">
-                <td class="view__td">{{review.reviewer}}</td>
-                <td class="view__td">{{new Date(review.assigned_ts).toLocaleDateString()}}</td>
-                <td class="view__td">{{new Date(review.updated_ts).toLocaleDateString()}}</td>
-                <td class="view__td">{{review.comments}}</td>
-              </tr>
-            </table>
-          </section>
-        </div>
-
       </div>
-
-      <div class="view__button-wrap">
-        <button class="btn btn__primary profile__button view__button--btm" @click="editIdea">{{editButtonText}}</button>
-      </div>
-    </section>
+    </div>
   </div>
 </template>
 
 <script>
-import { getUserProfile, getAccessToken } from '@/auth';
-import http from '../../api/index';
-import IdeaLinks from '../shared/IdeaLinks';
-import IdeaTags from '../shared/IdeaTags';
-import IdeaType from '../shared/IdeaType';
-import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../../../../server/models/ideaConstants';
 
 export default {
-  name: 'IdeaDetails',
-  components: {
-    IdeaLinks,
-    IdeaTags,
-    IdeaType,
+  name: 'IdeaTags',
+  props: {
+    tags: { type: Array, required: true },
+    mode: { type: String, required: false },
   },
   data() {
     return {
-      // Session information
-      currentUser: '',
-      userRole: '',
-      editButtonText: '',
-      // Idea information
-      idea_id: '',
-      ideaCreator: '',
-      ideaTitle: '',
-      ideaType: '',
-      ideaDesc: '',
-      ideaTags: [],
-      ideaLinks: [''],
-      ideaAgreement: '',
-      ideaReviews: [],
-      ideaTypeCode: '',
-      // Constants
-      // Note that constants are imported from files to maintain consistency across the app
-      // but defined in this fashion so they are available to be referenced from HTML.
-      PUBLIC: PUBLIC_IDEA,
-      PRIVATE: PRIVATE_IDEA,
-      COMMERCIAL: COMMERCIAL_IDEA,
+      tagText: '',
     };
   },
-  mounted() {
-    // Get the profile for the currently logged in (i.e. session) user
-    if (getAccessToken()) {
-      getUserProfile()
-      .then((profile) => {
-        this.currentUser = profile.sub;
-
-        // Retrieve the idea identified by the URL paramaters
-        http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
-        .then((response) => {
-          this.ideaCreator = response.data[0].creator;
-          this.ideaTitle = response.data[0].title;
-          this.ideaType = response.data[0].type;
-          this.ideaTypeCode = IDEA_TYPES.findIndex(element =>
-            element.name === this.ideaType,
-          );
-          if (this.ideaTypeCode === -1) {
-            throw new Error(`Invalid idea type encountered displaying idea details. type: ${this.ideaType}`);
-          }
-
-          // eslint-disable-next-line no-underscore-dangle
-          this.idea_id = response.data[0]._id;
-          this.ideaDesc = response.data[0].description;
-          this.ideaLinks = response.data[0].documents;
-          this.ideaTags = response.data[0].tags;
-          if (response.data[0].agreement === null) {
-            this.ideaAgreement = null;
-          } else {
-            this.ideaAgreement = response.data[0].agreement.agreement;
-          }
-          this.ideaReviews = response.data[0].reviews;
-          this.userRole = (this.ideaCreator === this.currentUser) ? 'creator' : 'reviewer';
-          this.editButtonText = (this.userRole === 'creator') ? 'Edit Idea' : 'Add/Update Review';
-        })
-        .catch((err) => {
-          throw new Error(`Locating idea: ${err}`);
-        });
-      })
-      .catch((err) => {
-        throw new Error(`Accessing user security profile: ${err}`);
-      });
-    }
+  computed: {
+    // Make a deep copy of the tags array passed by the caller
+    ideaTags() {
+      return JSON.parse(JSON.stringify(this.tags));
+    },
   },
   methods: {
-    editIdea() {
-      if (this.userRole === 'creator') {
-        this.$router.push({ path: `/edit/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
-      } else {
-        this.$router.push({ path: `/review/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
+    addTag() {
+      let newVal = this.tagText.trim();
+      if (newVal[newVal.length - 1] === ',') {
+        newVal = newVal.slice(0, -1);
       }
+      if (newVal.length !== 0) {
+        this.ideaTags.push(newVal);
+        this.tagText = '';
+      }
+      this.$emit('tagschanged', this.ideaTags);
+    },
+    removeTag(index) {
+      this.ideaTags.splice(index, 1);
+      this.$emit('tagschanged', this.ideaTags);
     },
   },
 };
@@ -158,7 +73,7 @@ export default {
 <style lang="stylus" scoped>
 @import '~stylus_var'
 
-.view
+.tags
 
   &__form-wrapper
     width 100%
@@ -237,13 +152,43 @@ export default {
       -moz-box-shadow: 2px 2px 10px 0 rgba(110, 28, 233, 0.8);
       box-shadow: 2px 2px 10px 0 rgba(110, 28, 233, 0.8);
 
+  &__add-button
+    width 40px
+    margin-left 10px
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    text-align: center;
+    font-family: inherit;
+    font-weight: inherit;
+    font-size: inherit;
+    padding 6px 12px
+    border 1px solid $purple
+    letter-spacing 1.5px
+    color $purple
+    position: relative;
+    overflow: hidden;
+    transition all 300ms ease-in-out
+
+    &:hover, &:active, &:focus
+      -webkit-appearance: none;
+      appearance: none;
+      color: inherit;
+      background $purple
+      background linear-gradient(-134deg, $dkblue 0%, $pink 100%)
+      color white
+      border 1px solid $purple
+      transition all 300ms ease-in-out
+      -webkit-box-shadow: 2px 2px 10px 0 rgba(110, 28, 233, 0.8);
+      -moz-box-shadow: 2px 2px 10px 0 rgba(110, 28, 233, 0.8);
+      box-shadow: 2px 2px 10px 0 rgba(110, 28, 233, 0.8);
 
   &__input
-    padding 0 0 20px
+    padding 10px
     width 100%
-    font-size 1.5em
-    color $purple
-    border 0px transparent
+    font-size 1em
+    border 1px solid $purple
+    color $gray_text
 
     &:focus
       -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
@@ -269,6 +214,46 @@ export default {
     display inline-block
     width 33%
 
+&__edit
+    color: $gray_text;
+    display: inline-block;
+    font-size: 0.9em;
+    line-height: 1.4;
+    background-color: transparent;
+    border-radius: 2px;
+    border: 1px solid $gray_bkgrd;
+    margin-right: 10px;
+    margin-top: 5px;
+    vertical-align: top;
+
+    &:hover
+      border: 1px solid $aqua;
+
+    &__label
+      border-bottom-right-radius: 2px;
+      border-top-right-radius: 2px;
+      cursor: default;
+      padding: 1px 5px 4px 5px;
+      display: inline-block;
+      vertical-align: middle;
+
+    &__button
+      -webkit-appearance: none;
+      appearance: none;
+      border: none;
+      background: transparent;
+      color: inherit;
+      
+    &__icon
+      display: inline-block;
+      cursor: pointer;
+      border-bottom-left-radius: 2px;
+      border-top-left-radius: 2px;
+      border-right: 1px solid rgba(124,72,194, 0.25);
+      padding: 1px 5px 3px;
+      &:hover
+        // color: red;
+
   &__link-wrap
     display flex
     flex-wrap wrap
@@ -293,6 +278,19 @@ export default {
       text-decoration none
       border-bottom 1px dotted $aqua
 
+  &__remove-link
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-size: 1em;
+    border: 1px solid rgba(124,72,194, 0.25);
+    padding: 0 4px 2px;
+    margin-left 10px
+
+    &:hover
+      border: 1px solid rgb(124,72,194);
 
   &__radio-group
     display flex

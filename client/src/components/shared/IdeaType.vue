@@ -64,7 +64,7 @@ export default {
         if (typeCode === -1) {
           throw new Error(`Invalid idea type encountered editing idea details. type: ${typeCode}`);
         }
-        this.$emit('typechange', typeCode, IDEA_TYPES[typeCode].name);
+        this.$emit('typechanged', typeCode, IDEA_TYPES[typeCode].name);
       }
     },
   },

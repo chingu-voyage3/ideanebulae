@@ -1,6 +1,6 @@
 <template id="idea-links">
   <div class="links__form-element">
-    <label class="links__label" for="view__links">Links</label>
+    <label class="links__label" for="view__links" v-show="this.ideaLinks.length > 0">Links</label>
     <div class="links__link-wrap">
       <span id="links__links" class="view__links" v-for="(link, index) in ideaLinks" v-bind:key="index">
         <span class="links__link">
@@ -62,11 +62,11 @@ export default {
           this.ideaLinks.push({ url_description: newVal, url: `${newVal}` });
         }
       });
-      this.$emit('linkschange', this.ideaLinks);
+      this.$emit('linkschanged', this.ideaLinks);
     },
     removeLink(index) {
       this.ideaLinks.splice(index, 1);
-      this.$emit('linkschange', this.ideaLinks);
+      this.$emit('linkschanged', this.ideaLinks);
     },
 
   },

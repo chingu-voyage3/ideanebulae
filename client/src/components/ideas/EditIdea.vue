@@ -17,37 +17,9 @@
           <textarea id="edit__desc" name="description" class="edit__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaDesc" placeholder="Description" ></textarea>
         </div>
 
-        <div class="edit__form-tags">
-          <div class="edit__tag-wrap">
-            <span class="edit__form-tag" v-for="(tag, index) in ideaTags" v-bind:key="index">
-              <span class="edit__tag" >
-                <span class="edit__tag__icon" aria-hidden="true">
-                  <button
-                    class="edit__tag__button"
-                    @click="removeTag(index)">
-                      &times;
-                  </button>
-                </span>
-                <span class="edit__tag__label" role="option" aria-selected="true">
-                    {{tag}}
-                  <span class="tag-aria-only">&nbsp;</span>
-                </span>
-              </span>
-            </span>
-          </div>
-
-          <div class="edit__addtag">
-            <label class="edit__label" for="newTag">Add Tag</label>
-            <div class="edit__input-wrap">
-              <input class="edit__input" name="newTag" type="text" v-model="tagText" @keyup.enter="addTag" @keyup.188="addTag" @keyup.tab="addTag" placeholder="Add tags to help other users find your idea">
-              <button class="edit__add-button"
-            @click="addTag"> + </button>
-            </div>
-          </div>
-        </div>
-
-        <IdeaLinks :mode="'update'" :links="this.ideaDocuments" v-on:linkschange="linksChange"></IdeaLinks>
-        <IdeaType :mode="'update'" :type="this.ideaType" v-on:typechange="typeChange"></IdeaType>
+        <IdeaTags :mode="'update'" :tags="this.ideaTags" v-on:tagschanged="tagsChanged"></IdeaTags>
+        <IdeaLinks :mode="'update'" :links="this.ideaDocuments" v-on:linkschanged="linksChanged"></IdeaLinks>
+        <IdeaType :mode="'update'" :type="this.ideaType" v-on:typechanged="typeChanged"></IdeaType>
 
       </div>
 
@@ -70,6 +42,7 @@ import { getUserProfile, getAccessToken } from '@/auth';
 import localstorage from '@/utils/localstorage';
 import http from '../../api/index';
 import IdeaLinks from '../shared/IdeaLinks';
+import IdeaTags from '../shared/IdeaTags';
 import IdeaType from '../shared/IdeaType';
 // eslint-disable-next-line no-unused-vars
 import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../../../../server/models/ideaConstants';
@@ -78,6 +51,7 @@ export default {
   name: 'EditIdea',
   components: {
     IdeaLinks,
+    IdeaTags,
     IdeaType,
   },
   data() {
@@ -96,8 +70,6 @@ export default {
       // Page work variables
       origTitle: '',
       origType: '',
-      linkText: '',
-      tagText: '',
       // Constants
       // Note that constants are imported from files to maintain consistency across the app
       // but defined in this fashion so they are available to be referenced from HTML.
@@ -149,16 +121,6 @@ export default {
     }
   },
   methods: {
-    addTag() {
-      let newVal = this.tagText.trim();
-      if (newVal[newVal.length - 1] === ',') {
-        newVal = newVal.slice(0, -1);
-      }
-      if (newVal.length !== 0) {
-        this.ideaTags.push(newVal);
-        this.tagText = '';
-      }
-    },
     deleteIdea() {
       http.delete('/ideas', {
         params: {
@@ -174,13 +136,13 @@ export default {
         throw new Error('Deleting idea: ', err);
       });
     },
-    linksChange(updatedLinks) {
+    linksChanged(updatedLinks) {
       this.ideaDocuments = updatedLinks;
     },
-    removeLink(index) {
-      this.ideaDocuments.splice(index, 1);
+    tagsChanged(updatedTags) {
+      this.ideaTags = updatedTags;
     },
-    typeChange(typeCode, typeName) {
+    typeChanged(typeCode, typeName) {
       this.ideaTypeCode = typeCode;
       this.ideaType = typeName;
       this.ideaAgreement = (this.ideaTypeCode === this.PUBLIC) ? '' : ' ';

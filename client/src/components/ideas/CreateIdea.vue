@@ -21,37 +21,9 @@
           </div>
         </div>
 
-        <div class="create__form-tags">
-          <div class="create__tag-wrap">
-            <span class="create__form-tag" v-for="(tag, index) in ideaTags" v-bind:key="index">
-              <span class="create__tag" >
-                <span class="create__tag__icon" aria-hidden="true">
-                  <button
-                    class="create__tag__button"
-                    @click="removeTag(index)">
-                      &times;
-                  </button>
-                </span>
-                <span class="create__tag__label" role="option" aria-selected="true">
-                    {{tag}}
-                  <span class="tag-aria-only">&nbsp;</span>
-                </span>
-              </span>
-            </span>
-          </div>
-
-          <div class="create__addtag">
-            <label class="create__label" for="newTag">Add Tag</label>
-            <div class="create__input-wrap">
-              <input class="create__input" name="newTag" type="text" v-model="tagText" @keyup.enter="addTag" @keyup.188="addTag" @keyup.tab="addTag" placeholder="Add tags to help other users find your idea">
-              <button class="create__add-button"
-            @click="addTag"> + </button>
-            </div>
-          </div>
-        </div>
-
-        <IdeaLinks :mode="'update'" :links="this.ideaDocuments" v-on:linkschange="linksChange"></IdeaLinks>
-        <IdeaType :mode="'update'" :type="this.ideaType" v-on:typechange="typeChange"></IdeaType>
+        <IdeaTags :mode="'update'" :tags="this.ideaTags" v-on:tagschanged="tagsChanged"></IdeaTags>
+        <IdeaLinks :mode="'update'" :links="this.ideaDocuments" v-on:linkschanged="linksChanged"></IdeaLinks>
+        <IdeaType :mode="'update'" :type="this.ideaType" v-on:typechanged="typeChanged"></IdeaType>
 
       </div>
       <div class="create__button-wrap">
@@ -69,6 +41,7 @@ import AutosizeTextarea from '@/components/misc/AutosizeTextarea';
 import localstorage from '@/utils/localstorage';
 import http from '../../api/index';
 import IdeaLinks from '../shared/IdeaLinks';
+import IdeaTags from '../shared/IdeaTags';
 import IdeaType from '../shared/IdeaType';
 import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA } from '../../../../server/models/ideaConstants';
 
@@ -77,6 +50,7 @@ export default {
   components: {
     AutosizeTextarea,
     IdeaLinks,
+    IdeaTags,
     IdeaType,
   },
   data() {
@@ -88,8 +62,6 @@ export default {
       ideaTags: [],
       ideaDocuments: [],
       // Session Work Fields
-      linkText: '',
-      tagText: '',
       ideaTypeCode: this.PUBLIC_IDEA,
       ideaDescMarked: '',
       previewDesc: false,
@@ -112,21 +84,8 @@ export default {
     );
   },
   methods: {
-    addTag() {
-      let newVal = this.tagText.trim();
-      if (newVal[newVal.length - 1] === ',') {
-        newVal = newVal.slice(0, -1);
-      }
-      if (newVal.length !== 0) {
-        this.ideaTags.push(newVal);
-        this.tagText = '';
-      }
-    },
-    linksChange(updatedLinks) {
+    linksChanged(updatedLinks) {
       this.ideaDocuments = updatedLinks;
-    },
-    removeTag(index) {
-      this.ideaTags.splice(index, 1);
     },
     saveIdea() {
       localstorage.setObject('create-idea-save', this.$data);
@@ -154,7 +113,10 @@ export default {
         throw new Error(`Error adding new idea document: ${err}`);
       });
     },
-    typeChange(typeCode, typeName) {
+    tagsChanged(updatedTags) {
+      this.ideaTags = updatedTags;
+    },
+    typeChanged(typeCode, typeName) {
       this.ideaTypeCode = typeCode;
       this.ideaType = typeName;
     },
