@@ -1,12 +1,15 @@
 <template id="idea-links">
   <div class="links__form-element">
-    <label class="links__label" for="view__links" v-show="this.ideaLinks.length > 0">Links</label>
+    <label class="links__label" v-show="this.ideaLinks.length > 0">Links</label>
     <div class="links__link-wrap">
-      <span id="links__links" class="view__links" v-for="(link, index) in ideaLinks" v-bind:key="index">
+      <span id="links__links" v-for="(link, index) in ideaLinks" v-bind:key="index">
         <span class="links__link">
-          <a :href="link.url" target="_blank">{{link.url_description}}</a>
           <div v-if="mode === 'update'">
+            <a class="links__link-text" :href="link.url" target="_blank">{{link.url_description}}</a>
             <button class="create__remove-link" id="remove__link" @click="removeLink(index)"> &times; </button>
+          </div>
+          <div v-else>
+            <a :href="link.url" target="_blank">{{link.url_description}}</a>
           </div>
         </span>
       </span>
@@ -87,18 +90,6 @@ export default {
       padding 40px
       border 1px solid $purple
 
-  &__header
-    text-align center
-    color $purple
-    font-size 1.5em
-    line-height 1.2em
-    @media (min-width: 600px)
-      font-size 36px
-      margin-bottom 60px
-
-    & h1
-      font-weight 200 !important
-
   &__label
     text-transform uppercase
     font-size .8em
@@ -106,36 +97,10 @@ export default {
     font-weight 700
     display block
 
-  &__table
-    margin 0 auto
-    width 100%
-
-  &__th
-    padding 10px
-    text-transform uppercase
-    border-bottom 1px dotted $purple
-    &:first-child
-      text-align left
-      padding-left 0
-    &:last-child
-      text-align right
-      padding-right 0
-
-  &__tr
-    padding 10px
-
-  &__td
-    padding 10px
-    border-bottom 1px dotted $purple
-    &:first-child
-      padding-left 0
-    &:nth-child(2),
-    &:nth-child(3)
-      text-align center
-    &:last-child
-      text-align right
-      max-width 25px
-      padding-right 0
+  &__link-wrap
+    display flex
+    flex-wrap wrap
+    margin-bottom 20px
 
   &__input-wrap
     width 100%
@@ -213,16 +178,7 @@ export default {
       -moz-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
       box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
 
-  &__type
-    display inline-block
-    width 33%
-
-  &__link-wrap
-    display flex
-    flex-wrap wrap
-    margin-bottom 20px
-
-  &__links
+  &__link
     margin 10px
 
     &:first-child
@@ -255,10 +211,6 @@ export default {
     &:hover
       border: 1px solid rgb(124,72,194);
 
-  &__radio-group
-    display flex
-    width 100%
-
   &__button-wrap
     display flex
     justify-content center
@@ -272,55 +224,6 @@ export default {
 
       &:last-child
         margin-left 20px
-
-  &__form-tags
-
-
-  &__tag-wrap
-    margin-bottom 20px
-
-
-  &__tag
-    color: $gray_text;
-    display: inline-block;
-    font-size: 0.9em;
-    line-height: 1.4;
-    background-color: transparent;
-    border-radius: 2px;
-    border: 1px solid $gray_bkgrd;
-    margin-right: 10px;
-    margin-top: 5px;
-    vertical-align: top;
-
-    &:hover
-      border: 1px solid $aqua;
-
-
-    &__label
-      border-bottom-right-radius: 2px;
-      border-top-right-radius: 2px;
-      cursor: default;
-      padding: 2px 3px 3px 9px;
-      display: inline-block;
-      vertical-align: middle;
-
-    &__button
-      -webkit-appearance: none;
-      appearance: none;
-      border: none;
-      background: transparent;
-      color: inherit;
-
-    &__icon
-      display: inline-block;
-      cursor: pointer;
-      border-bottom-left-radius: 2px;
-      border-top-left-radius: 2px;
-      border-right: 1px solid rgba(0, 126, 255, 0.24);
-      padding: 1px 5px 3px;
-
-      &:hover
-        // color: red;
 
   &__option
       -webkit-appearance: none;
@@ -379,49 +282,6 @@ export default {
         display: block;
         position: relative;
         z-index: 100;
-
-  &__type-title
-    text-align center
-    width 100%
-    position absolute
-    top -24px
-    left 30px
-
-  &__type-desc
-    width 100%
-    min-width 150px
-    margin-left 60px
-    padding-left 10px
-    font-size .8em
-    @media (min-width: 600px)
-      min-width 400px
-
-
-  &__radio-group
-    padding: 10px 0;
-    display flex
-    flex-direction column
-    width 100%
-
-  &__radio
-    margin: 0 5px 15px 0;
-    padding: 1px;
-    border-radius: 50%;
-    display block
-    text-align center
-
-    &::after
-      border-radius: 50%;
-
-    &:focus
-      border-radius: 50%;
-
-  &__radio-label
-    color: $gray_text;
-    padding: 0 15px 0 0;
-
-  &__radio-wrap
-    display: inline-block;
 
 .tooltip {
     position: relative;

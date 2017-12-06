@@ -1,16 +1,16 @@
 <template id="idea-links">
   <div class="tags__form-tags">
-  <label class="tags__label" for="newTag" v-show="this.ideaTags.length > 0">Tags</label>
+    <label class="tags__label" v-show="this.ideaTags.length > 0">Tags</label>
     <div class="tags__tag-wrap">
       <span class="tags__form-tag" v-for="(tag, index) in ideaTags" v-bind:key="index">
         <span class="tags__tag" >
-          <div v-if="mode === 'update'">
-            <span class="tags__edit__icon" aria-hidden="true">
+          <span class="tags__edit__icon" aria-hidden="true">
+            <div v-if="mode === 'update'">
               <button class="tags__edit__button" @click="removeTag(index)">
                   &times;
               </button>
-            </span>
-          </div>
+            </div>
+          </span>
           <span class="tags__edit__label" role="option" aria-selected="true">
               {{tag}}
             <span class="tag-aria-only">&nbsp;</span>
@@ -84,55 +84,12 @@ export default {
       padding 40px
       border 1px solid $purple
 
-  &__header
-    text-align center
-    color $purple
-    font-size 1.5em
-    line-height 1.2em
-    @media (min-width: 600px)
-      font-size 36px
-      margin-bottom 60px
-
-    & h1
-      font-weight 200 !important
-
   &__label
     text-transform uppercase
     font-size .8em
     letter-spacing 2.5px
     font-weight 700
     display block
-
-  &__table
-    margin 0 auto
-    width 100%
-
-  &__th
-    padding 10px
-    text-transform uppercase
-    border-bottom 1px dotted $purple
-    &:first-child
-      text-align left
-      padding-left 0
-    &:last-child
-      text-align right
-      padding-right 0
-
-  &__tr
-    padding 10px
-
-  &__td
-    padding 10px
-    border-bottom 1px dotted $purple
-    &:first-child
-      padding-left 0
-    &:nth-child(2),
-    &:nth-child(3)
-      text-align center
-    &:last-child
-      text-align right
-      max-width 25px
-      padding-right 0
 
   &__input-wrap
     width 100%
@@ -195,6 +152,9 @@ export default {
       -moz-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
       box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
 
+  &__tag-wrap
+    margin-bottom 20px
+
   &__textarea
     width 100%
     padding 10px 0 20px
@@ -210,91 +170,45 @@ export default {
       -moz-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
       box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
 
-  &__type
-    display inline-block
-    width 33%
-
-&__edit
-    color: $gray_text;
-    display: inline-block;
-    font-size: 0.9em;
-    line-height: 1.4;
-    background-color: transparent;
-    border-radius: 2px;
-    border: 1px solid $gray_bkgrd;
-    margin-right: 10px;
-    margin-top: 5px;
-    vertical-align: top;
-
-    &:hover
-      border: 1px solid $aqua;
-
-    &__label
-      border-bottom-right-radius: 2px;
-      border-top-right-radius: 2px;
-      cursor: default;
-      padding: 1px 5px 4px 5px;
+  &__edit
+      color: $gray_text;
       display: inline-block;
-      vertical-align: middle;
+      font-size: 0.9em;
+      line-height: 1.4;
+      background-color: transparent;
+      border-radius: 2px;
+      border: 1px solid $gray_bkgrd;
+      margin-right: 10px;
+      margin-top: 5px;
+      vertical-align: top;
 
-    &__button
-      -webkit-appearance: none;
-      appearance: none;
-      border: none;
-      background: transparent;
-      color: inherit;
-      
-    &__icon
-      display: inline-block;
-      cursor: pointer;
-      border-bottom-left-radius: 2px;
-      border-top-left-radius: 2px;
-      border-right: 1px solid rgba(124,72,194, 0.25);
-      padding: 1px 5px 3px;
       &:hover
-        // color: red;
+        border: 1px solid $aqua;
 
-  &__link-wrap
-    display flex
-    flex-wrap wrap
-    margin-bottom 20px
+      &__label
+        border-bottom-right-radius: 2px;
+        border-top-right-radius: 2px;
+        cursor: default;
+        padding: 1px 5px 4px 5px;
+        display: inline-block;
+        vertical-align: middle;
 
-  &__links
-    margin 10px
+      &__button
+        -webkit-appearance: none;
+        appearance: none;
+        border: none;
+        background: transparent;
+        color: inherit;
 
-    &:first-child
-      margin-left 0
-
-    &:last-child
-      margin-right 0
-
-  &__link a
-    color $purple
-    text-decoration none
-    border-bottom 1px dotted $purple
-
-    &:hover, &:focus
-      color $aqua
-      text-decoration none
-      border-bottom 1px dotted $aqua
-
-  &__remove-link
-    -webkit-appearance: none;
-    appearance: none;
-    background: transparent;
-    color: inherit;
-    cursor: pointer;
-    font-size: 1em;
-    border: 1px solid rgba(124,72,194, 0.25);
-    padding: 0 4px 2px;
-    margin-left 10px
-
-    &:hover
-      border: 1px solid rgb(124,72,194);
-
-  &__radio-group
-    display flex
-    width 100%
+      &__icon
+        display: inline-block;
+        cursor: pointer;
+        border-bottom-left-radius: 2px;
+        border-top-left-radius: 2px;
+        border-right: 1px solid rgba(124,72,194, 0.25);
+        padding: 1px 5px 3px;
+        &:hover
+          // color: red;
 
   &__button-wrap
     display flex
@@ -315,7 +229,6 @@ export default {
 
   &__tag-wrap
     margin-bottom 20px
-
 
   &__tag
     color: $gray_text;
@@ -358,107 +271,6 @@ export default {
 
       &:hover
         // color: red;
-
-  &__option
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      -ms-appearance: none;
-      -o-appearance: none;
-      appearance: none;
-      position: relative;
-      top: 4px;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      height: 20px;
-      width: 20px;
-      transition: all 0.15s ease-out 0s;
-      border: 2px solid $purple
-      color: $purple
-      cursor: pointer;
-      display: block;
-      margin-right: 0.5rem;
-      position: relative;
-      z-index: 10;
-
-      & input
-        z-index: -1
-        opacity: 0
-        width 100%
-        display flex
-        height 20px
-        position relative
-
-
-      &:hover
-        background: $pink;
-
-      &:checked
-        background: $pink;
-
-      &::before
-        height: 12px;
-        width: 12px;
-        position: absolute;
-        top: 2px;
-        left: 2px;
-        content: '';
-        display: inline-block;
-        border-radius: 100%;
-        background-color: white;
-
-        &:focus
-          border-radius: 50%;
-
-      &::after
-        background: #40e0d0;
-        content: '';
-        display: block;
-        position: relative;
-        z-index: 100;
-
-  &__type-title
-    text-align center
-    width 100%
-    position absolute
-    top -24px
-    left 30px
-
-  &__type-desc
-    width 100%
-    min-width 150px
-    margin-left 60px
-    padding-left 10px
-    font-size .8em
-    @media (min-width: 600px)
-      min-width 400px
-
-
-  &__radio-group
-    padding: 10px 0;
-    display flex
-    flex-direction column
-    width 100%
-
-  &__radio
-    margin: 0 5px 15px 0;
-    padding: 1px;
-    border-radius: 50%;
-    display block
-    text-align center
-
-    &::after
-      border-radius: 50%;
-
-    &:focus
-      border-radius: 50%;
-
-  &__radio-label
-    color: $gray_text;
-    padding: 0 15px 0 0;
-
-  &__radio-wrap
-    display: inline-block;
 
 .tooltip {
     position: relative;
