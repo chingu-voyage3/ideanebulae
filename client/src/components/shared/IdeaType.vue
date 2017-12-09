@@ -1,97 +1,41 @@
-<template>
-  <div class="container view">
-    <header class="view__header">
-      <h1 class="view__title">Idea Details</h1>
-    </header>
-
-    <section class="view__form-wrapper">
-      <div class="view__form-group">
-
-        <div class="view__form-element">
-          <label class="view__label" for="view__creator">Creator</label>
-          <input class="view__input" id="view__creator" maxlength="100" type="text" name="creator" v-model="ideaCreator" placeholder="Creator" autofocus disabled>
+<template id="idea-type">
+  <div class="view__form-element">
+    <label class="view__label" for="create__type">Type</label>
+    <div class="view__radio-group">
+      <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === PUBLIC }" @mouseover="upHere = PUBLIC" @mouseleave="upHere = -1" @click="typeToggle(PUBLIC)">
+        <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC" v-model="ideaTypeCode" disable>
+        <div class="view__type-title tooltip">Public
+          <span class="view__type-desc tooltiptext" v-if="upHere == PUBLIC">Anyone can read and give feedback</span>
         </div>
-
-        <div class="view__form-element">
-          <label class="view__label" for="view__title">Title</label>
-          <input class="view__input" id="view__title" maxlength="100" type="text" name="title" v-model="ideaTitle" placeholder="Title" autofocus disabled>
-        </div>
-
-        <div class="view__form-element">
-          <label class="view__label" for="view__desc">Description</label>
-          <div id="view__desc" name="description" class="view__textarea" >{{ideaDesc}}</div>
-        </div>
-
-        <IdeaTags :tags="this.ideaTags"></IdeaTags>
-        <IdeaLinks :links="this.ideaLinks"></IdeaLinks>
-        <IdeaType :type="this.ideaType"></IdeaType>
-
-        <div class="view__form-element" v-show="this.ideaTypeCode">
-          <label class="view__label" for="view__agreement">Agreement</label>
-          <textarea id="view__agreement" name="agreement" class="view__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement" disabled></textarea>
-        </div>
-
-        <div class="view__form-element" v-show="this.ideaReviews.length">
-          <label class="view__label" for="view__reviews">Reviews</label>
-          <section class="view__results">
-            <table class="view__table">
-              <tr class="view__tr">
-                <th class="view__th">Reviewer</th>
-                <th class="view__th">Assigned</th>
-                <th class="view__th">Updated</th>
-                <th class="view__th">Comments</th>
-              </tr>
-              <tr class="view__tr" v-for="review in ideaReviews" v-bind:key="review.reviewer">
-                <td class="view__td">{{review.reviewer}}</td>
-                <td class="view__td">{{new Date(review.assigned_ts).toLocaleDateString()}}</td>
-                <td class="view__td">{{new Date(review.updated_ts).toLocaleDateString()}}</td>
-                <td class="view__td">{{review.comments}}</td>
-              </tr>
-            </table>
-          </section>
-        </div>
-
       </div>
-
-      <div class="view__button-wrap">
-        <button class="btn btn__primary profile__button view__button--btm" @click="editIdea">{{editButtonText}}</button>
+      <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === PRIVATE }" @mouseover="upHere = PRIVATE" @mouseleave="upHere = -1" @click="typeToggle(PRIVATE)">
+        <input type="radio" name="ideatype" :value="PRIVATE" v-model="ideaTypeCode" disable>
+        <div class="view__type-title tooltip">Private
+          <span class="view__type-desc tooltiptext" v-if="upHere == PRIVATE">Only visible to people who agree to the license</span>
+        </div>
       </div>
-    </section>
+      <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL }" @mouseover="upHere = COMMERCIAL" @mouseleave="upHere = -1" @click="typeToggle(COMMERCIAL)">
+        <input type="radio" name="ideatype" :value="COMMERCIAL" v-model="ideaTypeCode" disable>
+        <div class="view__type-title tooltip">Custom
+          <span class="view__type-desc tooltiptext" v-if="upHere == COMMERCIAL">Customise the license and choose who can see the idea</span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { getUserProfile, getAccessToken } from '@/auth';
-import http from '../../api/index';
-import IdeaLinks from '../shared/IdeaLinks';
-import IdeaTags from '../shared/IdeaTags';
-import IdeaType from '../shared/IdeaType';
 import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../../../../server/models/ideaConstants';
 
 export default {
-  name: 'IdeaDetails',
-  components: {
-    IdeaLinks,
-    IdeaTags,
-    IdeaType,
+  name: 'IdeaType',
+  props: {
+    type: { type: String, required: true },
+    mode: { type: String, required: false },
   },
   data() {
     return {
-      // Session information
-      currentUser: '',
-      userRole: '',
-      editButtonText: '',
-      // Idea information
-      idea_id: '',
-      ideaCreator: '',
-      ideaTitle: '',
-      ideaType: '',
-      ideaDesc: '',
-      ideaTags: [],
-      ideaLinks: [''],
-      ideaAgreement: '',
-      ideaReviews: [],
-      ideaTypeCode: '',
+      upHere: '-1',
       // Constants
       // Note that constants are imported from files to maintain consistency across the app
       // but defined in this fashion so they are available to be referenced from HTML.
@@ -100,55 +44,27 @@ export default {
       COMMERCIAL: COMMERCIAL_IDEA,
     };
   },
-  mounted() {
-    // Get the profile for the currently logged in (i.e. session) user
-    if (getAccessToken()) {
-      getUserProfile()
-      .then((profile) => {
-        this.currentUser = profile.sub;
-
-        // Retrieve the idea identified by the URL paramaters
-        http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
-        .then((response) => {
-          this.ideaCreator = response.data[0].creator;
-          this.ideaTitle = response.data[0].title;
-          this.ideaType = response.data[0].type;
-          this.ideaTypeCode = IDEA_TYPES.findIndex(element =>
-            element.name === this.ideaType,
-          );
-          if (this.ideaTypeCode === -1) {
-            throw new Error(`Invalid idea type encountered displaying idea details. type: ${this.ideaType}`);
-          }
-
-          // eslint-disable-next-line no-underscore-dangle
-          this.idea_id = response.data[0]._id;
-          this.ideaDesc = response.data[0].description;
-          this.ideaLinks = response.data[0].documents;
-          this.ideaTags = response.data[0].tags;
-          if (response.data[0].agreement === null) {
-            this.ideaAgreement = null;
-          } else {
-            this.ideaAgreement = response.data[0].agreement.agreement;
-          }
-          this.ideaReviews = response.data[0].reviews;
-          this.userRole = (this.ideaCreator === this.currentUser) ? 'creator' : 'reviewer';
-          this.editButtonText = (this.userRole === 'creator') ? 'Edit Idea' : 'Add/Update Review';
-        })
-        .catch((err) => {
-          throw new Error(`Locating idea: ${err}`);
-        });
-      })
-      .catch((err) => {
-        throw new Error(`Accessing user security profile: ${err}`);
-      });
-    }
+  computed: {
+    ideaType() {
+      return this.type;
+    },
+    ideaTypeCode() {
+      return IDEA_TYPES.findIndex(element =>
+        element.name === this.type,
+      );
+    },
   },
   methods: {
-    editIdea() {
-      if (this.userRole === 'creator') {
-        this.$router.push({ path: `/edit/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
-      } else {
-        this.$router.push({ path: `/review/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
+    /* Process a user click to change the idea type only if we've been called in 'update' mode.
+     * Return an literal indicating that the type was changed along with the new type code and
+     * the name that's associated with it.
+     */
+    typeToggle(typeCode) {
+      if (this.mode === 'update') {
+        if (typeCode === -1) {
+          throw new Error(`Invalid idea type encountered editing idea details. type: ${typeCode}`);
+        }
+        this.$emit('typechanged', typeCode, IDEA_TYPES[typeCode].name);
       }
     },
   },

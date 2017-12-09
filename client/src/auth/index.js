@@ -48,7 +48,6 @@ export function getIdToken() {
 
 // Get the access token from the localStorage
 export function getAccessToken() {
-  console.log(`REDIRECT: ${REDIRECT}`);
   return window.localStorage.getItem(ACCESS_TOKEN_KEY);
 }
 

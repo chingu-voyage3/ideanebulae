@@ -21,77 +21,10 @@
           </div>
         </div>
 
-        <div class="create__form-tags">
-          <div class="create__tag-wrap">
-            <span class="create__form-tag" v-for="(tag, index) in ideaTags" v-bind:key="index">
-              <span class="create__tag" >
-                <span class="create__tag__icon" aria-hidden="true">
-                  <button
-                    class="create__tag__button"
-                    @click="removeTag(index)">
-                      &times;
-                  </button>
-                </span>
-                <span class="create__tag__label" role="option" aria-selected="true">
-                    {{tag}}
-                  <span class="tag-aria-only">&nbsp;</span>
-                </span>
-              </span>
-            </span>
-          </div>
+        <IdeaTags :mode="'update'" :tags="this.ideaTags" v-on:tagschanged="tagsChanged"></IdeaTags>
+        <IdeaLinks :mode="'update'" :links="this.ideaDocuments" v-on:linkschanged="linksChanged"></IdeaLinks>
+        <IdeaType :mode="'update'" :type="this.ideaType" v-on:typechanged="typeChanged"></IdeaType>
 
-          <div class="create__addtag">
-            <label class="create__label" for="newTag">Add Tag</label>
-            <div class="create__input-wrap">
-              <input class="create__input" name="newTag" type="text" v-model="tagText" @keyup.enter="addTag" @keyup.188="addTag" @keyup.tab="addTag" placeholder="Add tags to help other users find your idea">
-              <button class="create__add-button"
-            @click="addTag"> + </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="create__form-element">
-          <div id="create__links" class="create__form__link" v-for="(link, index) in ideaDocuments" v-bind:key="index">
-            <div class="create__link">
-              <a class="create__link-text" :href="link.url" target="_blank">{{link.url_description}}</a>
-              <button class="create__remove-link" id="remove__link" @click="removeLink(index)"> &times; </button>
-            </div>
-          </div>
-
-          <div class="create__addlink">
-            <div v-show="errors.has('newlink')">Invalid link</div>
-            <label class="create__label" for="newlink">Add link</label>
-            <div class="create__input-wrap">
-              <input class="create__input" name="newlink" v-validate="'url'" data-vv-delay="1000" type="text" v-model="linkText" @keyup.enter="addLink" placeholder="Links to more information about your idea">
-              <button class="create__add-button"
-            @click="addLink"> + </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="create__form-element">
-          <label class="create__label" for="create__type">Type</label>
-          <div class="create__radio-group">
-            <div class="create__radio create__option" v-bind:class="{ active: ideaTypeCode === PUBLIC }" @mouseover="upHere = PUBLIC" @mouseleave="upHere = -1" @click="typeToggle(PUBLIC)">
-              <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC" v-model="ideaTypeCode">
-              <div class="create__type-title tooltip">Public
-                <span class="create__type-desc tooltiptext" v-if="upHere == PUBLIC">Anyone can read and give feedback</span>
-              </div>
-            </div>
-            <div class="create__radio create__option" v-bind:class="{ active: ideaTypeCode === PRIVATE }" @mouseover="upHere = PRIVATE" @mouseleave="upHere = -1" @click="typeToggle(PRIVATE)">
-              <input type="radio" name="ideatype" :value="PRIVATE" v-model="ideaTypeCode">
-              <div class="create__type-title tooltip">Private
-                <span class="create__type-desc tooltiptext" v-if="upHere == PRIVATE">Only visible to people who agree to the license</span>
-              </div>
-            </div>
-            <div class="create__radio create__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL }" @mouseover="upHere = COMMERCIAL" @mouseleave="upHere = -1" @click="typeToggle(COMMERCIAL)">
-              <input type="radio" name="ideatype" :value="COMMERCIAL" v-model="ideaTypeCode">
-              <div class="create__type-title tooltip">Custom
-                <span class="create__type-desc tooltiptext" v-if="upHere == COMMERCIAL">Customise the license and choose who can see the idea</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
       <div class="create__button-wrap">
         <a class="btn btn__primary profile__button create__button--btm" href="/dashboard">Cancel</a>
@@ -107,10 +40,19 @@ import marked from 'marked';
 import AutosizeTextarea from '@/components/misc/AutosizeTextarea';
 import localstorage from '@/utils/localstorage';
 import http from '../../api/index';
+import IdeaLinks from '../shared/IdeaLinks';
+import IdeaTags from '../shared/IdeaTags';
+import IdeaType from '../shared/IdeaType';
 import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA } from '../../../../server/models/ideaConstants';
 
 export default {
   name: 'CreateIdea',
+  components: {
+    AutosizeTextarea,
+    IdeaLinks,
+    IdeaTags,
+    IdeaType,
+  },
   data() {
     return {
       // Idea Document Fields
@@ -120,11 +62,7 @@ export default {
       ideaTags: [],
       ideaDocuments: [],
       // Session Work Fields
-      linkText: '',
-      tagText: '',
       ideaTypeCode: this.PUBLIC_IDEA,
-      upHere: '-1',
-      addLinkError: false,
       ideaDescMarked: '',
       previewDesc: false,
       // Constants
@@ -146,42 +84,8 @@ export default {
     );
   },
   methods: {
-    addLink() {
-      let newVal = this.linkText.trim();
-
-      if (newVal.length === 0) {
-        return;
-      }
-
-      this.$validator.validate('newlink', newVal)
-      .then((result) => {
-        if (result) {
-          if (!/^http[s]?:\/\/.+/.test(newVal)) {
-            newVal = `https://${newVal}`;
-          }
-          this.linkText = '';
-          this.ideaDocuments.push({ url_description: newVal, url: `${newVal}` });
-        }
-      });
-    },
-    addTag() {
-      let newVal = this.tagText.trim();
-      if (newVal[newVal.length - 1] === ',') {
-        newVal = newVal.slice(0, -1);
-      }
-      if (newVal.length !== 0) {
-        this.ideaTags.push(newVal);
-        this.tagText = '';
-      }
-    },
-    removeLink(index) {
-      this.ideaDocuments.splice(index, 1);
-    },
-    removeTag(index) {
-      this.ideaTags.splice(index, 1);
-    },
-    typeToggle(type) {
-      this.ideaTypeCode = type;
+    linksChanged(updatedLinks) {
+      this.ideaDocuments = updatedLinks;
     },
     saveIdea() {
       localstorage.setObject('create-idea-save', this.$data);
@@ -209,11 +113,17 @@ export default {
         throw new Error(`Error adding new idea document: ${err}`);
       });
     },
+    tagsChanged(updatedTags) {
+      this.ideaTags = updatedTags;
+    },
+    typeChanged(typeCode, typeName) {
+      this.ideaTypeCode = typeCode;
+      this.ideaType = typeName;
+    },
     updateIdeaDesc(v) {
       this.ideaDesc = v;
     },
   },
-  components: { AutosizeTextarea },
 };
 </script>
 
