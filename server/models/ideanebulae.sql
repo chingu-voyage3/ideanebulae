@@ -7,7 +7,7 @@ create database ideanebulae
 
 create type idea_type as ENUM ('public', 'private', 'commercial');
 
-create table profile (
+create table user (
   user_id         char(16)    not null,
   username        char(30)    not null,
   name            char(30),
@@ -17,71 +17,76 @@ create table profile (
 );
 
 create table idea (
-  idea_id         serial      not null,
+  idea_slug       serial      not null,
   creator         char(16)    not null,
   title           char(40)    not null,
   type            idea_type   not null,
   description     text,
   created_ts      timestamp,
   tags            char(16)[],
-  primary key (idea_id)
+  primary key (idea_slug)
 );
 
 create index idea_naturalkey on idea (creator, title, type);
 create index idea_tag on idea using gin (tags);
 
 create table agreement (
-  agreement_id    serial      not null,
+  agreement_slug  serial      not null,
   idea_id         integer     not null,
   agreement_version smallserial,
   creator         char(16)    not null,
   title           char(40)    not null,
   type            idea_type   not null,
   agreement       text        not null,
-  primary key (agreement_id, agreement_version)
+  primary key (agreement_slug, agreement_version)
 );
 
 create index agreement_idea on agreement (idea_id);
 create index agreement_naturalkey on agreement (creator, title, type);
 
 create table review (
-  review_id       serial      not null,
-  idea_id         integer     not null,
+  review_slug     serial      not null,
+  idea_slug       integer     not null,
   creator         char(16)    not null,
   title           char(40)    not null,
   type            idea_type   not null,
-  primary key (review_id)
+  reviewer_slug   integer     not null,
+  assigned_ts     timestamp   not null,
+  updated_ts      timestamp   not null,
+  comments        text        not null,        
+  primary key (review_slug)
 );
 
-create index review_idea on review (idea_id);
+create index review_idea on review (idea_slug);
+create index review_reviewer on review (reviewer_slug);
 create index review_naturalkey on review (creator, title, type);
 
 create table document (
-  document_id     serial      not null,
-  idea_id         integer     not null,
+  document_slug   serial      not null,
+  idea_slug       integer     not null,
   creator         char(16)    not null,
   title           char(40)    not null,
   type            idea_type   not null,
   url             text        not null,
   description     text,
-  primary key (document_id)
+  primary key (document_slug)
 );
 
-create index document_idea on document (idea_id);
+create index document_idea on document (idea_slug);
 create index document_naturalkey on document (creator, title, type);
 
 -- Populate user profile test data
-insert into profile ( user_id, username, name, avatar_url, qualifications)
+insert into user ( user_id, username, name, avatar_url, qualifications)
   values ('github|11398826', 'oxyrus', 'Andrés Pérez', 'TBD', 'TBD');
-insert into profile ( user_id, username, name, avatar_url, qualifications)
+insert into user ( user_id, username, name, avatar_url, qualifications)
   values ('github|1287072', 'jdmedlock', 'Jim Medlock',
     'https://avatars3.githubusercontent.com/u/1287072?v=4',
     'I love empanadas!');
-insert into profile ( user_id, username, name, avatar_url, qualifications)
+insert into user ( user_id, username, name, avatar_url, qualifications)
   values ('github|24995773', 'rifkegribenes', 'Sarah Schneider',
     'https://avatars2.githubusercontent.com/u/24995773?v=4',
     'Designer extrordinaire');
-insert into profile ( user_id, username, name, avatar_url, qualifications)
+insert into user ( user_id, username, name, avatar_url, qualifications)
   values ('github|8445249', 'Parminder Singh', null, null, null);
 
 -- Populate idea test data
@@ -167,46 +172,57 @@ insert into idea (creator, title, type, description, created_ts, tags)
   );
 
 -- Populate agreement test data
-insert into agreement (idea_id, creator, title, type, agreement)
+insert into agreement (idea_slug, creator, title, type, agreement)
   values (8,
     'github|1287072',
     'Pumpkin Ale Empanadas',
     'private',
     'You agree to 1) Eat more empanadas, 2) Refrain from eating, touching, or looking at any other batter coated food product, 3) Spread the good word about the beauty, quiet dignity, and general awesomeness of empanadas to your fellow Earthlings.'
   );
-insert into agreement (idea_id, creator, title, type, agreement)
+insert into agreement (idea_slug, creator, title, type, agreement)
   values (2,
     'github|8445249',
     'Empanadas',
     'public',
     'Agree or else!'
     );
-insert into agreement (idea_id, creator, title, type, agreement)
+insert into agreement (idea_slug, creator, title, type, agreement)
   values (1,
     'github|11398826',
     'Empanadas 4 ever',
     'public',
     'Agree or it will be no empanadas for you!'
   );
-insert into agreement (idea_id, creator, title, type, agreement)
+insert into agreement (idea_slug, creator, title, type, agreement)
   values (10,
     'github|8445249',
     'Gas Operated Empanadas',
     'private',
-    'Acceptance of this agreement certifies that you acknowledge Trion as the Supreme Overlord AI and you promise to hold empanadas created by him in reverence for all perpetuity.'  );
-insert into agreement (idea_id, creator, title, type, agreement)
+    'Acceptance of this agreement certifies that you acknowledge Trion as the Supreme Overlord AI and you promise to hold empanadas created by him in reverence for all perpetuity.'
+  );
+insert into agreement (idea_slug, creator, title, type, agreement)
   values (9,
-    'github|1287072'
+    'github|1287072',
     'Cold Fusion Powered Empanadas',
     'private',
     'This agreement binds you to Promise to worship Trion'
   );
-insert into agreement (idea_id, creator, title, type, agreement)
+insert into agreement (idea_slug, creator, title, type, agreement)
   values (4,
     'github|1287072',
     'Interstellar Empanadas',
     'private',
     'This is my own little agreement. Please honor it or there will be no empanadas for you!'
   );
-insert into agreement (idea_id, creator, title, type, agreement)
-  values (  );
+
+-- Populate url document test data 
+insert into document (idea_slug, creator, title, type, url, description)
+  values (
+
+  );
+
+-- Populate review test data
+insert into review (idea_slug, creator, title, type, reviewer_slug, assigned_ts, updated_ts, comments)
+  values (
+
+  );
