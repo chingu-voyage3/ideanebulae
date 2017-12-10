@@ -1,19 +1,10 @@
 import express, { Router } from 'express';
-import mongoose from 'mongoose';
-import config from '../services/mongoose.config';
 import User from '../models/user';
 import Idea from '../models/idea';
 import authCheck from '../utils/authCheck';
 import decodeToken from '../utils/decodeToken';
 
 const router = Router();
-
-mongoose.connect(config.db.mongoURI, {
-  useMongoClient: true
-});
-
-// See http://mongoosejs.com/docs/promises.html#plugging-in-your-own-promises-library
-mongoose.Promise = global.Promise;
 
 // Example of route that implements authCheck
 // only if you've been authenticated you can access

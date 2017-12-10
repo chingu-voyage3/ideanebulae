@@ -1,45 +1,32 @@
-import mongoose, { Schema } from 'mongoose';
-import userMethods from './methods/userMethods';
+import Sequelize from 'sequelize';
+import db from '../services/db';
 
-const userSchema = new Schema({
-  // Unique intneranl Auth0 user identifier (Auth0 sub field)
+const sequelize = db.get();
+
+const User = sequelize.define('user', {
   user_id: {
-    type: String,
-    required: true,
-    unique: true
+    type: Sequelize.STRING
   },
 
   // User name used for authentication (Auth0 nickname field)
   username: {
-    type: String,
-    required: false,
-    unique: true
+    type: Sequelize.STRING    
   },
 
   // User full name (Auth0 name field)
   name: {
-    type: String,
-    required: false,
-    unique: false,
+    type: Sequelize.STRING    
   },
 
   // User's social media avatar (Auth0 picture field)
   avatar_url: {
-    type: String,
-    required: false,
-    unique: false
+    type: Sequelize.STRING
   },
 
   // User's qualification description 
   qualifications: {
-    type: String,
-    required: false,
-    unique: false
+    type: Sequelize.STRING
   },
 });
-
-// Create a model for the schema
-userSchema.loadClass(userMethods);
-const User = mongoose.model('User', userSchema);
 
 export default User;
