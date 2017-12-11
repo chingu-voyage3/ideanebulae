@@ -158,7 +158,7 @@ deployed from.
 | `git remote add ideanebulaeas https://git.heroku.com/ideanebulaeas.git` | Define a name in the local repo for the API Server repo on Heroku |
 | `git remote -v` | Verify the remote names have been established |
 | `heroku buildpacks:set https://github.com/heroku/heroku-buildpack-nodejs -a ideanebulae` | Define the Client Services component as a NodeJS app |
-| `heroku buildpacks --app ideanebulae | Verify ideanebulae is a NodeJS app` |
+| `heroku buildpacks --app ideanebulae` | Verify ideanebulae is a NodeJS app |
 | `heroku buildpacks:set https://github.com/heroku/heroku-buildpack-nodejs -a ideanebulaeas`| Define the API Server component as a NodeJS app |
 | `heroku buildpacks --app ideanebulaeas` | Verify ideanebulaeas is a NodeJS app |
 | | |
