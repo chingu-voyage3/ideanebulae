@@ -7,10 +7,10 @@ create database ideanebulae
 
 create type idea_type as ENUM ('public', 'private', 'commercial');
 
-create table user (
-  user_id         char(16)    not null,
-  username        char(30)    not null,
-  name            char(30),
+create table profile ( 
+  user_id         char(64)       not null,
+  username        varchar(30)    not null,
+  name            varchar(30),
   avatar_url      text,
   qualifications  text,
   primary key (user_id)
@@ -18,12 +18,12 @@ create table user (
 
 create table idea (
   idea_slug       serial      not null,
-  creator         char(16)    not null,
+  creator         char(64)    not null,
   title           char(40)    not null,
   type            idea_type   not null,
   description     text,
   created_ts      timestamp,
-  tags            char(16)[],
+  tags            char(40)[],
   primary key (idea_slug)
 );
 
@@ -32,25 +32,25 @@ create index idea_tag on idea using gin (tags);
 
 create table agreement (
   agreement_slug  serial      not null,
-  idea_id         integer     not null,
+  idea_slug       integer     not null,
   agreement_version smallserial,
-  creator         char(16)    not null,
-  title           char(40)    not null,
+  creator         char(64) not null,
+  title           char(40) not null,
   type            idea_type   not null,
   agreement       text        not null,
   primary key (agreement_slug, agreement_version)
 );
 
-create index agreement_idea on agreement (idea_id);
+create index agreement_idea on agreement (idea_slug);
 create index agreement_naturalkey on agreement (creator, title, type);
 
 create table review (
   review_slug     serial      not null,
   idea_slug       integer     not null,
-  creator         char(16)    not null,
+  creator         char(64)    not null,
   title           char(40)    not null,
   type            idea_type   not null,
-  reviewer_slug   integer     not null,
+  reviewer        char(64)    not null,
   assigned_ts     timestamp   not null,
   updated_ts      timestamp   not null,
   comments        text        not null,        
@@ -64,7 +64,7 @@ create index review_naturalkey on review (creator, title, type);
 create table document (
   document_slug   serial      not null,
   idea_slug       integer     not null,
-  creator         char(16)    not null,
+  creator         char(64)    not null,
   title           char(40)    not null,
   type            idea_type   not null,
   url             text        not null,
@@ -76,17 +76,17 @@ create index document_idea on document (idea_slug);
 create index document_naturalkey on document (creator, title, type);
 
 -- Populate user profile test data
-insert into user ( user_id, username, name, avatar_url, qualifications)
+insert into profile ( user_id, username, name, avatar_url, qualifications)
   values ('github|11398826', 'oxyrus', 'Andrés Pérez', 'TBD', 'TBD');
-insert into user ( user_id, username, name, avatar_url, qualifications)
+insert into profile ( user_id, username, name, avatar_url, qualifications)
   values ('github|1287072', 'jdmedlock', 'Jim Medlock',
     'https://avatars3.githubusercontent.com/u/1287072?v=4',
     'I love empanadas!');
-insert into user ( user_id, username, name, avatar_url, qualifications)
+insert into profile ( user_id, username, name, avatar_url, qualifications)
   values ('github|24995773', 'rifkegribenes', 'Sarah Schneider',
     'https://avatars2.githubusercontent.com/u/24995773?v=4',
     'Designer extrordinaire');
-insert into user ( user_id, username, name, avatar_url, qualifications)
+insert into profile ( user_id, username, name, avatar_url, qualifications)
   values ('github|8445249', 'Parminder Singh', null, null, null);
 
 -- Populate idea test data
@@ -217,12 +217,208 @@ insert into agreement (idea_slug, creator, title, type, agreement)
 
 -- Populate url document test data 
 insert into document (idea_slug, creator, title, type, url, description)
-  values (
-
+  values (1,
+    'github|11398826',
+    'Empanadas 4 ever',
+    'public',
+    'https://google.com',
+    'The search engine of the web'
+  );
+insert into document (idea_slug, creator, title, type, url, description)
+  values (2,
+    'github|8445249',
+    'Empanadas',
+    'public',
+    'https://google.com',
+    'The search engine of the web'
+  );
+insert into document (idea_slug, creator, title, type, url, description)
+  values (6,
+    'github|8445249',
+    'Evolution Strategies',
+    'public',
+    'lol.com',
+    'https://lol.com'
+  );
+insert into document (idea_slug, creator, title, type, url, description)
+  values (6,
+    'github|8445249',
+    'Evolution Strategies',
+    'public',
+    'haha.com',
+    'https://haha.com'
+  );
+insert into document (idea_slug, creator, title, type, url, description)
+  values (6,
+    'github|8445249',
+    'Evolution Strategies',
+    'public',
+    'goooogle.com',
+    'https://goooogle.com'
+  );
+insert into document (idea_slug, creator, title, type, url, description)
+  values (7,
+    'github|1287072',
+    'Turducken Empanada',
+    'public',
+    'https://google.com',
+    'https://google.com'
+  );
+insert into document (idea_slug, creator, title, type, url, description)
+  values (8,
+    'github|1287072',
+    'Pumpkin Ale Empanadas',
+    'private',
+    'https://google.com',
+    'The search engine of the web'
+  );
+insert into document (idea_slug, creator, title, type, url, description)
+  values (9,
+    'github|1287072',
+    'Cold Fusion Powered Empanadas',
+    'private',
+    'https://youtu.be/hjJOAFAriHQ',
+    'https://youtu.be/hjJOAFAriHQ'
+  );
+insert into document (idea_slug, creator, title, type, url, description)
+  values (10,
+    'github|8445249',
+    'Gas Operated Empanadas',
+    'private',
+    'https://google.com',
+    'The search engine of the web'
   );
 
 -- Populate review test data
-insert into review (idea_slug, creator, title, type, reviewer_slug, assigned_ts, updated_ts, comments)
-  values (
-
+insert into review (idea_slug, creator, title, type, 
+            reviewer_slug, assigned_ts, updated_ts, comments)
+  values (1,
+    'github|11398826',
+    'Empanadas 4 ever',
+    'public',
+    'github|8445249',
+    '2017-11-06 10:30:00',
+    '2017-11-06 18:00:00',
+    'How are you going to preserve an empanada forever?'
+  );
+insert into review (idea_slug, creator, title, type, 
+            reviewer_slug, assigned_ts, updated_ts, comments)
+  values (1,
+    'github|11398826',
+    'Empanadas 4 ever',
+    'public',
+    'github|1287072',
+    '2017-11-21 16:50:23.279',
+    '2017-11-21 16:50:23.279',
+    'Can an empanada be stringified?'
+  );
+insert into review (idea_slug, creator, title, type, 
+            reviewer_slug, assigned_ts, updated_ts, comments)
+  values (2,
+    'github|8445249',
+    'Empanadas',
+    'public',
+    'github|11398826',
+    '2017-11-06 10:30:00',
+    '2017-11-06 18:00:00',
+    'This idea has merit, but more details are needed to fully understand the associated benefits and costs.'
+  );
+insert into review (idea_slug, creator, title, type, 
+            reviewer_slug, assigned_ts, updated_ts, comments)
+  values (2,
+    'github|8445249',
+    'Empanadas',
+    'public',
+    'github|1287072',
+    '2017-11-06 10:30:00',
+    '2017-11-22 14:41:33.385',
+    'Have you considered rainbow colored empanadas? If not you really should. \n\nWhat is the frequency Kenneth? 42 or 43?'
+  );
+insert into review (idea_slug, creator, title, type, 
+            reviewer_slug, assigned_ts, updated_ts, comments)
+  values (2,
+    'github|8445249',
+    'Empanadas',
+    'public',
+    'github|24995773',
+    '2017-12-10 23:31:11.392',
+    '2017-12-10 23:32:14.873',
+    'Will this work if i submit a new review???'
+  );
+insert into review (idea_slug, creator, title, type, 
+            reviewer_slug, assigned_ts, updated_ts, comments)
+  values (3,
+    'github|11398826',
+    'Dachshund Powered Empanada Factory',
+    'private',
+    'google-oauth2|104752550062603565419',
+    '2017-12-04 02:38:09.023',
+    '2017-12-04 02:38:09.023',
+    'It needs more dachshunds'
+  );
+insert into review (idea_slug, creator, title, type, 
+            reviewer_slug, assigned_ts, updated_ts, comments)
+  values (6,
+    'github|8445249',
+    'Evolution Strategies',
+    'public',
+    'github|1287072',
+    '2017-11-20 15:36:45.373',
+    '2017-11-21 17:03:27.119',
+    'Woot woot'
+  );
+insert into review (idea_slug, creator, title, type, 
+            reviewer_slug, assigned_ts, updated_ts, comments)
+  values (6,
+    'github|8445249',
+    'Evolution Strategies',
+    'public',
+    'github|24995773',
+    '2017-12-10 22:42:25.356',
+    '2017-12-10 22:50:56.247',
+    'Here is another review, will this add???'
+  );
+insert into review (idea_slug, creator, title, type, 
+            reviewer_slug, assigned_ts, updated_ts, comments)
+  values (6,
+    'github|8445249',
+    'Evolution Strategies',
+    'public',
+    'github|24995773',
+    '2017-12-10 22:42:30.468',
+    '2017-12-10 22:42:30.468',
+    'Test review'
+  );
+insert into review (idea_slug, creator, title, type, 
+            reviewer_slug, assigned_ts, updated_ts, comments)
+  values (8,
+    'github|1287072',
+    'Pumpkin Ale Empanadas',
+    'private',
+    'github|8445249',
+    '2017-11-06T10:30:00',
+    '2017-11-06T18:00:00',
+    'This is an awesome idea, but there may be issues with the time necessary to acquire a liquor license.'
+  );
+insert into review (idea_slug, creator, title, type, 
+            reviewer_slug, assigned_ts, updated_ts, comments)
+  values (9,
+    'github|1287072',
+    'Cold Fusion Powered Empanadas',
+    'private',
+    'github|20404311',
+    '2017-12-05 04:26:56.665',
+    '2017-12-05 04:26:56.665',
+    'What about after effects of longterm exposure to gamma ray irradiated empanadas?'
+  );
+insert into review (idea_slug, creator, title, type, 
+            reviewer_slug, assigned_ts, updated_ts, comments)
+  values (10,
+    'github|8445249',
+    'Gas Operated Empanadas',
+    'private',
+    'github|11398826',
+    '2017-11-06 10:30:00',
+    '2017-11-06 18:00:00',
+    'Will you use a 2-cycle or 4-cycle engine?'
   );
