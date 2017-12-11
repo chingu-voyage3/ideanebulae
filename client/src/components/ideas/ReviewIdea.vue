@@ -19,7 +19,7 @@
 
         <div class="review__form-element">
           <label class="review__label" for="review__desc">Description</label>
-          <textarea id="review__desc" name="description" class="review__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaDesc" placeholder="Description" disabled></textarea>
+          <div id="review__desc" name="description" class="review__textarea" >{{ideaDesc}}</div>
         </div>
 
         <IdeaTags :tags="this.ideaTags"></IdeaTags>
@@ -32,14 +32,10 @@
         </div>
 
         <div class="review__form-element">
-          <label class="review__label" for="review__reviews">Reviews</label>
+          <h3 class="review__subhead" for="review__reviews">Reviews</h3>
           <section class="review__results">
-            <label class="review__label" for="review__assigned">Date Assigned</label>
-            <input class="review__input" id="review__assigned" maxlength="10" type="text" name="assigned" v-model="reviewAssigned" placeholder="Assigned" autofocus disabled>
-            <label class="review__label" for="review__updated">Date Last Updated</label>
-            <input class="review__input" id="review__updated" maxlength="10" type="text" name="updated" v-model="reviewUpdated" placeholder="Updated" autofocus disabled>
             <label class="review__label" for="review__comments">Comments</label>
-            <textarea id="review__comments" name="comments" class="review__textarea" cols="80" rows="13" maxlength="1000" v-model="reviewComments" placeholder="Comments"></textarea>
+            <textarea id="review__comments" name="comments" class="review__textarea review__textarea--editable" cols="80" rows="13" maxlength="1000" v-model="reviewComments" placeholder="Your review here..."></textarea>
           </section>
         </div>
 
@@ -153,16 +149,20 @@ export default {
         .then((response) => {
           if (response.data.ok !== 1) {
             throw new Error('Failed to add a review to idea document. ', response.data);
+          } else {
+            this.$router.push('/dashboard');
           }
         }).catch((err) => {
           throw new Error('Failed to add an idea review: ', err);
         });
       } else {
-      // Update and existing review
+      // Update an existing review
         http.post(`/review/?creator=${this.ideaCreator}&title=${this.ideaTitle}&type=${this.ideaType}`, { reviewer: this.currentUser, comment: this.reviewComments })
         .then((response) => {
           if (response.data.ok !== 1 && response.data.nModified < 1) {
             throw new Error('Failed to update an idea document. ', response.data);
+          } else {
+            this.$router.push('/dashboard');
           }
         }).catch((err) => {
           throw new Error('Failed to update an idea review: ', err);
@@ -199,6 +199,21 @@ export default {
     & h1
       font-weight 200 !important
 
+  &__subhead
+    color $purple
+    font-size 1.2em
+    margin 20px 0
+    padding-bottom: 10px;
+    border-bottom: 1px dotted $purple;
+    font-weight 200 !important
+    @media (min-width: 600px)
+      font-size 30px
+
+  &__date-wrap
+    display flex
+    justify-content space-between
+    margin-bottom: 20px
+
   &__label
     text-transform uppercase
     font-size .8em
@@ -226,31 +241,45 @@ export default {
 
 
   &__input
-    padding 10px
+    padding 10px 0
     width 100%
-    font-size 1em
-    border 1px solid $purple
+    font-size 1.5em
+    border 0px transparent
+    color $purple
 
-    &:focus
-      -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
-      -moz-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
-      box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+    &--editable
+      padding 0 0 20px
+      width 100%
+      font-size 1em
+      color $gray_text
+      border 1px solid $purple
+
+      &:focus
+        -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+        -moz-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+        box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
 
   &__textarea
     width 100%
-    padding 10px
+    padding 10px 0 20px
     font-size 1em
     font-family: 'Titillium Web', Helvetica, Arial, sans-serif
-    color: $gray_text
+    color: $purple
     letter-spacing: 1px
     line-height: 1.5em
-    border 1px solid $purple
+    border 0px transparent
     margin-bottom 10px
 
-    &:focus
-      -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
-      -moz-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
-      box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+    &--editable
+      padding 20px
+      font-size 1.2em
+      color $gray_text
+      border 1px solid $purple
+
+      &:focus
+        -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+        -moz-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+        box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
 
   &__type
     display inline-block

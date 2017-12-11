@@ -32,22 +32,24 @@
         </div>
 
         <div class="view__form-element" v-show="this.ideaReviews.length">
-          <label class="view__label" for="view__reviews">Reviews</label>
+          <h3 class="view__subhead">Reviews</h3>
           <section class="view__results">
-            <table class="view__table">
-              <tr class="view__tr">
-                <th class="view__th">Reviewer</th>
-                <th class="view__th">Assigned</th>
-                <th class="view__th">Updated</th>
-                <th class="view__th">Comments</th>
-              </tr>
-              <tr class="view__tr" v-for="review in ideaReviews" v-bind:key="review.reviewer">
-                <td class="view__td">{{review.reviewer}}</td>
-                <td class="view__td">{{new Date(review.assigned_ts).toLocaleDateString()}}</td>
-                <td class="view__td">{{new Date(review.updated_ts).toLocaleDateString()}}</td>
-                <td class="view__td">{{review.comments}}</td>
-              </tr>
-            </table>
+            <div class="view__table">
+              <div class="view__tr view__tr--space-between">
+                <span class="view__th">Reviewer</span>
+                <span class="view__th">Assigned</span>
+                <span class="view__th">Updated</span>
+              </div>
+              <div class="view__tr view__tr--col" v-for="review in ideaReviews" v-bind:key="review.reviewer">
+                <div class="view__td--wrap">
+                  <div class="view__td">{{review.reviewer}}</div>
+                  <div class="view__td">{{new Date(review.assigned_ts).toLocaleDateString()}}</div>
+                  <div class="view__td">{{new Date(review.updated_ts).toLocaleDateString()}}</div>
+                </div>
+                <div class="view__td--full">{{review.comments}}</div>
+              </div>
+
+              </div>
           </section>
         </div>
 
@@ -181,6 +183,16 @@ export default {
     & h1
       font-weight 200 !important
 
+  &__subhead
+    color $purple
+    font-size 1.2em
+    margin 20px 0
+    padding-bottom: 10px;
+    border-bottom: 1px dotted $purple;
+    font-weight 200 !important
+    @media (min-width: 600px)
+      font-size 30px
+
   &__label
     text-transform uppercase
     font-size .8em
@@ -195,29 +207,51 @@ export default {
   &__th
     padding 10px
     text-transform uppercase
-    border-bottom 1px dotted $purple
     &:first-child
+      width 50%
+      text-align left
+      padding-left 0
+    &:nth-child(2)
+      width 25%
       text-align left
       padding-left 0
     &:last-child
+      width 25%
       text-align right
       padding-right 0
 
   &__tr
     padding 10px
+    display flex
+    border-bottom 1px solid $purple
+    &--col
+      flex-direction column
+      padding 0
+    &--space-between
+      justify-content space-between
+      padding 0
 
   &__td
-    padding 10px
-    border-bottom 1px dotted $purple
+    padding 10px 0
     &:first-child
+      width 50%
       padding-left 0
-    &:nth-child(2),
-    &:nth-child(3)
-      text-align center
+      color $purple
+    &:nth-child(2)
+      width 25%
+      text-align left
+      justify-self start
     &:last-child
+      width 25%
       text-align right
-      max-width 25px
       padding-right 0
+
+    &--wrap
+      display flex
+      justify-content space-between
+      width: 100%
+    &--full
+      padding 0 0 5px
 
   &__input-wrap
     width 100%
