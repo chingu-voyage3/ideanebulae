@@ -1,19 +1,10 @@
 import express, { Router } from 'express';
-import mongoose from 'mongoose';
-import config from '../services/mongoose.config';
-import User from '../models/user';
+import ProfileMethods from '../models/methods/profileMethods';
 import Idea from '../models/idea';
 import authCheck from '../utils/authCheck';
 import decodeToken from '../utils/decodeToken';
 
 const router = Router();
-
-mongoose.connect(config.db.mongoURI, {
-  useMongoClient: true
-});
-
-// See http://mongoosejs.com/docs/promises.html#plugging-in-your-own-promises-library
-mongoose.Promise = global.Promise;
 
 // Example of route that implements authCheck
 // only if you've been authenticated you can access
@@ -165,14 +156,14 @@ router.route('/review/:creator(*):title(*):type(*)')
 // Returns a list of all the users
 router.route('/users')
   .get((req, res) => {
-    User.listUsers()
+    ProfileMethods.listUsers()
       .then(users => res.json(users))
       .catch(err => res.send(err));
   });
 
 // Retrieve the user profile for the specified user name
 router.get('/profile/:username(*)', (req, res) => {
-  User.findUser(req.query.username)
+  ProfileMethods.findUser(req.query.username)
   .then(user => {
     res.json(user);
   })
@@ -182,12 +173,12 @@ router.get('/profile/:username(*)', (req, res) => {
 // Add or update the user profile for the specified user.
 //router.put('/profile/:username(*)', authCheck, (req, res) => {
 router.put('/profile/:userId(*)', (req, res) => {
-  User.createOrUpdateUser(req.params.userId, req.body.profile)
+  ProfileMethods.createOrUpdateUser(req.params.userId, req.body.profile)
   .then((doc) => {
     res.json('User profile created/updated');
   })
   .catch((err) => {
-    console.log('Error: ', err);
+    console.log('Error processing api route /profile/:userId(*): ', err);
     res.json(err);
   })
 });

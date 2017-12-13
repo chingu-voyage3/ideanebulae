@@ -1,3 +1,4 @@
+// TODO: Delete this file after migration to Postgres is complete
 import dotenv from 'dotenv';
 
 dotenv.config();

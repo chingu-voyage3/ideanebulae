@@ -1,9 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import config from './services/config';
 import router from './router';
 
 const app = express();
+
 // default port where dev server listens for incoming traffic
 var port = process.env.PORT || 7000;
 
