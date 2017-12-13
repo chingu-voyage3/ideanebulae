@@ -1,9 +1,10 @@
 import Sequelize from 'sequelize';
 import db from '../services/db';
+import profileMethods from './methods/profileMethods';
 
 const sequelize = db.get();
 
-const User = sequelize.define('user', {
+const Profile = sequelize.define('profile', {
   user_id: {
     type: Sequelize.STRING
   },
@@ -29,4 +30,4 @@ const User = sequelize.define('user', {
   },
 });
 
-export default User;
+export default Profile;
