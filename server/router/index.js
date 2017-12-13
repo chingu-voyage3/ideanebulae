@@ -165,7 +165,6 @@ router.route('/users')
 router.get('/profile/:username(*)', (req, res) => {
   ProfileMethods.findUser(req.query.username)
   .then(user => {
-    console.log(`user: ${res.json(user)}`);
     res.json(user);
   })
   .catch(err => res.send(err));

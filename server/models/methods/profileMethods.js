@@ -31,9 +31,6 @@ export default class userMethods {
       qualifications: profileData.qualifications,
     };
 
-    console.log(`userId: ${userId}`);
-    console.log('profileColumns: ', profileColumns);
-
     return await Profile.findOrCreate({
       where: { user_id: userId },
       defaults: profileColumns,
