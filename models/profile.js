@@ -6,7 +6,8 @@ const sequelize = db.get();
 
 const Profile = sequelize.define('profile', {
   user_id: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING,
+    primaryKey: true
   },
 
   // User name used for authentication (Auth0 nickname field)
@@ -28,6 +29,14 @@ const Profile = sequelize.define('profile', {
   qualifications: {
     type: Sequelize.STRING
   },
+},{
+  // By default, sequelize automatically pluralizes table names unless
+  // this option is enabled.
+  freezeTableName: true,
+  // By default, sequelize generates columns such as 'createdAt' and
+  // 'modifiedAt' which are automatically timestamped unless this
+  // option is disabled.
+  timestamps: false,
 });
 
 export default Profile;
