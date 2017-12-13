@@ -16,6 +16,8 @@ create table profile (
   primary key (user_id)
 );
 
+grant all on table profile to ideanebulae;
+
 create table idea (
   idea_slug       serial      not null,
   creator         char(64)    not null,
@@ -29,6 +31,7 @@ create table idea (
 
 create index idea_naturalkey on idea (creator, title, type);
 create index idea_tag on idea using gin (tags);
+grant all on table idea to ideanebulae;
 
 create table agreement (
   agreement_slug  serial      not null,
@@ -43,6 +46,7 @@ create table agreement (
 
 create index agreement_idea on agreement (idea_slug);
 create index agreement_naturalkey on agreement (creator, title, type);
+grant all on table agreement to ideanebulae;
 
 create table review (
   review_slug     serial      not null,
@@ -60,6 +64,7 @@ create table review (
 create index review_idea on review (idea_slug);
 create index review_reviewer on review (reviewer_slug);
 create index review_naturalkey on review (creator, title, type);
+grant all on table review to ideanebulae;
 
 create table document (
   document_slug   serial      not null,
@@ -74,6 +79,7 @@ create table document (
 
 create index document_idea on document (idea_slug);
 create index document_naturalkey on document (creator, title, type);
+grant all on table document to ideanebulae;
 
 -- Populate user profile test data
 insert into profile ( user_id, username, name, avatar_url, qualifications)

@@ -3,12 +3,16 @@ import Profile from '../profile';
 export default class userMethods {
   // Returns a list of all the users in the database
   static async listUsers() {
-    return await this.findAll();
+    return await this.findAll({
+      order: [ ['user_id', 'ASC'] ],
+    });
   }
 
   // Finds an user using the id
   static async findUser(username) {
-    return await Profile.findOne({username: username});
+    return await Profile.findOne({
+      where: { username: username},
+    });
   }
 
   // Finds an user using the sub property
@@ -19,7 +23,7 @@ export default class userMethods {
 
   // Update a user if it exists, otherwise insert it
   static async createOrUpdateUser(userId, profileData) {
-    const profile = {
+    const profileColumns = {
       user_id: profileData.sub,
       username: profileData.nickname,
       name: profileData.name,
@@ -27,9 +31,12 @@ export default class userMethods {
       qualifications: profileData.qualifications,
     };
 
+    console.log(`userId: ${userId}`);
+    console.log('profileColumns: ', profileColumns);
+
     return await Profile.findOrCreate({
       where: { user_id: userId },
-      defaults: profileData,
+      defaults: profileColumns,
     });
   }
 }

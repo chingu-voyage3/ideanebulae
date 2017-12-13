@@ -179,7 +179,7 @@ router.put('/profile/:userId(*)', (req, res) => {
     res.json('User profile created/updated');
   })
   .catch((err) => {
-    console.log('Error: ', err);
+    console.log('Error processing api route /profile/:userId(*): ', err);
     res.json(err);
   })
 });
