@@ -1,12 +1,14 @@
+import Profile from '../profile';
+
 export default class userMethods {
   // Returns a list of all the users in the database
   static async listUsers() {
-    return await this.find();
+    return await this.findAll();
   }
 
   // Finds an user using the id
   static async findUser(username) {
-    return await this.findOne({username: username});
+    return await Profile.findOne({username: username});
   }
 
   // Finds an user using the sub property
@@ -25,10 +27,9 @@ export default class userMethods {
       qualifications: profileData.qualifications,
     };
 
-    return await this.updateOne(
-      { user_id: userId },
-      profileData,
-      { upsert: true, new: true, runValidators: true }
-    );
+    return await Profile.findOrCreate({
+      where: { user_id: userId },
+      defaults: profileData,
+    });
   }
 }
