@@ -1,44 +1,66 @@
-import mongoose, { Schema } from 'mongoose';
-import agreementMethods from './methods/agreementMethods';
+import Sequelize from "sequelize";
+import db from "../services/db";
+import Profile from "./profile";
+import Idea from "./idea";
 
-const agreementSchema = new Schema({
-  // Create the schema for the User collection
+const sequelize = db.get();
 
-  creator: {
-    type: String,
-    required: true,
-    unique: true
+const Agreement = sequelize.define(
+  "agreement",
+  {
+    title: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+
+    description: {
+      type: Sequelize.TEXT,
+      allowNull: false
+    },
+
+    agreement_type: {
+      type: Sequelize.ENUM,
+      values: ["public", "private", "commercial"],
+      defaultValue: "public",
+      allowNull: false
+    },
+
+    agreement: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+
+    version: {
+      type: Sequelize.INTEGER,
+      allowNull: false
+    },
+
+    profile_id: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      onDelete: "CASCADE",
+      references: {
+        model: Profile,
+        key: "id"
+      }
+    },
+
+    idea_id: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      onDelete: "CASCADE",
+      references: {
+        model: Idea,
+        key: "id"
+      }
+    }
   },
+  {
+    underscored: true
+  }
+);
 
-  title: {
-    type: String,
-    required: true,
-    unique: false
-  },
-
-  type: {
-    type: String,
-    enum: ['public', 'private', 'commercial',],
-    required: true,
-    unique: false
-  },
-
-  agreement: {
-    type: String,
-    required: true,
-    unique: false
-  },
-
-  agreement_version: {
-    type: Number,
-    required: true,
-    unique: false
-  },
-
-});
-
-// Create a model for the schema
-agreementSchema.loadClass(agreementMethods);
-const Agreement = mongoose.model('Agreement', agreementSchema);
+Agreement.belongsTo(Profile);
+Agreement.belongsTo(Idea);
 
 export default Agreement;
