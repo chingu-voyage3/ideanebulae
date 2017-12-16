@@ -1,5 +1,5 @@
 import Agreement from '../agreement';
-import User from '../user';
+import Profile from '../profile';
 import {PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES} from '../ideaConstants';
 
 export default class ideaMethods {

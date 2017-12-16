@@ -1,167 +1,55 @@
-import mongoose, { Schema } from 'mongoose';
-import ideaMethods from './methods/ideaMethods';
-import {PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES} from './ideaConstants';
+import Sequelize from "sequelize";
+import db from "../services/db";
+import Profile from "./profile";
+import Agreement from "./agreement";
+import Review from "./review";
 
-// Create the schema for the Ideas collection
-const ideaSchema = new Schema({
-  creator: {
-    type: String,
-    required: true,
-    ref: 'User'
-  },
+const sequelize = db.get();
 
-  title: {
-    type: String,
-    required: true,
-    unique: false
-  },
-
-  type: {
-    type: String,
-    enum: ['public', 'private', 'commercial',],
-    required: false,
-    unique: false
-  },
-
-  description: {
-    type: String,
-    required: true,
-    unique: false
-  },
-
-  agreement: {
-    type: Schema.Types.ObjectId,
-    ref: 'Agreement',
-    default: null
-  },
-
-  created_ts: {
-    type: Date,
-    default: Date.now,
-    unique: false
-  },
-
-  tags: [{
-    type: String,
-    required: false,
-    unique: false
-  }],
-
-  documents: [{
-    url_description: {
-      type: String,
-      required: true,
-      unique: false
+const Idea = sequelize.define(
+  "idea",
+  {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      allowNull: false,
+      autoIncrement: true
     },
 
-    url: {
-      type: String,
-      required: true,
-      unique: false
-    },
-  }],
-    
-  // It is expected that the reviews field will contain one and only one review per reviewer.
-  // New reviews are always pushed to the end of the array
-  reviews: [{
-    reviewer: {
-      type: String,
-      required: true,
-      unique: true
+    title: {
+      type: Sequelize.STRING,
+      allowNull: false
     },
 
-    assigned_ts: {
-      type: Date,
-      default: Date.now,
-      unique: false
+    description: {
+      type: Sequelize.TEXT,
+      allowNull: false
     },
 
-    updated_ts: {
-      type: Date,
-      default: Date.now,
-      unique: false
+    idea_type: {
+      type: Sequelize.ENUM,
+      values: ["public", "private", "commercial"],
+      defaultValue: "public",
+      allowNull: false
     },
 
-    comments: {
-      type: String,
-      default: '',
-      unique: false
-    },
-  }],
-},{
-  toObject: { virtuals: true },
-  toJSON: { virtuals: true }
-});
+    profile_id: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      onDelete: "CASCADE",
+      references: {
+        model: Profile,
+        key: "id"
+      }
+    }
+  },
+  {
+    underscored: true
+  }
+);
 
-ideaSchema.virtual('typeCode')
-.get(function() {
-  /**
-   * @description Return a numeric code representing the idea type.
-   * @returns {String} typeCode A numeric type code cooresponding to the idea type in the
-   * idea document.
-   * @memberof ideaSchema
-   */
-  const typeIndex = IDEA_TYPES.findIndex(element =>
-    element.name === this.type,
-  );
-  if (typeIndex === -1) {
-    throw new Error(`Invalid idea type encountered calculating virtual typeCode. type: ${this.type}`);
-  }
-  return IDEA_TYPES[typeIndex].type;
-})
-.set(function(valueToSet) {
-  /**
-   * @description Set the idea type in this document based on its cooresponding numeric type code.
-   * @memberof ideaSchema
-   */
-  const typeIndex = IDEA_TYPES.findIndex(element =>
-    element.type === valueToSet,
-  );
-  if (typeIndex === -1) {
-    throw new Error(`Invalid type code encountered setting idea document type. valueToSet: ${valueToSet}`);
-  }
-  this.type = IDEA_TYPES[typeIndex].name;
-});
-
-/**
- * @description Produce the idea's current status as a virtual field in the
- * schema. By design there is no cooresponding setter function so this field should
- * not be used for updates.
- * @returns {String} The status value: 'Created', 'Assigned', or 'Reviewed'.
- * @memberof ideaSchema
- */
-ideaSchema.virtual('status')
-.get(function() {
-  if (this.reviews.length === 0) {
-    return 'Created';
-  }
-  if (this.reviews[this.reviews.length-1].comments.length === 0) {
-    return 'Assigned';
-  }
-  return 'Reviewed';
-});
-
-/**
- * @description Produce the date for the idea's current status as a virtual
- * field in the schema. By design there is no cooresponding setter function
- * so this field should not be used for updates.
- * @returns {String} The status date in the format 'yyyy-mm-ddThh:mm:ss'
- * @memberof ideaSchema
- */
-ideaSchema.virtual('status_dt')
-.get(function() {
-  if (this.reviews.length === 0) {
-    return this.created_ts;
-  }
-  const lastElementPos = this.reviews.length-1;
-  if (this.reviews[lastElementPos].comments.length === 0) {
-    return this.reviews[lastElementPos].assigned_ts;
-  }
-  return this.reviews[lastElementPos].updated_ts;
-});
-
-// Create a model for the schema
-ideaSchema.loadClass(ideaMethods);
-const Idea = mongoose.model('Idea', ideaSchema);
+Idea.belongsTo(Profile);
+Idea.hasOne(Agreement);
+Idea.hasMany(Review);
 
 export default Idea;

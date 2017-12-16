@@ -4,10 +4,12 @@ import config from './config';
 let sequelize = null;
 
 const connect = () => {
-  sequelize = new Sequelize(config.db.dbname, config.db.dbuserid, config.db.dbpasswd, {
-    host: 'localhost',
-    dialect: 'postgres',
-  
+  sequelize = new Sequelize(config.db.dburl, {
+    dialect:  'postgres',
+    protocol: 'postgres',
+    port:     config.db.dbport,
+    host:     config.db.dbhost,
+    logging:  true,  
     pool: {
       max: 5,
       min: 0,
