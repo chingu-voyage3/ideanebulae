@@ -1,5 +1,9 @@
 import Sequelize from 'sequelize';
-import config from './config';
+import config from './config'
+import Profile from '../models/profile';
+import Idea from '../models/idea';
+import Agreement from '../models/agreement';
+import Review from '../models/review';
 
 let sequelize = null;
 
@@ -21,6 +25,14 @@ const connect = () => {
   sequelize
   .authenticate()
   .then(() => {
+    Profile.getProfile();
+    Idea.getIdea();
+    Agreement.getAgreement();
+    Review.getReview();
+    Profile.defineProfileRelations();
+    Idea.defineIdeaRelations();
+    Agreement.defineAgreementRelations();
+    Review.defineReviewRelations();
     console.log('Connection has been established successfully.');
   })
   .catch(err => {
