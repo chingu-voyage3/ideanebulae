@@ -6,8 +6,14 @@ import Agreement from '../models/agreement';
 import Review from '../models/review';
 
 let sequelize = null;
+let profile = new Profile();
 
-const connect = () => {
+/**
+ * @description Create a new connection to the Postgres database and
+ * instantiate all Sequelize models and associations.
+ * @return {Object} sequelize - The Sequelize connection
+ */
+export function connect() {
   sequelize = new Sequelize(config.db.dburl, {
     dialect:  'postgres',
     protocol: 'postgres',
@@ -25,31 +31,35 @@ const connect = () => {
   sequelize
   .authenticate()
   .then(() => {
-    Profile.getProfile();
+    //profileModel = Profile.defineModel();
+    console.log('In db.connect - profile.model: ', profile.model);
+    /*
     Idea.getIdea();
     Agreement.getAgreement();
     Review.getReview();
-    Profile.defineProfileRelations();
+    Profile.defineAssociations();
     Idea.defineIdeaRelations();
     Agreement.defineAgreementRelations();
     Review.defineReviewRelations();
+    */
     console.log('Connection has been established successfully.');
+    return sequelize;
   })
   .catch(err => {
     console.error('Unable to connect to the database:', err);
   });
-  
+};
+
+/**
+ * @description Used by the other functions to get a connection to Sequelize.
+ * @returns {Object} sequelize - The current Sequelize connection or creates a
+ * new connection if one hasn't yet been established.
+ */
+export function getDbConnection() {
+  if (!sequelize) {
+    connect();
+  }
   return sequelize;
 };
 
-// Used by the other functions to get a connection to Sequelize.
-// Connects, if no connection is established yet.
-const get = () => {
-  if (sequelize) {
-    return sequelize;
-  } else {
-    return connect();
-  }
-};
-
-module.exports = { get };
+export { sequelize };
