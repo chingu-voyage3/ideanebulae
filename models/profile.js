@@ -1,14 +1,10 @@
 import Sequelize from "sequelize";
 import { getDbConnection, profileModel } from "../services/db";
 
-export default class Profile {
-  constructor() {
-    this.model = this.defineModel();
-  }
+let Profile = null;
 
-  defineModel() {
-    const sequelize = getDbConnection();
-    this.model = sequelize.define(
+const getProfile = () => {
+  return db.get.define(
       "profile",
       {
         user_id: {
@@ -49,18 +45,12 @@ export default class Profile {
         underscored: true
       }
     );
-    console.log('profile.defineModel: ', this.model);
-    return this.model;
   };
 
-  static defineAssociations() {
-    this.model.hasMany(Idea);
-    this.model.hasMany(Agreement);
-    this.model.hasMany(Review);
-  };
+const defineProfileAssociations = () => {
+  Profile.hasMany(Idea);
+  Profile.hasMany(Agreement);
+  Profile.hasMany(Review);
+};
 
-  static getModel() {
-    return this.model;
-  };
-}
-
+export default { Profile, getProfile, defineProfileAssociations };

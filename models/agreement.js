@@ -63,9 +63,9 @@ const getAgreement = () => {
   );
 };
 
-const defineAgreementRelations = () => {
+const defineAgreementAssociations = () => {
   Agreement.belongsTo(Profile);
   Agreement.belongsTo(Idea);
 };
 
-export default { Agreement, getAgreement, defineAgreementRelations };
+export default { Agreement, getAgreement, defineAgreementAssociations };

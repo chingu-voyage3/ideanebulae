@@ -41,9 +41,9 @@ const getReview = () => {
   );
 };
 
-const defineReviewRelations = () => {
+const defineReviewAssociations = () => {
   db.get().belongsTo(Profile);
   db.get().belongsTo(Idea);
 };
 
-export default { Review, getReview, defineReviewRelations };
+export default { Review, getReview, defineReviewAssociations };

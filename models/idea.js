@@ -51,10 +51,10 @@ const getIdea = () => {
   );
 };
 
-const defineIdeaRelations = () => {
+const defineIdeaAssociations = () => {
   db.get().belongsTo(Profile);
   db.get().hasOne(Agreement);
   db.get().hasMany(Review);
 };
 
-export default { Idea, getIdea, defineIdeaRelations };
+export default { Idea, getIdea, defineIdeaAssociations };
