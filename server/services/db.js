@@ -1,12 +1,11 @@
 import Sequelize from 'sequelize';
 import config from './config'
-import Profile from '../models/profile';
+import { getProfile } from '../models/profile';
 import Idea from '../models/idea';
 import Agreement from '../models/agreement';
 import Review from '../models/review';
 
 let sequelize = null;
-let profile = new Profile();
 
 /**
  * @description Create a new connection to the Postgres database and
@@ -31,8 +30,8 @@ export function connect() {
   sequelize
   .authenticate()
   .then(() => {
-    //profileModel = Profile.defineModel();
-    console.log('In db.connect - profile.model: ', profile.model);
+    const profileModel = getProfile();
+    console.log('In db.connect - profileModel: ', profileModel);
     /*
     Idea.getIdea();
     Agreement.getAgreement();
