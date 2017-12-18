@@ -1,6 +1,7 @@
+import { getDbConnection, profile } from '../../services/db';
 import Profile from '../profile';
 
-export default class userMethods {
+export default class profileMethods {
   // Returns a list of all the users in the database
   static async listUsers() {
     return await this.findAll({
@@ -10,7 +11,7 @@ export default class userMethods {
 
   // Finds an user using the id
   static async findUser(username) {
-    return await Profile.findOne({
+    return await this.findOne({
       where: { username: username},
     });
   }
@@ -30,8 +31,8 @@ export default class userMethods {
       avatar_url: profileData.picture,
       qualifications: profileData.qualifications,
     };
-
-    return await Profile.findOrCreate({
+    const connection = getDbConnection();
+    return await profile.getModel().findOrCreate({
       where: { user_id: userId },
       defaults: profileColumns,
     });
