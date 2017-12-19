@@ -1,11 +1,31 @@
-import express, { Router } from 'express';
-import ProfileMethods from '../models/methods/profileMethods';
-import Idea from '../models/idea';
-import authCheck from '../utils/authCheck';
-import decodeToken from '../utils/decodeToken';
+const Router = require('express').Router;
+// import ProfileMethods from '../models/methods/profileMethods';
+// import Idea from '../models/idea';
+const authCheck = require('../utils/authCheck');
+const decodeToken = require('../utils/decodeToken');
+
+const models = require('../db/models');
 
 const router = Router();
 
+/**
+ * IMPORTANT
+ * DO NOT UNCOMMENT THESE ROUTES UNTIL THE ENDPOINTS
+ * HAVE BEEN PORTED TO SEQUELIZE, FOR SOME WEIRD
+ * REASON, THEY'RE COLLIDING AND CRASH THE SERVER
+ */
+
+router.post('/dbtest', (req, res) => {
+  models.Profile.create({ user_id: 1, username: 'Oxyrus' })
+    .then(user => {
+      res.json(user);
+    })
+    .catch(err => {
+      res.json(err);
+      console.log(err);
+    });
+});
+/*
 // Example of route that implements authCheck
 // only if you've been authenticated you can access
 // inner functionality
@@ -110,7 +130,7 @@ router.route('/ideas/getAllTags')
       })
       .catch(err => res.send(err));
   });
-  
+
 // Retrieve the idea documents matching the specified tags and keywords.
 router.route('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)')
 .get((req, res) => {
@@ -182,5 +202,6 @@ router.put('/profile/:userId(*)', (req, res) => {
     res.json(err);
   })
 });
+*/
 
-export default router;
+module.exports = router;
