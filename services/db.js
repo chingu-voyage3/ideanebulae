@@ -9,7 +9,7 @@ const connect = () => {
     protocol: 'postgres',
     port:     config.db.dbport,
     host:     config.db.dbhost,
-    logging:  true,  
+    logging:  true,
     pool: {
       max: 5,
       min: 0,
@@ -17,7 +17,7 @@ const connect = () => {
       idle: 10000
     },
   });
-  
+
   sequelize
   .authenticate()
   .then(() => {
@@ -26,7 +26,7 @@ const connect = () => {
   .catch(err => {
     console.error('Unable to connect to the database:', err);
   });
-  
+
   return sequelize;
 };
 
