@@ -49,14 +49,14 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
   }, {
-    underscored: true,
-    classMethods: {
-      associate: function(models) {
-        // associations can be defined here
-        Agreement.belongsTo(models.Profile);
-        Agreement.belongsTo(models.Idea);
+      underscored: true,
+      classMethods: {
+        associate: function (models) {
+          // associations can be defined here
+          Agreement.belongsTo(models.Profile);
+          Agreement.belongsTo(models.Idea);
+        }
       }
-    }
-  });
+    });
   return Agreement;
 };

@@ -41,6 +41,7 @@ module.exports = (sequelize, DataTypes) => {
           // associations can be defined here
           Idea.belongsTo(models.Profile);
           Idea.hasOne(models.Agreement);
+          Idea.hasMany(models.Review);
         }
       }
     });
