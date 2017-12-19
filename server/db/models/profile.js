@@ -2,14 +2,14 @@
 module.exports = (sequelize, DataTypes) => {
   var Profile = sequelize.define('Profile', {
     user_id: {
-      DataTypes.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       unique: true,
       primaryKey: true,
     },
 
     username: {
-      DataTypes.STRING,
+      type: DataTypes.STRING,
       allowNull: false,
       unique: true,
     },
@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     classMethods: {
       associate: function(models) {
         // associations can be defined here
+        Profile.hasMany(models.Idea);
       }
     }
   });
