@@ -4,6 +4,7 @@ module.exports = {
     password: 'postgres',
     database: 'ideanebulae_dev',
     host: '127.0.0.1',
+    port: 5432,
     dialect: 'postgres',
     define: {
       underscored: true, // snake_case timestamps
@@ -15,6 +16,7 @@ module.exports = {
     password: 'postgres',
     database: 'ideanebulae_test',
     host: '127.0.0.1',
+    port: 5432,
     dialect: 'postgres',
     define: {
       underscored: true,
@@ -26,6 +28,7 @@ module.exports = {
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_NAME,
     host: process.env.DATABASE_HOST,
+    port: process.env.DATABASE_PORT,
     dialect: 'postgres',
     define: {
       underscored: true,
