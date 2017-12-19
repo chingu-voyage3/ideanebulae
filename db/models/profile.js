@@ -33,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
           // associations can be defined here
           Profile.hasMany(models.Idea);
           Profile.hasMany(models.Agreement);
+          Profile.hasMany(models.Review);
         }
       }
     });
