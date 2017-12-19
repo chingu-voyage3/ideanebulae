@@ -1,20 +1,31 @@
-import express, { Router } from 'express';
-import mongoose from 'mongoose';
-import config from '../services/mongoose.config';
-import User from '../models/user';
-import Idea from '../models/idea';
-import authCheck from '../utils/authCheck';
-import decodeToken from '../utils/decodeToken';
+const Router = require('express').Router;
+// import ProfileMethods from '../models/methods/profileMethods';
+// import Idea from '../models/idea';
+const authCheck = require('../utils/authCheck');
+const decodeToken = require('../utils/decodeToken');
+
+const models = require('../db/models');
 
 const router = Router();
 
-mongoose.connect(config.db.mongoURI, {
-  useMongoClient: true
+/**
+ * IMPORTANT
+ * DO NOT UNCOMMENT THESE ROUTES UNTIL THE ENDPOINTS
+ * HAVE BEEN PORTED TO SEQUELIZE, FOR SOME WEIRD
+ * REASON, THEY'RE COLLIDING AND CRASH THE SERVER
+ */
+
+router.post('/dbtest', (req, res) => {
+  models.Profile.create({ user_id: 1, username: 'Oxyrus' })
+    .then(user => {
+      res.json(user);
+    })
+    .catch(err => {
+      res.json(err);
+      console.log(err);
+    });
 });
-
-// See http://mongoosejs.com/docs/promises.html#plugging-in-your-own-promises-library
-mongoose.Promise = global.Promise;
-
+/*
 // Example of route that implements authCheck
 // only if you've been authenticated you can access
 // inner functionality
@@ -119,7 +130,7 @@ router.route('/ideas/getAllTags')
       })
       .catch(err => res.send(err));
   });
-  
+
 // Retrieve the idea documents matching the specified tags and keywords.
 router.route('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)')
 .get((req, res) => {
@@ -165,14 +176,14 @@ router.route('/review/:creator(*):title(*):type(*)')
 // Returns a list of all the users
 router.route('/users')
   .get((req, res) => {
-    User.listUsers()
+    ProfileMethods.listUsers()
       .then(users => res.json(users))
       .catch(err => res.send(err));
   });
 
 // Retrieve the user profile for the specified user name
 router.get('/profile/:username(*)', (req, res) => {
-  User.findUser(req.query.username)
+  ProfileMethods.findUser(req.query.username)
   .then(user => {
     res.json(user);
   })
@@ -182,14 +193,15 @@ router.get('/profile/:username(*)', (req, res) => {
 // Add or update the user profile for the specified user.
 //router.put('/profile/:username(*)', authCheck, (req, res) => {
 router.put('/profile/:userId(*)', (req, res) => {
-  User.createOrUpdateUser(req.params.userId, req.body.profile)
+  ProfileMethods.createOrUpdateUser(req.params.userId, req.body.profile)
   .then((doc) => {
     res.json('User profile created/updated');
   })
   .catch((err) => {
-    console.log('Error: ', err);
+    console.log('Error processing api route /profile/:userId(*): ', err);
     res.json(err);
   })
 });
+*/
 
-export default router;
+module.exports = router;
