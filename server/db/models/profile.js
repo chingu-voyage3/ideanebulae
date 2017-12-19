@@ -27,13 +27,14 @@ module.exports = (sequelize, DataTypes) => {
 
     qualifications: DataTypes.STRING
   }, {
-    underscored: true,
-    classMethods: {
-      associate: function(models) {
-        // associations can be defined here
-        Profile.hasMany(models.Idea);
+      underscored: true,
+      classMethods: {
+        associate: function (models) {
+          // associations can be defined here
+          Profile.hasMany(models.Idea);
+          Profile.hasMany(models.Agreement);
+        }
       }
-    }
-  });
+    });
   return Profile;
 };

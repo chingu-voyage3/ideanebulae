@@ -9,25 +9,45 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       title: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       description: {
-        type: Sequelize.TEXT
+        type: Sequelize.TEXT,
+        allowNull: false,
       },
       agreement_type: {
-        type: Sequelize.ENUM
+        type: Sequelize.ENUM,
+        values: ['public', 'private', 'commercial'],
+        defaultValue: 'public',
+        allowNull: false,
       },
       agreement: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       version: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        defaultValue: 1,
+        allowNull: false,
       },
       profile_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
+        references: {
+          model: 'Profiles',
+          key: 'id',
+        },
+        allowNull: false,
       },
       idea_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
+        references: {
+          model: 'Ideas',
+          key: 'id',
+        },
+        allowNull: false,
       },
       created_at: {
         allowNull: false,
