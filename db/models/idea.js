@@ -35,13 +35,14 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
   }, {
-    underscored: true,
-    classMethods: {
-      associate: function(models) {
-        // associations can be defined here
-        Idea.belongsTo(models.Profile);
+      underscored: true,
+      classMethods: {
+        associate: function (models) {
+          // associations can be defined here
+          Idea.belongsTo(models.Profile);
+          Idea.hasOne(models.Agreement);
+        }
       }
-    }
-  });
+    });
   return Idea;
 };
