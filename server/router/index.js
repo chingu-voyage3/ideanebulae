@@ -1,13 +1,13 @@
-const Router = require('express').Router;
-// import ProfileMethods from '../models/methods/profileMethods';
-// import Idea from '../models/idea';
+const express = require('express');
 const authCheck = require('../utils/authCheck');
 const decodeToken = require('../utils/decodeToken');
+const ideasRouter = require('./ideas');
+const usersRouter = require('./users');
 
-const models = require('../db/models');
+const router = express.Router();
 
-const router = Router();
-
+router.use(ideasRouter);
+router.use(usersRouter);
 /**
  * IMPORTANT
  * DO NOT UNCOMMENT THESE ROUTES UNTIL THE ENDPOINTS
@@ -15,29 +15,9 @@ const router = Router();
  * REASON, THEY'RE COLLIDING AND CRASH THE SERVER
  */
 
-router.post('/dbtest', (req, res) => {
-  models.Profile.create({ user_id: 1, username: 'Oxyrus' })
-    .then(user => {
-      res.json(user);
-    })
-    .catch(err => {
-      res.json(err);
-      console.log(err);
-    });
-});
 /*
-// Example of route that implements authCheck
-// only if you've been authenticated you can access
-// inner functionality
-router.get('/private', authCheck, (req, res) => {
-  res.json('You must be authenticated to see this route');
-});
 
-// ----------------------------------------------------------------------------
-// Agreement Routes
-// ----------------------------------------------------------------------------
-
-// ----------------------------------------------------------------------------
+ // ----------------------------------------------------------------------------
 // Idea Routes
 // ----------------------------------------------------------------------------
 
@@ -62,12 +42,6 @@ router.route('/idea/:creator(*):title(*):type(*)')
   });
 
 router.route('/ideas')
-// Retrieve all idea documents with no filtering
-.get((req, res) => {
-  Idea.listIdeas()
-    .then(ideas => res.json(ideas))
-    .catch(err => res.send(err));
-})
 // Add or update an idea document
 .post((req, res) => {
   // When saving an idea we also need to find the user
@@ -167,40 +141,6 @@ router.route('/review/:creator(*):title(*):type(*)')
     .catch(err => {
       res.send(err);
     });
-});
-
-// ----------------------------------------------------------------------------
-// User Routes
-// ----------------------------------------------------------------------------
-
-// Returns a list of all the users
-router.route('/users')
-  .get((req, res) => {
-    ProfileMethods.listUsers()
-      .then(users => res.json(users))
-      .catch(err => res.send(err));
-  });
-
-// Retrieve the user profile for the specified user name
-router.get('/profile/:username(*)', (req, res) => {
-  ProfileMethods.findUser(req.query.username)
-  .then(user => {
-    res.json(user);
-  })
-  .catch(err => res.send(err));
-});
-
-// Add or update the user profile for the specified user.
-//router.put('/profile/:username(*)', authCheck, (req, res) => {
-router.put('/profile/:userId(*)', (req, res) => {
-  ProfileMethods.createOrUpdateUser(req.params.userId, req.body.profile)
-  .then((doc) => {
-    res.json('User profile created/updated');
-  })
-  .catch((err) => {
-    console.log('Error processing api route /profile/:userId(*): ', err);
-    res.json(err);
-  })
 });
 */
 
