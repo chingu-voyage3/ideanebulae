@@ -1,6 +1,13 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   var Document = sequelize.define('document', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false,
+    },
+    
     idea_id: {
       type: DataTypes.INTEGER,
       onDelete: 'CASCADE',

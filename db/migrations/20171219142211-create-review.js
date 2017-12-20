@@ -8,11 +8,16 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      comment: {
-        type: Sequelize.STRING,
+      idea_id: {
+        type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
+        references: {
+          model: 'ideas',
+          key: 'id',
+        },
         allowNull: false,
       },
-      profile_id: {
+      idea_profile_id: {
         type: Sequelize.INTEGER,
         onDelete: 'CASCADE',
         references: {
@@ -21,13 +26,27 @@ module.exports = {
         },
         allowNull: false,
       },
-      idea_id: {
+      idea_title: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      idea_type: {
+        type: Sequelize.ENUM,
+        values: ['public', 'private', 'commercial'],
+        defaultValue: 'public',
+        allowNull: false,
+      },
+      reviewer_id: {
         type: Sequelize.INTEGER,
         onDelete: 'CASCADE',
         references: {
-          model: 'ideas',
+          model: 'profiles',
           key: 'id',
         },
+        allowNull: false,
+      },
+      comments: {
+        type: Sequelize.TEXT,
         allowNull: false,
       },
       created_at: {
