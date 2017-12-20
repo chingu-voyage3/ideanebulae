@@ -1,18 +1,10 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  var Review = sequelize.define('Review', {
-    comment: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-
-    profile_id: {
+  var Review = sequelize.define('review', {
+    id: {
       type: DataTypes.INTEGER,
-      onDelete: 'CASCADE',
-      references: {
-        model: 'Profiles',
-        key: 'id',
-      },
+      primaryKey: true,
+      autoIncrement: true,
       allowNull: false,
     },
 
@@ -20,9 +12,46 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       onDelete: 'CASCADE',
       references: {
-        model: 'Ideas',
+        model: 'ideas',
         key: 'id',
       },
+      allowNull: false,
+    },
+
+    idea_profile_id: {
+      type: DataTypes.INTEGER,
+      onDelete: 'CASCADE',
+      references: {
+        model: 'profiles',
+        key: 'id',
+      },
+      allowNull: false,
+    },
+
+    idea_title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+
+    idea_type: {
+      type: DataTypes.ENUM,
+      values: ['public', 'private', 'commercial'],
+      defaultValue: 'public',
+      allowNull: false,
+    },
+
+    reviewer_id: {
+      type: DataTypes.INTEGER,
+      onDelete: 'CASCADE',
+      references: {
+        model: 'profiles',
+        key: 'id',
+      },
+      allowNull: false,
+    },
+
+    comments: {
+      type: DataTypes.TEXT,
       allowNull: false,
     },
   }, {
