@@ -11,7 +11,7 @@ module.exports = {
         },
         allowNull: false,
       },
-      profile_id: {
+      idea_profile_id: {
         type: Sequelize.INTEGER,
         onDelete: 'CASCADE',
         references: {
@@ -20,7 +20,7 @@ module.exports = {
         },
         allowNull: false,
       },
-      title: {
+      idea_title: {
         type: Sequelize.STRING,
         allowNull: false,
       },
