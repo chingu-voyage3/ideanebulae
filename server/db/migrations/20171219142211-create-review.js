@@ -1,29 +1,34 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Profiles', {
+    return queryInterface.createTable('Reviews', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      user_id: {
+      comment: {
+        type: Sequelize.STRING,
         allowNull: false,
-        type: Sequelize.STRING
       },
-      username: {
+      profile_id: {
+        type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
+        references: {
+          model: 'Profiles',
+          key: 'id',
+        },
         allowNull: false,
-        type: Sequelize.STRING
       },
-      name: {
-        type: Sequelize.STRING
-      },
-      avatar_url: {
-        type: Sequelize.STRING
-      },
-      qualifications: {
-        type: Sequelize.STRING
+      idea_id: {
+        type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
+        references: {
+          model: 'Ideas',
+          key: 'id',
+        },
+        allowNull: false,
       },
       created_at: {
         allowNull: false,
@@ -36,6 +41,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Profiles');
+    return queryInterface.dropTable('Reviews');
   }
 };

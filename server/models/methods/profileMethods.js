@@ -1,6 +1,7 @@
-import Profile from '../profile';
+import { sequelize, getDbConnection } from '../../services/db';
+import { Profile } from '../profile';
 
-export default class userMethods {
+export default class profileMethods {
   // Returns a list of all the users in the database
   static async listUsers() {
     return await this.findAll({
@@ -10,7 +11,7 @@ export default class userMethods {
 
   // Finds an user using the id
   static async findUser(username) {
-    return await Profile.findOne({
+    return await this.findOne({
       where: { username: username},
     });
   }
@@ -30,7 +31,8 @@ export default class userMethods {
       avatar_url: profileData.picture,
       qualifications: profileData.qualifications,
     };
-
+    const connection = getDbConnection();
+    console.log('profileMethods.createOrUpdateUser - Profile: ', Profile);
     return await Profile.findOrCreate({
       where: { user_id: userId },
       defaults: profileColumns,

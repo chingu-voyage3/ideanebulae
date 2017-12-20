@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     },
 
     user_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
       unique: true,
       primaryKey: true,
@@ -27,13 +27,15 @@ module.exports = (sequelize, DataTypes) => {
 
     qualifications: DataTypes.STRING
   }, {
-    underscored: true,
-    classMethods: {
-      associate: function(models) {
-        // associations can be defined here
-        Profile.hasMany(models.Idea);
+      underscored: true,
+      classMethods: {
+        associate: function (models) {
+          // associations can be defined here
+          Profile.hasMany(models.Idea);
+          Profile.hasMany(models.Agreement);
+          Profile.hasMany(models.Review);
+        }
       }
-    }
-  });
+    });
   return Profile;
 };

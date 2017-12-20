@@ -1,13 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  var Idea = sequelize.define('Idea', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-      allowNull: false,
-    },
-
+  var Agreement = sequelize.define('Agreement', {
     title: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -18,10 +11,21 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
 
-    idea_type: {
+    agreement_type: {
       type: DataTypes.ENUM,
       values: ['public', 'private', 'commercial'],
       defaultValue: 'public',
+      allowNull: false,
+    },
+
+    agreement: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+
+    version: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
       allowNull: false,
     },
 
@@ -34,16 +38,25 @@ module.exports = (sequelize, DataTypes) => {
       },
       allowNull: false,
     },
+
+    idea_id: {
+      type: DataTypes.INTEGER,
+      onDelete: 'CASCADE',
+      references: {
+        model: 'Ideas',
+        key: 'id',
+      },
+      allowNull: false,
+    },
   }, {
       underscored: true,
       classMethods: {
         associate: function (models) {
           // associations can be defined here
-          Idea.belongsTo(models.Profile);
-          Idea.hasOne(models.Agreement);
-          Idea.hasMany(models.Review);
+          Agreement.belongsTo(models.Profile);
+          Agreement.belongsTo(models.Idea);
         }
       }
     });
-  return Idea;
+  return Agreement;
 };
