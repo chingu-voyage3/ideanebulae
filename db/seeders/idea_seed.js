@@ -68,7 +68,7 @@ module.exports = {
         created_ts: "2017-10-15 00:00:00",
         tags: ["domination      ","empanada        ","eternal         "]
       }, {
-        id 5,
+        id: 5,
         profile_id: "github|1287072",
         title: "Fortune Empanadas",
         type: "private",
