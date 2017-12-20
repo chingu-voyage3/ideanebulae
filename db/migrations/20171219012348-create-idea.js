@@ -31,6 +31,10 @@ module.exports = {
         },
         allowNull: false,
       },
+      tags: {
+        type: Sequelize.ARRAY(Sequelize.TEXT),
+        allowNull: true,
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE,

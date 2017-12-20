@@ -6,6 +6,7 @@ module.exports = {
     host: process.env.DATABASE_HOST || '127.0.0.1',
     port: process.env.DATABASE_PORT || 5432,
     dialect: 'postgres',
+    logging: console.log,
     define: {
       underscored: true, // snake_case timestamps
       underscoredAll: true, // Converts camelCase model names to snake_case

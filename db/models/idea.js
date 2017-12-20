@@ -34,6 +34,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       allowNull: false,
     },
+    tags: {
+      type: DataTypes.ARRAY(DataTypes.TEXT),
+      allowNull: true,
+    },
   }, {
       underscored: true,
       classMethods: {
