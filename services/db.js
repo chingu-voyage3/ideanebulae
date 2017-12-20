@@ -18,7 +18,7 @@ export function connect() {
     protocol: 'postgres',
     port:     config.db.dbport,
     host:     config.db.dbhost,
-    logging:  true,  
+    logging:  true,
     pool: {
       max: 5,
       min: 0,
@@ -26,7 +26,7 @@ export function connect() {
       idle: 10000
     },
   });
-  
+
   sequelize
   .authenticate()
   .then(() => {
@@ -47,6 +47,8 @@ export function connect() {
   .catch(err => {
     console.error('Unable to connect to the database:', err);
   });
+
+  return sequelize;
 };
 
 /**
@@ -61,4 +63,4 @@ export function getDbConnection() {
   return sequelize;
 };
 
-export { sequelize };
+module.exports = { get };

@@ -1,5 +1,5 @@
-import jwt from 'express-jwt';
-import jwks from 'jwks-rsa';
+const jwt = require('express-jwt');
+const jwks = require('jwks-rsa');
 
 const authCheck = jwt({
   secret: jwks.expressJwtSecret({
@@ -13,4 +13,4 @@ const authCheck = jwt({
   algorithms: ['RS256'],
 });
 
-export default authCheck;
+module.exports = authCheck;
