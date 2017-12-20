@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
 
-    profile_id: {
+    idea_profile_id: {
       type: DataTypes.INTEGER,
       onDelete: 'CASCADE',
       references: {
@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
 
-    title: {
+    idea_title: {
       type: DataTypes.STRING,
       allowNull: false,
     },
