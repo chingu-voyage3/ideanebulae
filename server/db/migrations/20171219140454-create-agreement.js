@@ -8,15 +8,29 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      title: {
+      idea_id: {
+        type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
+        references: {
+          model: 'ideas',
+          key: 'id',
+        },
+        allowNull: false,
+      },
+      idea_profile_id: {
+        type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
+        references: {
+          model: 'profiles',
+          key: 'id',
+        },
+        allowNull: false,
+      },
+      idea_title: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      description: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-      },
-      agreement_type: {
+      idea_type: {
         type: Sequelize.ENUM,
         values: ['public', 'private', 'commercial'],
         defaultValue: 'public',
@@ -29,24 +43,6 @@ module.exports = {
       version: {
         type: Sequelize.INTEGER,
         defaultValue: 1,
-        allowNull: false,
-      },
-      profile_id: {
-        type: Sequelize.INTEGER,
-        onDelete: 'CASCADE',
-        references: {
-          model: 'profiles',
-          key: 'id',
-        },
-        allowNull: false,
-      },
-      idea_id: {
-        type: Sequelize.INTEGER,
-        onDelete: 'CASCADE',
-        references: {
-          model: 'ideas',
-          key: 'id',
-        },
         allowNull: false,
       },
       created_at: {

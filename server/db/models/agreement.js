@@ -1,17 +1,39 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  var Agreement = sequelize.define('Agreement', {
-    title: {
+  var Agreement = sequelize.define('agreement', {
+    id: {
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+      type: Sequelize.INTEGER,
+    },
+    
+    idea_id: {
+      type: DataTypes.INTEGER,
+      onDelete: 'CASCADE',
+      references: {
+        model: 'ideas',
+        key: 'id',
+      },
+      allowNull: false,
+    },
+ 
+    idea_profile_id: {
+      type: DataTypes.INTEGER,
+      onDelete: 'CASCADE',
+      references: {
+        model: 'profiles',
+        key: 'id',
+      },
+      allowNull: false,
+    },
+
+    idea_title: {
       type: DataTypes.STRING,
       allowNull: false,
     },
 
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-
-    agreement_type: {
+    idea_type: {
       type: DataTypes.ENUM,
       values: ['public', 'private', 'commercial'],
       defaultValue: 'public',
@@ -26,26 +48,6 @@ module.exports = (sequelize, DataTypes) => {
     version: {
       type: DataTypes.INTEGER,
       defaultValue: 1,
-      allowNull: false,
-    },
-
-    profile_id: {
-      type: DataTypes.INTEGER,
-      onDelete: 'CASCADE',
-      references: {
-        model: 'Profiles',
-        key: 'id',
-      },
-      allowNull: false,
-    },
-
-    idea_id: {
-      type: DataTypes.INTEGER,
-      onDelete: 'CASCADE',
-      references: {
-        model: 'Ideas',
-        key: 'id',
-      },
       allowNull: false,
     },
   }, {
