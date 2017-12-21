@@ -2,12 +2,12 @@ const express = require('express');
 const authCheck = require('../utils/authCheck');
 const decodeToken = require('../utils/decodeToken');
 const ideasRouter = require('./ideas');
-const usersRouter = require('./users');
+const profilesRouter = require('./profiles');
 
 const router = express.Router();
 
 router.use(ideasRouter);
-router.use(usersRouter);
+router.use(profilesRouter);
 /**
  * IMPORTANT
  * DO NOT UNCOMMENT THESE ROUTES UNTIL THE ENDPOINTS
