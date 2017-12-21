@@ -1,13 +1,13 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  var Agreement = sequelize.define('agreement', {
+  var Agreement = sequelize.define('Agreement', {
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: DataTypes.INTEGER,
     },
-    
+
     idea_id: {
       type: DataTypes.INTEGER,
       onDelete: 'CASCADE',
@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       allowNull: false,
     },
- 
+
     idea_profile_id: {
       type: DataTypes.INTEGER,
       onDelete: 'CASCADE',
