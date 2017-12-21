@@ -9,14 +9,9 @@ const router = express.Router();
  * @param {object} res - The response object to write to
  * @return {object[]} The array of profiles
  */
-router.get('/profiles', (req, res) => {
-  models.Profile.findAll()
-    .then((profiles) => {
-      res.json(profiles);
-    })
-    .catch((err) => {
-      res.json(err);
-    });
+router.get('/profiles', async (req, res) => {
+  const profiles = await models.Profile.findAll();
+  res.json(profiles);
 });
 
 /**
