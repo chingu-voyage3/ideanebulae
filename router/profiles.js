@@ -26,7 +26,7 @@ router.get('/profiles', (req, res) => {
  * @return {object} The profile found in the database
  */
 router.get('/profile/:username(*)', (req, res) => {
-  models.Profile.findOne({ where: { username: req.query.username } })
+  models.Profile.findOne({ where: { username: req.params.username } })
     .then((profile) => {
       res.json(profile);
     })
@@ -43,15 +43,43 @@ router.get('/profile/:username(*)', (req, res) => {
  */
 router.put('/profile/:userId(*)', (req, res) => {
   const { user_id, username, name, avatar_url, qualifications } = req.body;
-  models.Profile.create({
-    user_id,
-    username,
-    name,
-    avatar_url,
-    qualifications,
-  })
+  /**
+   * First we need to check if there's a profile for the given user_id
+   * if that's the case, we only want to update the rest of the fields
+   * however if it doesn't exist, we want to create one
+   */
+
+  models.Profile.findOne({ where: { user_id } })
     .then((profile) => {
-      res.json(profile);
+      if (profile) {
+        profile.update({
+          username,
+          name,
+          avatar_url,
+          qualifications,
+        })
+          .then((updatedProfile) => {
+            res.json(updatedProfile);
+          })
+          .catch((err) => {
+            res.json(err);
+          });
+      }
+      else {
+        models.Profile.create({
+          user_id,
+          username,
+          name,
+          avatar_url,
+          qualifications,
+        })
+          .then((createdProfile) => {
+            res.json(createdProfile);
+          })
+          .catch((err) => {
+            res.json(err);
+          });
+      }
     })
     .catch((err) => {
       res.json(err);
