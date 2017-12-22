@@ -21,7 +21,7 @@ router.get('/profiles', async (req, res) => {
  * @return {object} The profile found in the database
  */
 router.get('/profile/:username(*)', async (req, res) => {
-  const { username } = req.params;
+  const { username } = req.query;
   const profile = await models.Profile.findOne({ where: { username } });
   res.json(profile);
 });
