@@ -6,7 +6,7 @@ let config = {};
 config.app = {};
 config.db = {};
 
-config.app.debuglog = `${process.env.DEBUGLOG}`;
+config.app.debuglog = process.env.DEBUGLOG.toUpperCase() === 'TRUE' ? true : false;
 
 config.db.dbuserid = `${process.env.DBUSERID}`;
 config.db.dbpasswd = `${process.env.DBPASSWD}`;
@@ -16,7 +16,7 @@ config.db.dbport = `${process.env.DBPORT}`;
 config.db.dbname = `${process.env.DBNAME}`;
 config.db.dburl = `${process.env.DBURL}`;
 
-if (config.app.debuglog.toUpperCase() === 'TRUE') {
+if (config.app.debuglog) {
   console.log(`config.app.debuglog = ${process.env.DEBUGLOG}`);
   console.log(`config.db.dbuserid = ${process.env.DBUSERID}`);
   console.log(`config.db.dbpasswd = ${process.env.DBPASSWD}`);
