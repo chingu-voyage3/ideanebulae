@@ -1,9 +1,9 @@
 import Sequelize from 'sequelize';
 import config from './config'
-import { getProfile } from '../models/profile';
-import Idea from '../models/idea';
-import Agreement from '../models/agreement';
-import Review from '../models/review';
+import { getProfile } from '../db/models/profile';
+import Idea from '../db/models/idea';
+import Agreement from '../db/models/agreement';
+import Review from '../db/models/review';
 
 let sequelize = null;
 
@@ -63,4 +63,4 @@ export function getDbConnection() {
   return sequelize;
 };
 
-module.exports = { get };
+module.exports = { getDbConnection };
