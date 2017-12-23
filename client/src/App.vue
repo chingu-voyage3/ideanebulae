@@ -30,7 +30,6 @@ export default {
             profile,
           })
           .then((res) => {
-            // eslint-disable-next-line
             console.log(res);
           })
           .catch((err) => {

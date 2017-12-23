@@ -1,5 +1,6 @@
 const express = require('express');
 const models = require('../db/models');
+import ideaMethods from '../db/methods/ideaMethods';
 
 const router = express.Router();
 
@@ -10,7 +11,7 @@ const router = express.Router();
  * @return {object[]} The array of ideas
  */
 router.get('/ideas', (req, res) => {
-  models.Idea.findAll()
+  ideaMethods.findAll()
     .then((ideas) => {
       res.json(ideas);
     })
@@ -18,5 +19,14 @@ router.get('/ideas', (req, res) => {
       res.json(err);
     });
 });
+
+// Retrieve all unique idea tags that are currently assigned to ideas
+router.route('/ideas/getalltags')
+.get((req, res) => {
+    console.log('getalltags - No parameters');
+    const tags = ideaMethods.getAllTags();
+    console.log('getalltags - tags: ', tags);
+    res.json(tags);
+  });
 
 module.exports = router;
