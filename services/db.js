@@ -1,6 +1,5 @@
 import Sequelize from 'sequelize';
 import config from './config'
-import { getProfile } from '../db/models/profile';
 import Idea from '../db/models/idea';
 import Agreement from '../db/models/agreement';
 import Review from '../db/models/review';
@@ -30,25 +29,12 @@ export function connect() {
   sequelize
   .authenticate()
   .then(() => {
-    const profileModel = getProfile();
-    console.log('In db.connect - profileModel: ', profileModel);
-    /*
-    Idea.getIdea();
-    Agreement.getAgreement();
-    Review.getReview();
-    Profile.defineAssociations();
-    Idea.defineIdeaRelations();
-    Agreement.defineAgreementRelations();
-    Review.defineReviewRelations();
-    */
     console.log('Connection has been established successfully.');
     return sequelize;
   })
   .catch(err => {
     console.error('Unable to connect to the database:', err);
   });
-
-  return sequelize;
 };
 
 /**
@@ -63,4 +49,4 @@ export function getDbConnection() {
   return sequelize;
 };
 
-module.exports = { getDbConnection };
+module.exports = { sequelize, getDbConnection };
