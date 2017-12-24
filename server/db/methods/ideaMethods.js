@@ -1,8 +1,7 @@
-import { sequelize, getDbConnection } from '../../services/db';
 import config from '../../services/config';
-import models from '../models';
+import { getDbConnection } from '../../services/db';
 import Agreement from '../models/agreement';
-import { Idea } from '../../db/models/idea';
+import models from '../models/';
 import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../misc/ideaConstants';
 
 export default class ideaMethods {
@@ -172,13 +171,10 @@ export default class ideaMethods {
    */
   static async getAllTags() {
     console.log('ideaMethods - getAllTags - No parameters');
-    const connection = getDbConnection();
-    if (config.app.debuglog) {
-      console.log('ideaMethods - getAllTags - connection: ', connection);
-    }
     return await models.Idea.findAll({
-      attributes: { include: [[sequelize.fn('UNNEST', sequelize.col('tags'))]] },
+      attributes: { include: [[sequelize.fn('UNNEST', sequelize.col('tags')),'tag']], },
       distinct: true,
+      order: [['tag', 'ASC']],
     });
   }
   
