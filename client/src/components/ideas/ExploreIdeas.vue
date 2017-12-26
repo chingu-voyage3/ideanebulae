@@ -87,7 +87,7 @@
           <td class="explore__td">
             <a class="explore__link" v-on:click="checkForAgreement(idea)">{{idea.title}}</a>
           </td>
-          <td class="explore__td">{{idea.type}}</td>
+          <td class="explore__td">{{idea.idea_type}}</td>
           <td class="explore__td">{{idea.status}}</td>
           <td class="explore__td">{{new Date(idea.status_dt).toLocaleDateString()}}</td>
         </tr>
@@ -204,7 +204,7 @@ export default {
      * @param {Object} idea The idea selected by the user from the displayed list
      */
     checkForAgreement(idea) {
-      if (idea.type === 'public') {
+      if (idea.idea_type === 'public') {
         this.transferToDetails(idea);
         return;
       }
@@ -259,7 +259,7 @@ export default {
     },
     transferToDetails(idea) {
       localstorage.setObject('explore-ideas-save', this.$data);
-      this.$router.push(`ideas/${idea.creator}/${idea.title}/${idea.type}`);
+      this.$router.push(`ideas/${idea.creator}/${idea.title}/${idea.idea_type}`);
     },
     typeToggle(type) {
       this.ideaType = type;

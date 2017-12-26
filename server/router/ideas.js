@@ -2,6 +2,7 @@ const express = require('express');
 const Sequelize = require('sequelize');
 const models = require('../db/models');
 import ideaMethods from '../db/methods/ideaMethods';
+import { EWOULDBLOCK } from 'constants';
 
 const Op = Sequelize.Op;
 const router = express.Router();
@@ -45,6 +46,7 @@ router.get('/ideas/getalltags', async (req, res) => {
  * contain at least one keyword in either the title or description field.
  * Note that the keyword search requires a full text index on the title and
  * description fields of the idea collection.
+ * 
  * @param {String} currUser The nickname of the currently logged on user
  * @param {String} searchForTabs A list of comma-separated unique tags
  * @param {String} searchForKeywords A list of comma-separated of unique keywords
@@ -53,8 +55,21 @@ router.get('/ideas/getalltags', async (req, res) => {
  */
 router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', async (req, res) => {
   console.log('Route /ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*) - req.query: ', req.query);
+  const tagList = req.query.searchForTags.split(',').map((currentTag) => {
+    return `'${currentTag}'`;
+  }).join();
+  console.log('tagList: ', tagList);
   models.sequelize.query(
-    "SELECT * FROM ideas, (select id, UNNEST(tags) AS sgat FROM ideas) AS tagged_ideas WHERE ideas.id = tagged_ideas.id AND trim(tagged_ideas.sgat) IN ('factory', 'gas')", 
+    `SELECT *, \
+            review_status.status AS status, \
+            review_status.status_dt AS status_dt \
+       FROM ideas, \
+            (SELECT id, UNNEST(tags) AS sgat FROM ideas) AS tagged_ideas, \
+            review_status \
+       WHERE ideas.id = tagged_ideas.id \
+         AND review_status.idea_id = ideas.id \
+         AND trim(tagged_ideas.sgat) IN (${tagList}) \
+       ORDER BY updated_at DESC`, 
     { type: models.sequelize.QueryTypes.SELECT})
   .then(ideas => {
     console.log('Search results: ', ideas);
