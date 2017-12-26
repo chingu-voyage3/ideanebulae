@@ -34,10 +34,12 @@ module.exports = (sequelize, DataTypes) => {
       },
       allowNull: false,
     },
+
     tags: {
       type: DataTypes.ARRAY(DataTypes.TEXT),
       allowNull: true,
     },
+
   }, {
       underscored: true,
       classMethods: {
@@ -47,7 +49,21 @@ module.exports = (sequelize, DataTypes) => {
           Idea.hasOne(models.Agreement);
           Idea.hasMany(models.Review);
         }
-      }
+      },
+      indexes: [
+        // Create a unique index on id
+        {
+          unique: true,
+          fields: ['id']
+        },
+    
+        // Creates a gin index on the tags array
+        {
+          unique: false,
+          fields: ['tags'],
+          using: 'gin',
+        },
+      ]
     });
   return Idea;
 };
