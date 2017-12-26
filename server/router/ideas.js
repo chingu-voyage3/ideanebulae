@@ -52,14 +52,13 @@ router.get('/ideas/getalltags', async (req, res) => {
  * by its title, type, status, and status date
  */
 router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', async (req, res) => {
-  //Idea.searchIdeas(req.query.currUser, req.query.searchForTags, req.query.searchForKeywords)
   console.log('Route /ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*) - req.query: ', req.query);
-  const ideas = await models.Idea.findAll({
-    where: {
-      tags: { [Op.overlap]: [req.query.searchForTags] },
-    },
-  });
-  console.log('Search results: ', ideas);
-  res.json(ideas);
+  models.sequelize.query(
+    "SELECT * FROM ideas, (select id, UNNEST(tags) AS sgat FROM ideas) AS tagged_ideas WHERE ideas.id = tagged_ideas.id AND trim(tagged_ideas.sgat) IN ('factory', 'gas')", 
+    { type: models.sequelize.QueryTypes.SELECT})
+  .then(ideas => {
+    console.log('Search results: ', ideas);
+    res.json(ideas);
+  })
 });
 module.exports = router;
