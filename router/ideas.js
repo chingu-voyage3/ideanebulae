@@ -2,7 +2,6 @@ const express = require('express');
 const Sequelize = require('sequelize');
 const models = require('../db/models');
 import ideaMethods from '../db/methods/ideaMethods';
-import { EWOULDBLOCK } from 'constants';
 
 const Op = Sequelize.Op;
 const router = express.Router();
