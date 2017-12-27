@@ -48,6 +48,7 @@ module.exports = (sequelize, DataTypes) => {
           Idea.belongsTo(models.Profile);
           Idea.hasOne(models.Agreement);
           Idea.hasMany(models.Review);
+          Idea.hasMany(models.Document);
         }
       },
       indexes: [
@@ -56,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
           unique: true,
           fields: ['id']
         },
-    
+
         // Creates a gin index on the tags array
         {
           unique: false,
