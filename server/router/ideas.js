@@ -86,13 +86,21 @@ router.get('/ideas/getalltags', async (req, res) => {
  * by its title, type, status, and status date
  */
 router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', async (req, res) => {
-  console.log('Route /ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*) - req.query: ', req.query);
   const tagList = req.query.searchForTags.split(',').map((currentTag) => {
     return `'${currentTag}'`;
-  }).join();
-  console.log('tagList: ', tagList);
+  }).join(',');
+
+  const keywordList = '\'%('.concat(req.query.searchForKeywords.split(',').map((currentKeyword) => {
+    return `${currentKeyword}`;
+  }).join('|'), ')%\'');
+  
+  // TODO: Due to the complexity of the Postgres fulltext indexing and search
+  // option (FTS) a simpler solution employing the 'SIMILAR' operator is used 
+  // until the FTS solution can be researched.
   models.sequelize.query(
-    `SELECT *, \
+    `SELECT DISTINCT ideas.id, ideas.title, ideas.description, ideas.idea_type, \
+            ideas.profile_id, ideas.tags, ideas.created_at, ideas.updated_at, \
+            review_status.status AS status, review_status.status_dt AS status_dt, \
             review_status.status AS status, \
             review_status.status_dt AS status_dt \
        FROM ideas, \
@@ -100,7 +108,9 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
             review_status \
        WHERE ideas.id = tagged_ideas.id \
          AND review_status.idea_id = ideas.id \
-         AND trim(tagged_ideas.sgat) IN (${tagList}) \
+         AND (   trim(tagged_ideas.sgat) IN (${tagList}) \
+              OR lower(title) SIMILAR TO ${keywordList} \
+              OR lower(description) SIMILAR TO ${keywordList} ) \
        ORDER BY updated_at DESC`,
     { type: models.sequelize.QueryTypes.SELECT})
   .then(ideas => {
