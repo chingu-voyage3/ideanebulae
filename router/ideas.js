@@ -1,6 +1,7 @@
 const express = require('express');
 const Sequelize = require('sequelize');
 const models = require('../db/models');
+const decodeToken = require('../utils/decodeToken');
 const authCheck = require('../utils/authCheck');
 import ideaMethods from '../db/methods/ideaMethods';
 
@@ -36,18 +37,50 @@ router.post('/ideas', authCheck, async (req, res) => {
   // Then we decode it and extract sub only
   const { sub } = decodeToken(token);
 
-  const { title, description } = req.body;
+  const { title, description, typeCode, tags, documents } = req.body;
+
+  // Handles the constants defined in the client
+  // to set the correct value for the enum
+  let idea_type;
+  switch (typeCode) {
+    case 'PUBLIC_IDEA':
+      idea_type = 'public';
+      break;
+    case 'PRIVATE_IDEA':
+      idea_type = 'private';
+      break;
+    case 'COMMERCIAL_IDEA':
+      idea_type = 'commercial';
+      break;
+    default:
+      break;
+  }
 
   const profile = await models.Profile.findOne({ where: { user_id: sub } });
 
+  // There's a profile for the JWT, we can create the idea
   if (profile) {
     const idea = await models.Idea.create({
       title,
       description,
+      idea_type,
       profile_id: profile.id,
+      tags,
+    });
+    documents.forEach((document) => {
+      let { url, description, idea_title } = document;
+      models.Document.create({
+        url,
+        description,
+        idea_title,
+        profile_id: profile.id,
+        idea_id: idea.id,
+      });
     });
     res.json(idea);
-  } else {
+  }
+  // No profile, good bye
+  else {
     const err = {
       'message': 'There\'s no user for that token',
     };

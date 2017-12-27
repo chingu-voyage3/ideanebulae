@@ -34,6 +34,7 @@ module.exports = (sequelize, DataTypes) => {
           Profile.hasMany(models.Idea);
           Profile.hasMany(models.Agreement);
           Profile.hasMany(models.Review);
+          Profile.hasMany(models.Document);
         }
       }
     });
