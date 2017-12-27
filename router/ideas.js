@@ -24,6 +24,38 @@ router.get('/ideas', (req, res) => {
 });
 
 /**
+ * @description Create a new idea
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @return {Object} idea The just created idea
+ */
+router.post('/ideas', async (req, res) => {
+  // First we get the token from the headers
+  const token = req.headers['authorization'].slice(7);
+
+  // Then we decode it and extract sub only
+  const { sub } = decodeToken(token);
+
+  const { title, description } = req.body;
+
+  const profile = await models.Profile.findOne({ where: { user_id: sub } });
+
+  if (profile) {
+    const idea = await models.Idea.create({
+      title,
+      description,
+      profile_id: profile.id,
+    });
+    res.json(idea);
+  } else {
+    const err = {
+      'message': 'There\'s no user for that token',
+    };
+    res.json(message);
+  }
+});
+
+/**
  * @description Retrieve all unique idea tags across all ideas
  * @returns {Object} tags A JSON object containing the unique tags in ascending sequence
  */
@@ -46,11 +78,11 @@ router.get('/ideas/getalltags', async (req, res) => {
  * contain at least one keyword in either the title or description field.
  * Note that the keyword search requires a full text index on the title and
  * description fields of the idea collection.
- * 
+ *
  * @param {String} currUser The nickname of the currently logged on user
  * @param {String} searchForTabs A list of comma-separated unique tags
  * @param {String} searchForKeywords A list of comma-separated of unique keywords
- * @returns {Object} ideas A JSON object containing the resulting ideas, each described 
+ * @returns {Object} ideas A JSON object containing the resulting ideas, each described
  * by its title, type, status, and status date
  */
 router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', async (req, res) => {
@@ -69,7 +101,7 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
        WHERE ideas.id = tagged_ideas.id \
          AND review_status.idea_id = ideas.id \
          AND trim(tagged_ideas.sgat) IN (${tagList}) \
-       ORDER BY updated_at DESC`, 
+       ORDER BY updated_at DESC`,
     { type: models.sequelize.QueryTypes.SELECT})
   .then(ideas => {
     console.log('Search results: ', ideas);
