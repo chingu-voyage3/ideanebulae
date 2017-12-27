@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
 
-    idea_profile_id: {
+    profile_id: {
       type: DataTypes.INTEGER,
       onDelete: 'CASCADE',
       references: {
