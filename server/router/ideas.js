@@ -1,6 +1,7 @@
 const express = require('express');
 const Sequelize = require('sequelize');
 const models = require('../db/models');
+const authCheck = require('../utils/authCheck');
 import ideaMethods from '../db/methods/ideaMethods';
 
 const Op = Sequelize.Op;
@@ -28,7 +29,7 @@ router.get('/ideas', (req, res) => {
  * @param {Object} res - The response object
  * @return {Object} idea The just created idea
  */
-router.post('/ideas', async (req, res) => {
+router.post('/ideas', authCheck, async (req, res) => {
   // First we get the token from the headers
   const token = req.headers['authorization'].slice(7);
 
