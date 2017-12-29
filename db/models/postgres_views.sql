@@ -4,6 +4,25 @@
 -- View: public.review_status
 -- This view results in a single row for each idea containing its status and
 -- status date, as well as its most recent review creation date, and update
+DROP VIEW public.idea_agreement;
+CREATE OR REPLACE VIEW public.idea_agreement AS
+    SELECT agreements.id,
+        profiles.username,
+        agreements.idea_title,
+        agreements.idea_type,
+        agreements.agreement,
+        agreements.version
+    FROM agreements,
+        profiles
+    WHERE agreements.idea_profile_id = profiles.id
+    ORDER BY profiles.username;
+
+ALTER TABLE public.idea_agreement
+    OWNER TO postgres;
+
+-- View: public.review_status
+-- This view results in a single row for each idea containing its status and
+-- status date, as well as its most recent review creation date, and update
 DROP VIEW public.review_status;
 
 CREATE OR REPLACE VIEW public.review_status AS
