@@ -2,6 +2,7 @@ const models = require('../models');
 import Idea from '../models/idea';
 
 export default class agreementMethods {
+
   /**
    * @description Delete an agreement document. Note that it is the responsibility of the
    * caller to clear the agreement id from the owning idea document.
@@ -37,9 +38,17 @@ export default class agreementMethods {
    * @memberof agreementMethods
    */
   static async findByIdea(ideaId) {
-      return await models.Agreement.findAll({
-        where: { idea_id: ideaId },
-      });
+      return await models.sequelize.query(
+        `SELECT id,
+                username,
+                idea_id,
+                idea_title,
+                idea_type,
+                agreement,
+                version
+           FROM idea_agreements \
+           WHERE idea_id = ${ideaId}`,
+        { type: models.sequelize.QueryTypes.SELECT});
   }
 
   /**

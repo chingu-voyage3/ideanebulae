@@ -5,6 +5,8 @@ const decodeToken = require('../utils/decodeToken');
 const authCheck = require('../utils/authCheck');
 import ideaMethods from '../db/methods/ideaMethods';
 import agreementMethods from '../db/methods/agreementMethods';
+import documentMethods from '../db/methods/documentMethods';
+import reviewMethods from '../db/methods/reviewMethods';
 
 const Op = Sequelize.Op;
 const router = express.Router();
@@ -128,6 +130,7 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
     return `${currentKeyword}`;
   }).join('|'), ')%\'');
   
+  let allIdeasJSON = [];
   // TODO: Due to the complexity of the Postgres fulltext indexing and search
   // option (FTS) a simpler solution employing the 'SIMILAR' operator is used 
   // until the FTS solution can be researched.
@@ -148,16 +151,27 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
        ORDER BY updated_at DESC`,
     { type: models.sequelize.QueryTypes.SELECT})
   .then(ideas => {
-    console.log('Search results: ', ideas);
-    console.log('ideas.id: ', ideas[0].id);
-    // Retrieve any agreements associated with this idea
-    agreementMethods.findByIdea(ideas[0].id)
-    .then((agreements) => {
-      console.log('agreements: ', agreements);
+    ideas.forEach((idea) => {
+      let ideaJSON = {};
+      ideaJSON.idea = idea;
+
+      // Retrieve any agreements, documents, and reviews associated with this idea and 
+      // add them to the JSON object
+      const agreementPromise = agreementMethods.findByIdea(idea.id);
+      const documentsPromise = documentMethods.findByIdea(idea.id);
+      const reviewsPromise = reviewMethods.findByIdea(idea.id);
+      Promise.all([agreementPromise, documentsPromise, reviewsPromise]).then((promiseValues) => {
+        const agreement = promiseValues[0];
+        ideaJSON.idea.agreement = agreement[0];
+        const documents = promiseValues[1];
+        ideaJSON.idea.documents = documents;
+        const reviews = promiseValues[2];
+        ideaJSON.idea.reviews = reviews;
+        console.log('ideaJSON: ', JSON.stringify(ideaJSON, null, 2));
+        allIdeasJSON.push(ideaJSON);
     });
-    // Retrieve any documents associated with this idea
-    // Retrieve any reviews associated with this idea
-    res.json(ideas);
+  });
+    res.json(allIdeasJSON);
   })
 });
 module.exports = router;

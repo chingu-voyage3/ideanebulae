@@ -1,10 +1,11 @@
 -- These views must be manually defined in Postgres since Sequelize does not
 -- support view creation.
 
--- View: public.review_status
--- This view results in a single row for each idea containing its status and
--- status date, as well as its most recent review creation date, and update
-DROP VIEW public.idea_agreement;
+-- View: public.idea_agreements
+--
+-- This view produces a list of all agreements for an idea
+--
+DROP VIEW public.idea_agreements;
 CREATE OR REPLACE VIEW public.idea_agreement AS
     SELECT agreements.id,
         profiles.username,
@@ -20,9 +21,33 @@ CREATE OR REPLACE VIEW public.idea_agreement AS
 ALTER TABLE public.idea_agreement
     OWNER TO postgres;
 
+-- View: public.idea_agreements
+--
+-- This view produces a list of all documents for an idea
+--
+DROP VIEW public.idea_documents;
+
+CREATE OR REPLACE VIEW public.idea_documents AS
+ SELECT documents.id,
+    profiles.username,
+    documents.idea_id,
+    documents.idea_title,
+    documents.idea_type,
+    documents.url,
+    documents.description
+   FROM documents,
+    profiles
+  WHERE documents.idea_profile_id = profiles.id
+  ORDER BY profiles.username;
+
+ALTER TABLE public.idea_documents
+    OWNER TO postgres;
+    
 -- View: public.review_status
+--
 -- This view results in a single row for each idea containing its status and
 -- status date, as well as its most recent review creation date, and update
+--
 DROP VIEW public.review_status;
 
 CREATE OR REPLACE VIEW public.review_status AS
