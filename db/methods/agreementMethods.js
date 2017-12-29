@@ -1,3 +1,4 @@
+const models = require('../models');
 import Idea from '../models/idea';
 
 export default class agreementMethods {
@@ -26,8 +27,20 @@ export default class agreementMethods {
    * @memberof agreementMethods
    */
   static async findAgreement(agreementID) {
-      return await this.findById(agreementID);
-    }
+    return await this.findById(agreementID);
+  }
+
+  /**
+   * @description Retrieve all agreements associated with a given idea.
+   * @param {any} ideaId The id value of the owning idea
+   * @returns {Object} An object containing all agreements realated to the idea id
+   * @memberof agreementMethods
+   */
+  static async findByIdea(ideaId) {
+      return await models.Agreement.findAll({
+        where: { idea_id: ideaId },
+      });
+  }
 
   /**
    * @description Add an agreement document to the database. It is expected that the

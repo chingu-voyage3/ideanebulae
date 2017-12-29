@@ -4,6 +4,7 @@ const models = require('../db/models');
 const decodeToken = require('../utils/decodeToken');
 const authCheck = require('../utils/authCheck');
 import ideaMethods from '../db/methods/ideaMethods';
+import agreementMethods from '../db/methods/agreementMethods';
 
 const Op = Sequelize.Op;
 const router = express.Router();
@@ -116,7 +117,7 @@ router.get('/ideas/getalltags', async (req, res) => {
  * @param {String} searchForTabs A list of comma-separated unique tags
  * @param {String} searchForKeywords A list of comma-separated of unique keywords
  * @returns {Object} ideas A JSON object containing the resulting ideas, each described
- * by its title, type, status, and status date
+ * by its title, type, status, and status date. Also
  */
 router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', async (req, res) => {
   const tagList = req.query.searchForTags.split(',').map((currentTag) => {
@@ -148,6 +149,14 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
     { type: models.sequelize.QueryTypes.SELECT})
   .then(ideas => {
     console.log('Search results: ', ideas);
+    console.log('ideas.id: ', ideas[0].id);
+    // Retrieve any agreements associated with this idea
+    agreementMethods.findByIdea(ideas[0].id)
+    .then((agreements) => {
+      console.log('agreements: ', agreements);
+    });
+    // Retrieve any documents associated with this idea
+    // Retrieve any reviews associated with this idea
     res.json(ideas);
   })
 });
