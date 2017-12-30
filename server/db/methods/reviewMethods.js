@@ -11,10 +11,11 @@ export default class reviewMethods {
   static async findByIdea(ideaId) {
       return await models.sequelize.query(
         `SELECT id,
-                username,
                 idea_id,
+                idea_creator,
                 idea_title,
                 idea_type,
+                reviewer,
                 comments
            FROM idea_reviews \
            WHERE idea_id = ${ideaId}`,
