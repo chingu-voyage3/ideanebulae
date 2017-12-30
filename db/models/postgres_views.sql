@@ -9,6 +9,7 @@ DROP VIEW public.idea_agreements;
 CREATE OR REPLACE VIEW public.idea_agreement AS
     SELECT agreements.id,
         profiles.username,
+        agreements.idea_id,
         agreements.idea_title,
         agreements.idea_type,
         agreements.agreement,
@@ -21,7 +22,7 @@ CREATE OR REPLACE VIEW public.idea_agreement AS
 ALTER TABLE public.idea_agreement
     OWNER TO postgres;
 
--- View: public.idea_agreements
+-- View: public.idea_documents
 --
 -- This view produces a list of all documents for an idea
 --
@@ -42,7 +43,32 @@ CREATE OR REPLACE VIEW public.idea_documents AS
 
 ALTER TABLE public.idea_documents
     OWNER TO postgres;
-    
+
+-- View: public.idea_reviews
+--
+-- This view produces a list of all reviews of an idea
+--
+DROP VIEW public.idea_reviews;
+
+CREATE OR REPLACE VIEW public.idea_reviews AS
+ SELECT reviews.id,
+    reviews.idea_id,
+    ideaowners.username AS idea_creator,
+    reviews.idea_title,
+    reviews.idea_type,
+    reviewers.username AS reviewer,
+    reviews.comments
+   FROM reviews,
+    profiles ideaowners,
+    profiles reviewers
+  WHERE reviews.idea_profile_id = ideaowners.id AND reviews.reviewer_id = reviewers.id
+  ORDER BY reviews.idea_id, reviews.id, reviewers.username;
+
+ALTER TABLE public.idea_reviews
+    OWNER TO postgres;
+
+
+
 -- View: public.review_status
 --
 -- This view results in a single row for each idea containing its status and
