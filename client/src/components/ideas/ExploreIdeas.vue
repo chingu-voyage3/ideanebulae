@@ -147,7 +147,6 @@ export default {
     // Retrieve all unique tags referenced across all ideas
     http.get('/ideas/getalltags').then((response) => {
       this.ideaTags = response.data;
-      console.log('Got here');
     }).catch((err) => {
       throw new Error(`Error retrieving all idea tags: ${err}`);
     });

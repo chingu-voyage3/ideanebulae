@@ -130,7 +130,9 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
     return `${currentKeyword}`;
   }).join('|'), ')%\'');
   
+  let ideaPromises = [];
   let allIdeasJSON = [];
+  
   // TODO: Due to the complexity of the Postgres fulltext indexing and search
   // option (FTS) a simpler solution employing the 'SIMILAR' operator is used 
   // until the FTS solution can be researched.
@@ -149,29 +151,43 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
               OR lower(title) SIMILAR TO ${keywordList} \
               OR lower(description) SIMILAR TO ${keywordList} ) \
        ORDER BY updated_at DESC`,
-    { type: models.sequelize.QueryTypes.SELECT})
+    { type: models.sequelize.QueryTypes.SELECT })
   .then(ideas => {
     ideas.forEach((idea) => {
-      let ideaJSON = {};
-      ideaJSON.idea = idea;
-
+      console.log('New idea. idea.id: ', idea.id);
+      let ideaStatus = null;
+      let ideaPromise = new Promise((resolve, reject) => {
+        ideaStatus = ({resolve: resolve, reject: reject});
+      });
+      ideaPromises.push(ideaPromise);
       // Retrieve any agreements, documents, and reviews associated with this idea and 
       // add them to the JSON object
       const agreementPromise = agreementMethods.findByIdea(idea.id);
       const documentsPromise = documentMethods.findByIdea(idea.id);
       const reviewsPromise = reviewMethods.findByIdea(idea.id);
-      Promise.all([agreementPromise, documentsPromise, reviewsPromise]).then((promiseValues) => {
+      console.log(agreementPromise);
+      Promise.all([agreementPromise, documentsPromise, reviewsPromise])
+      .then((promiseValues) => {
+        let ideaJSON = {};
+        ideaJSON.idea = idea;
         const agreement = promiseValues[0];
         ideaJSON.idea.agreement = agreement[0];
         const documents = promiseValues[1];
         ideaJSON.idea.documents = documents;
         const reviews = promiseValues[2];
         ideaJSON.idea.reviews = reviews;
-        console.log('ideaJSON: ', JSON.stringify(ideaJSON, null, 2));
+        console.log('ideaJSON: ', JSON.stringify(ideaJSON, null, 2))
         allIdeasJSON.push(ideaJSON);
+        ideaStatus.resolve(`Completed: ${idea.id}`);
+      });
+    });
+    Promise.all(ideaPromises)
+    .then(() => {
+      console.log('All ideas processed');
+      console.log('allIdeasJSON: ', JSON.stringify(allIdeasJSON, null, 2));
+      res.json(allIdeasJSON);
     });
   });
-    res.json(allIdeasJSON);
-  })
 });
+
 module.exports = router;
