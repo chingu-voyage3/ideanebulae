@@ -109,12 +109,14 @@ router.get('/ideas/getalltags', async (req, res) => {
   })
   */
   models.sequelize.query(
-    `SELECT DISTINCT UNNEST(tags) as tagList \
+    `SELECT DISTINCT UNNEST(tags) as tag \
        FROM ideas \
-       ORDER BY tagList`,
-    { type: models.sequelize.QueryTypes.SELECT })
+       ORDER BY tag`,
+    { 
+      type: models.sequelize.QueryTypes.SELECT,
+    })
   .then((tags) => {
-    res.json(tags);
+    res.json(tags.map((tagName) => { return tagName.tag }));
   })
   .catch((err) => {
     console.log('Error encountered in /ideas/getalltags route. ', err);
@@ -160,9 +162,12 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
             review_status \
        WHERE ideas.id = tagged_ideas.id \
          AND review_status.idea_id = ideas.id \
-         AND (   trim(tagged_ideas.sgat) IN (${tagList}) \
-              OR lower(title) SIMILAR TO ${keywordList} \
-              OR lower(description) SIMILAR TO ${keywordList} ) \
+         AND (    trim(tagged_ideas.sgat) IN (${tagList}) \
+              AND (   ${keywordList} <> '' \
+                   OR lower(title) SIMILAR TO ${keywordList} \
+                   OR lower(description) SIMILAR TO ${keywordList} \
+                  ) \
+             ) \
        ORDER BY updated_at DESC`,
     { type: models.sequelize.QueryTypes.SELECT })
   .then(ideas => {
