@@ -87,7 +87,7 @@
           <td class="explore__td">
             <a class="explore__link" v-on:click="checkForAgreement(idea)">{{idea.title}}</a>
           </td>
-          <td class="explore__td">{{idea.idea_type}}</td>
+          <td class="explore__td">{{idea.type}}</td>
           <td class="explore__td">{{idea.status}}</td>
           <td class="explore__td">{{new Date(idea.status_dt).toLocaleDateString()}}</td>
         </tr>
@@ -145,8 +145,10 @@ export default {
       Object.assign(this.$data, savedState);
     }
     // Retrieve all unique tags referenced across all ideas
+    console.log('Invoking route /ideas/getalltags...');
     http.get('/ideas/getalltags').then((response) => {
       this.ideaTags = response.data;
+      console.log('...Processing getalltags results. this.ideaTags: ', this.ideaTags);
     }).catch((err) => {
       throw new Error(`Error retrieving all idea tags: ${err}`);
     });
