@@ -96,16 +96,29 @@ router.post('/ideas', authCheck, async (req, res) => {
  * @returns {Object} tags A JSON object containing the unique tags in ascending sequence
  */
 router.get('/ideas/getalltags', async (req, res) => {
-  const tags = await models.Idea.findAll({
+  // TODO: The following Sequelize findAll results in an error of "TypeError: Cannot read property 'type' of undefined". 
+  /*
+  const tags = models.Idea.findAll({
     attributes: [
-      [models.sequelize.fn('UNNEST', models.sequelize.col('tags')),'tag'],
+      [models.sequelize.fn('UNNEST', models.sequelize.col('tags')),'tagList'],
     ],
     distinct: true,
     order: [
-      ['ideas.tag', 'ASC']
+      ['ideas.tagList', 'ASC']
     ],
+  })
+  */
+  models.sequelize.query(
+    `SELECT DISTINCT UNNEST(tags) as tagList \
+       FROM ideas \
+       ORDER BY tagList`,
+    { type: models.sequelize.QueryTypes.SELECT })
+  .then((tags) => {
+    res.json(tags);
+  })
+  .catch((err) => {
+    console.log('Error encountered in /ideas/getalltags route. ', err);
   });
-  res.json(tags);
 });
 
 /**
@@ -154,7 +167,6 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
     { type: models.sequelize.QueryTypes.SELECT })
   .then(ideas => {
     ideas.forEach((idea) => {
-      console.log('New idea. idea.id: ', idea.id);
       let ideaStatus = null;
       let ideaPromise = new Promise((resolve, reject) => {
         ideaStatus = ({resolve: resolve, reject: reject});
@@ -165,7 +177,6 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
       const agreementPromise = agreementMethods.findByIdea(idea.id);
       const documentsPromise = documentMethods.findByIdea(idea.id);
       const reviewsPromise = reviewMethods.findByIdea(idea.id);
-      console.log(agreementPromise);
       Promise.all([agreementPromise, documentsPromise, reviewsPromise])
       .then((promiseValues) => {
         let ideaJSON = {};
@@ -176,7 +187,6 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
         ideaJSON.idea.documents = documents;
         const reviews = promiseValues[2];
         ideaJSON.idea.reviews = reviews;
-        console.log('ideaJSON: ', JSON.stringify(ideaJSON, null, 2))
         allIdeasJSON.push(ideaJSON);
         ideaStatus.resolve(`Completed: ${idea.id}`);
       });
