@@ -110,11 +110,14 @@ export default {
         this.currentUser = profile.sub;
 
         // Retrieve the idea identified by the URL paramaters
-        http.get(`/idea/?creator=${this.$route.params.profile_id}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
+        http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
-          this.ideaCreator = response.data[0].user_id;
-          this.ideaTitle = response.data[0].title;
-          this.ideaType = response.data[0].idea_type;
+          console.log('response.data: ', response.data);
+          const idea = response.data.idea;
+          console.log('idea: ', idea);
+          this.ideaCreator = idea.user_id;
+          this.ideaTitle = idea.title;
+          this.ideaType = idea.idea_type;
           this.ideaTypeCode = IDEA_TYPES.findIndex(element =>
             element.name === this.ideaType,
           );
@@ -123,16 +126,17 @@ export default {
           }
 
           // eslint-disable-next-line no-underscore-dangle
-          this.idea_id = response.data[0]._id;
-          this.ideaDesc = response.data[0].description;
-          this.ideaLinks = response.data[0].documents;
-          this.ideaTags = response.data[0].tags;
-          if (response.data[0].agreement === null) {
+          this.idea_id = idea._id;
+          this.ideaDesc = idea.description;
+          this.ideaLinks = idea.documents;
+          console.log('this.ideaLinks: ', this.ideaLinks);
+          this.ideaTags = idea.tags;
+          if (idea.agreement === null) {
             this.ideaAgreement = null;
           } else {
-            this.ideaAgreement = response.data[0].agreement.agreement;
+            this.ideaAgreement = idea.agreement;
           }
-          this.ideaReviews = response.data[0].reviews;
+          this.ideaReviews = idea.reviews;
           this.userRole = (this.ideaCreator === this.currentUser) ? 'creator' : 'reviewer';
           this.editButtonText = (this.userRole === 'creator') ? 'Edit Idea' : 'Add/Update Review';
         })

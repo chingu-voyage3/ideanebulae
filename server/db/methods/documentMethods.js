@@ -21,5 +21,4 @@ export default class documentMethods {
            WHERE idea_id = ${ideaId}`,
         { type: models.sequelize.QueryTypes.SELECT});
   }
-
 }
