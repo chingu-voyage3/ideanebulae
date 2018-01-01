@@ -11,6 +11,38 @@ import reviewMethods from '../db/methods/reviewMethods';
 const Op = Sequelize.Op;
 const router = express.Router();
 
+// Retrieve the idea document identified by the specified creator, title, and type.
+/**
+ * @description Retrieve a specific idea 
+ * @param {String} creator - Username of the ideas creator
+ * @param {String} title - Title of the idea
+ * @param {String} type - Type classification of the idea
+ * @return {Object} idea -  JSON object containing the idea's column values
+ */
+router.get('/idea/:creator(*):title(*):type(*)', (req, res) => {
+  console.log('req.query: ', req.query);
+  models.sequelize.query(
+    `SELECT ideas.id, profiles.user_id, ideas.title, ideas.idea_type, \
+            ideas.description, ideas.tags, ideas.created_at, ideas.updated_at, \
+            idea_agreement.agreement, idea_agreement.version \
+       FROM ideas, \
+            profiles, \
+            idea_agreement \
+       WHERE ideas.profile_id = ${req.query.creator} \
+         AND ideas.title = ${req.query.title} \
+         AMD ideas.idea_type = ${req.query.type} \
+         AND ideas.profile_id = profiles.id \
+         AND ideas.id = idea_agreement.idea_id`,
+    { 
+      type: models.sequelize.QueryTypes.SELECT,
+  })
+  .then(idea => {
+    console.log('idea: ', idea);
+    res.json(idea);
+  })
+  .catch(err => res.send(err));
+});
+
 /**
  * @description List all ideas
  * @param {Object} req - The request object
@@ -154,19 +186,22 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
   // option (FTS) a simpler solution employing the 'SIMILAR' operator is used 
   // until the FTS solution can be researched.
   models.sequelize.query(
-    `SELECT DISTINCT ideas.id, ideas.title, ideas.description, \
+    `SELECT DISTINCT ideas.id, profiles.user_id, ideas.title, ideas.description, \
             ideas.idea_type, ideas.profile_id, ideas.tags, ideas.created_at, \
             ideas.updated_at, \
             review_status.status AS status, \
             review_status.status_dt AS status_dt \
-       FROM ideas \
+       FROM profiles, \
+            ideas \
             LEFT OUTER JOIN (SELECT id, UNNEST(tags) AS sgat \
                                FROM ideas) AS tagged_ideas \
                                  ON ideas.id = tagged_ideas.id \
             LEFT OUTER JOIN review_status ON review_status.idea_id = ideas.id \
-       WHERE TRIM(tagged_ideas.sgat) IN (${tagList}) \
-          OR LOWER(title) SIMILAR TO ${keywordList} \
-          OR LOWER(description) SIMILAR TO ${keywordList} \
+       WHERE profiles.id = ideas.profile_id \
+         AND (   TRIM(tagged_ideas.sgat) IN (${tagList}) \
+              OR LOWER(title) SIMILAR TO ${keywordList} \
+              OR LOWER(description) SIMILAR TO ${keywordList} \
+             ) \
        ORDER BY updated_at DESC`,
     { type: models.sequelize.QueryTypes.SELECT })
   .then(ideas => {
