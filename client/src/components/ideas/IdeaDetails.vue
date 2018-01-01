@@ -110,11 +110,11 @@ export default {
         this.currentUser = profile.sub;
 
         // Retrieve the idea identified by the URL paramaters
-        http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
+        http.get(`/idea/?creator=${this.$route.params.profile_id}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
-          this.ideaCreator = response.data[0].creator;
+          this.ideaCreator = response.data[0].user_id;
           this.ideaTitle = response.data[0].title;
-          this.ideaType = response.data[0].type;
+          this.ideaType = response.data[0].idea_type;
           this.ideaTypeCode = IDEA_TYPES.findIndex(element =>
             element.name === this.ideaType,
           );
