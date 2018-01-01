@@ -11,34 +11,46 @@ import reviewMethods from '../db/methods/reviewMethods';
 const Op = Sequelize.Op;
 const router = express.Router();
 
-// Retrieve the idea document identified by the specified creator, title, and type.
 /**
  * @description Retrieve a specific idea 
  * @param {String} creator - Username of the ideas creator
  * @param {String} title - Title of the idea
  * @param {String} type - Type classification of the idea
- * @return {Object} idea -  JSON object containing the idea's column values
+ * @returns {Object} A JSON object containing the attributes of the idea, including
+ * its associated agreement, supporting documents, and reviews.
  */
 router.get('/idea/:creator(*):title(*):type(*)', (req, res) => {
-  console.log('req.query: ', req.query);
   models.sequelize.query(
     `SELECT ideas.id, profiles.user_id, ideas.title, ideas.idea_type, \
             ideas.description, ideas.tags, ideas.created_at, ideas.updated_at, \
-            idea_agreement.agreement, idea_agreement.version \
+            idea_agreements.agreement, idea_agreements.version \
        FROM ideas, \
             profiles, \
-            idea_agreement \
-       WHERE ideas.profile_id = ${req.query.creator} \
-         AND ideas.title = ${req.query.title} \
-         AMD ideas.idea_type = ${req.query.type} \
-         AND ideas.profile_id = profiles.id \
-         AND ideas.id = idea_agreement.idea_id`,
+            idea_agreements \
+      WHERE profiles.user_id = '${req.query.creator}' \
+        AND ideas.title = '${req.query.title}' \
+        AND ideas.idea_type = '${req.query.type}' \
+        AND ideas.profile_id = profiles.id \
+        AND ideas.id = idea_agreements.idea_id`,
     { 
       type: models.sequelize.QueryTypes.SELECT,
   })
   .then(idea => {
-    console.log('idea: ', idea);
-    res.json(idea);
+    // Retrieve any agreements, documents, and reviews associated with this idea and 
+    // add them to the JSON object
+    const agreementPromise = agreementMethods.findByIdea(idea[0].id);
+    const documentsPromise = documentMethods.findByIdea(idea[0].id);
+    const reviewsPromise = reviewMethods.findByIdea(idea[0].id);
+    Promise.all([agreementPromise, documentsPromise, reviewsPromise])
+    .then((promiseValues) => {
+      let ideaJSON = {};
+      ideaJSON.idea = idea[0];
+      ideaJSON.idea.agreement = promiseValues[0];
+      ideaJSON.idea.documents = promiseValues[1];
+      ideaJSON.idea.reviews = promiseValues[2];
+      console.log('ideaJSON: ', JSON.stringify(ideaJSON,null,2));
+      res.json(ideaJSON);
+    });
   })
   .catch(err => res.send(err));
 });
@@ -57,70 +69,6 @@ router.get('/ideas', (req, res) => {
     .catch((err) => {
       res.json(err);
     });
-});
-
-/**
- * @description Create a new idea
- * @param {Object} req - The request object
- * @param {Object} res - The response object
- * @return {Object} idea The just created idea
- */
-router.post('/ideas', authCheck, async (req, res) => {
-  // First we get the token from the headers
-  const token = req.headers['authorization'].slice(7);
-
-  // Then we decode it and extract sub only
-  const { sub } = decodeToken(token);
-
-  const { title, description, typeCode, tags, documents } = req.body;
-
-  // Handles the constants defined in the client
-  // to set the correct value for the enum
-  let idea_type;
-  switch (typeCode) {
-    case 'PUBLIC_IDEA':
-      idea_type = 'public';
-      break;
-    case 'PRIVATE_IDEA':
-      idea_type = 'private';
-      break;
-    case 'COMMERCIAL_IDEA':
-      idea_type = 'commercial';
-      break;
-    default:
-      break;
-  }
-
-  const profile = await models.Profile.findOne({ where: { user_id: sub } });
-
-  // There's a profile for the JWT, we can create the idea
-  if (profile) {
-    const idea = await models.Idea.create({
-      title,
-      description,
-      idea_type,
-      profile_id: profile.id,
-      tags,
-    });
-    documents.forEach((document) => {
-      let { url, description, idea_title } = document;
-      models.Document.create({
-        url,
-        description,
-        idea_title,
-        profile_id: profile.id,
-        idea_id: idea.id,
-      });
-    });
-    res.json(idea);
-  }
-  // No profile, good bye
-  else {
-    const err = {
-      'message': 'There\'s no user for that token',
-    };
-    res.json(message);
-  }
 });
 
 /**
@@ -166,7 +114,8 @@ router.get('/ideas/getalltags', async (req, res) => {
  * @param {String} searchForTabs A list of comma-separated unique tags
  * @param {String} searchForKeywords A list of comma-separated of unique keywords
  * @returns {Object} ideas A JSON object containing the resulting ideas, each described
- * by its title, type, status, and status date. Also
+ * by its title, type, status, and status date. Also included are the associated
+ * agreement, supporting documents, and reviews.
  */
 router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', async (req, res) => {
   const tagList = req.query.searchForTags.split(',').map((currentTag) => {
@@ -235,6 +184,70 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
       res.json(allIdeasJSON);
     });
   });
+});
+
+/**
+ * @description Create a new idea
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @return {Object} idea The just created idea
+ */
+router.post('/ideas', authCheck, async (req, res) => {
+  // First we get the token from the headers
+  const token = req.headers['authorization'].slice(7);
+
+  // Then we decode it and extract sub only
+  const { sub } = decodeToken(token);
+
+  const { title, description, typeCode, tags, documents } = req.body;
+
+  // Handles the constants defined in the client
+  // to set the correct value for the enum
+  let idea_type;
+  switch (typeCode) {
+    case 'PUBLIC_IDEA':
+      idea_type = 'public';
+      break;
+    case 'PRIVATE_IDEA':
+      idea_type = 'private';
+      break;
+    case 'COMMERCIAL_IDEA':
+      idea_type = 'commercial';
+      break;
+    default:
+      break;
+  }
+
+  const profile = await models.Profile.findOne({ where: { user_id: sub } });
+
+  // There's a profile for the JWT, we can create the idea
+  if (profile) {
+    const idea = await models.Idea.create({
+      title,
+      description,
+      idea_type,
+      profile_id: profile.id,
+      tags,
+    });
+    documents.forEach((document) => {
+      let { url, description, idea_title } = document;
+      models.Document.create({
+        url,
+        description,
+        idea_title,
+        profile_id: profile.id,
+        idea_id: idea.id,
+      });
+    });
+    res.json(idea);
+  }
+  // No profile, good bye
+  else {
+    const err = {
+      'message': 'There\'s no user for that token',
+    };
+    res.json(message);
+  }
 });
 
 module.exports = router;
