@@ -10,13 +10,15 @@ export default class reviewMethods {
    */
   static async findByIdea(ideaId) {
       return await models.sequelize.query(
-        `SELECT id,
-                idea_id,
-                idea_creator,
-                idea_title,
-                idea_type,
-                reviewer,
-                comments
+        `SELECT id, \
+                idea_id, \
+                idea_creator, \
+                idea_title, \
+                idea_type, \
+                reviewer, \
+                comments, \
+                created_at, \
+                updated_at \
            FROM idea_reviews \
            WHERE idea_id = ${ideaId}`,
         { type: models.sequelize.QueryTypes.SELECT});

@@ -22,16 +22,13 @@ const router = express.Router();
 router.get('/idea/:creator(*):title(*):type(*)', (req, res) => {
   models.sequelize.query(
     `SELECT ideas.id, profiles.user_id, ideas.title, ideas.idea_type, \
-            ideas.description, ideas.tags, ideas.created_at, ideas.updated_at, \
-            idea_agreements.agreement, idea_agreements.version \
+            ideas.description, ideas.tags, ideas.created_at, ideas.updated_at \
        FROM ideas, \
-            profiles, \
-            idea_agreements \
+            profiles \
       WHERE profiles.user_id = '${req.query.creator}' \
         AND ideas.title = '${req.query.title}' \
         AND ideas.idea_type = '${req.query.type}' \
-        AND ideas.profile_id = profiles.id \
-        AND ideas.id = idea_agreements.idea_id`,
+        AND ideas.profile_id = profiles.id`,
     { 
       type: models.sequelize.QueryTypes.SELECT,
   })

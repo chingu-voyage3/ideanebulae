@@ -6,7 +6,7 @@
 -- This view produces a list of all agreements for an idea
 --
 DROP VIEW public.idea_agreements;
-CREATE OR REPLACE VIEW public.idea_agreement AS
+CREATE OR REPLACE VIEW public.idea_agreements AS
     SELECT agreements.id,
         profiles.username,
         agreements.idea_id,
@@ -19,7 +19,7 @@ CREATE OR REPLACE VIEW public.idea_agreement AS
     WHERE agreements.idea_profile_id = profiles.id
     ORDER BY profiles.username;
 
-ALTER TABLE public.idea_agreement
+ALTER TABLE public.idea_agreements
     OWNER TO postgres;
 
 -- View: public.idea_documents
@@ -57,7 +57,9 @@ CREATE OR REPLACE VIEW public.idea_reviews AS
     reviews.idea_title,
     reviews.idea_type,
     reviewers.username AS reviewer,
-    reviews.comments
+    reviews.comments,
+    reviews.created_at,
+    reviews.updated_at
    FROM reviews,
     profiles ideaowners,
     profiles reviewers
