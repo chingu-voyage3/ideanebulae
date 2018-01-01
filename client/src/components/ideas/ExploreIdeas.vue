@@ -83,13 +83,13 @@
           <th class="explore__th">Status</th>
           <th class="explore__th">Status Date</th>
         </tr>
-        <tr class="explore__tr" v-for="idea in ideas" v-bind:key="idea.title">
+        <tr class="explore__tr" v-for="idea in ideas" v-bind:key="idea.idea.title">
           <td class="explore__td">
-            <a class="explore__link" v-on:click="checkForAgreement(idea)">{{idea.title}}</a>
+            <a class="explore__link" v-on:click="checkForAgreement(idea.idea)">{{idea.idea.title}}</a>
           </td>
-          <td class="explore__td">{{idea.type}}</td>
-          <td class="explore__td">{{idea.status}}</td>
-          <td class="explore__td">{{new Date(idea.status_dt).toLocaleDateString()}}</td>
+          <td class="explore__td">{{idea.idea.idea_type}}</td>
+          <td class="explore__td">{{idea.idea.status}}</td>
+          <td class="explore__td">{{new Date(idea.idea.status_dt).toLocaleDateString()}}</td>
         </tr>
       </table>
       <ModalDialog v-if="showModal" @cancel="showModal = false" @accept="acceptAgreement">
@@ -145,10 +145,8 @@ export default {
       Object.assign(this.$data, savedState);
     }
     // Retrieve all unique tags referenced across all ideas
-    console.log('Invoking route /ideas/getalltags...');
     http.get('/ideas/getalltags').then((response) => {
       this.ideaTags = response.data;
-      console.log('...Processing getalltags results. this.ideaTags: ', this.ideaTags);
     }).catch((err) => {
       throw new Error(`Error retrieving all idea tags: ${err}`);
     });
@@ -239,6 +237,11 @@ export default {
     removeTag(index) {
       this.searchForTags.splice(index, 1);
     },
+    /**
+     * @description Search for ideas matching whose tags match one or more of
+     * the tags selected by the user or whose title and description contain
+     * one or more of the keywords provided by the user.
+     */
     searchIdeas() {
       http.get(`/ideas/search/?currUser=${this.currentUser}&searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
       .then((response) => {

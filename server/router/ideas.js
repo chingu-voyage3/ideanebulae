@@ -140,10 +140,12 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
   const tagList = req.query.searchForTags.split(',').map((currentTag) => {
     return `'${currentTag}'`;
   }).join(',');
+  console.log('tagList: ', tagList);
 
   const keywordList = '\'%('.concat(req.query.searchForKeywords.split(',').map((currentKeyword) => {
     return `${currentKeyword}`;
   }).join('|'), ')%\'');
+  console.log('keywordList: ', keywordList);
   
   let ideaPromises = [];
   let allIdeasJSON = [];
@@ -152,22 +154,19 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
   // option (FTS) a simpler solution employing the 'SIMILAR' operator is used 
   // until the FTS solution can be researched.
   models.sequelize.query(
-    `SELECT DISTINCT ideas.id, ideas.title, ideas.description, ideas.idea_type, \
-            ideas.profile_id, ideas.tags, ideas.created_at, ideas.updated_at, \
-            review_status.status AS status, review_status.status_dt AS status_dt, \
+    `SELECT DISTINCT ideas.id, ideas.title, ideas.description, \
+            ideas.idea_type, ideas.profile_id, ideas.tags, ideas.created_at, \
+            ideas.updated_at, \
             review_status.status AS status, \
             review_status.status_dt AS status_dt \
-       FROM ideas, \
-            (SELECT id, UNNEST(tags) AS sgat FROM ideas) AS tagged_ideas, \
-            review_status \
-       WHERE ideas.id = tagged_ideas.id \
-         AND review_status.idea_id = ideas.id \
-         AND (    trim(tagged_ideas.sgat) IN (${tagList}) \
-              AND (   ${keywordList} <> '' \
-                   OR lower(title) SIMILAR TO ${keywordList} \
-                   OR lower(description) SIMILAR TO ${keywordList} \
-                  ) \
-             ) \
+       FROM ideas \
+            LEFT OUTER JOIN (SELECT id, UNNEST(tags) AS sgat \
+                               FROM ideas) AS tagged_ideas \
+                                 ON ideas.id = tagged_ideas.id \
+            LEFT OUTER JOIN review_status ON review_status.idea_id = ideas.id \
+       WHERE TRIM(tagged_ideas.sgat) IN (${tagList}) \
+          OR LOWER(title) SIMILAR TO ${keywordList} \
+          OR LOWER(description) SIMILAR TO ${keywordList} \
        ORDER BY updated_at DESC`,
     { type: models.sequelize.QueryTypes.SELECT })
   .then(ideas => {
@@ -198,8 +197,6 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
     });
     Promise.all(ideaPromises)
     .then(() => {
-      console.log('All ideas processed');
-      console.log('allIdeasJSON: ', JSON.stringify(allIdeasJSON, null, 2));
       res.json(allIdeasJSON);
     });
   });
