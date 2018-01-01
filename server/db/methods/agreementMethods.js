@@ -39,13 +39,13 @@ export default class agreementMethods {
    */
   static async findByIdea(ideaId) {
     return await models.sequelize.query(
-      `SELECT id,
-              username,
-              idea_id,
-              idea_title,
-              idea_type,
-              agreement,
-              version
+      `SELECT id, \
+              username, \
+              idea_id, \
+              idea_title, \
+              idea_type, \
+              agreement, \
+              version \
           FROM idea_agreements \
           WHERE idea_id = ${ideaId}`,
       { type: models.sequelize.QueryTypes.SELECT}

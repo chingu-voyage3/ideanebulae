@@ -43,8 +43,8 @@
               <div class="view__tr view__tr--col" v-for="review in ideaReviews" v-bind:key="review.reviewer">
                 <div class="view__td--wrap">
                   <div class="view__td">{{review.reviewer}}</div>
-                  <div class="view__td">{{new Date(review.assigned_ts).toLocaleDateString()}}</div>
-                  <div class="view__td">{{new Date(review.updated_ts).toLocaleDateString()}}</div>
+                  <div class="view__td">{{new Date(review.created_at).toLocaleDateString()}}</div>
+                  <div class="view__td">{{new Date(review.updated_at).toLocaleDateString()}}</div>
                 </div>
                 <div class="view__td--full">{{review.comments}}</div>
               </div>
