@@ -112,9 +112,7 @@ export default {
         // Retrieve the idea identified by the URL paramaters
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
-          console.log('response.data: ', response.data);
           const idea = response.data.idea;
-          console.log('idea: ', idea);
           this.ideaCreator = idea.user_id;
           this.ideaTitle = idea.title;
           this.ideaType = idea.idea_type;
@@ -129,7 +127,6 @@ export default {
           this.idea_id = idea._id;
           this.ideaDesc = idea.description;
           this.ideaLinks = idea.documents;
-          console.log('this.ideaLinks: ', this.ideaLinks);
           this.ideaTags = idea.tags;
           if (idea.agreement === null) {
             this.ideaAgreement = null;
@@ -150,6 +147,10 @@ export default {
     }
   },
   methods: {
+    /**
+     * @description If the user is the creator of the idea transfer to the Edit Idea page.
+     * Otherwise, transfer to the Review Idea page
+     */
     editIdea() {
       if (this.userRole === 'creator') {
         this.$router.push({ path: `/edit/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
