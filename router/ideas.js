@@ -46,7 +46,7 @@ router.get('/idea/:creator(*):title(*):type(*)', (req, res) => {
       ideaJSON.idea.documents = promiseValues[1];
       ideaJSON.idea.reviews = promiseValues[2];
       console.log('ideaJSON: ', JSON.stringify(ideaJSON,null,2));
-      res.json(ideaJSON);
+      res.json(ideaJSON.idea);
     });
   })
   .catch(err => res.send(err));
