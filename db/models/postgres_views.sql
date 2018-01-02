@@ -56,7 +56,8 @@ CREATE OR REPLACE VIEW public.idea_reviews AS
     ideaowners.username AS idea_creator,
     reviews.idea_title,
     reviews.idea_type,
-    reviewers.username AS reviewer,
+    reviews.reviewer_id,
+    reviewers.user_id AS reviewer,
     reviews.comments,
     reviews.created_at,
     reviews.updated_at
