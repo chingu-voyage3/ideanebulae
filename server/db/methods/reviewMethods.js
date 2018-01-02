@@ -15,6 +15,7 @@ export default class reviewMethods {
                 idea_creator, \
                 idea_title, \
                 idea_type, \
+                reviewer_id, \
                 reviewer, \
                 comments, \
                 created_at, \

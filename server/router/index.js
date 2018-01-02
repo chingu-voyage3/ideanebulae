@@ -3,11 +3,13 @@ const authCheck = require('../utils/authCheck');
 const decodeToken = require('../utils/decodeToken');
 const ideasRouter = require('./ideas');
 const profilesRouter = require('./profiles');
+const reviewsRouter = require('./reviews');
 
 const router = express.Router();
 
 router.use(ideasRouter);
 router.use(profilesRouter);
+router.use(reviewsRouter);
 /**
  * IMPORTANT
  * DO NOT UNCOMMENT THESE ROUTES UNTIL THE ENDPOINTS
@@ -20,26 +22,6 @@ router.use(profilesRouter);
  // ----------------------------------------------------------------------------
 // Idea Routes
 // ----------------------------------------------------------------------------
-
-// Retrieve the idea document identified by the specified creator, title, and type.
-router.route('/idea/:creator(*):title(*):type(*)')
-.get((req, res) => {
-  Idea.findIdea(req.query.creator, req.query.title, req.query.type)
-    .then(idea => {
-      res.json(idea)
-    })
-    .catch(err => res.send(err));
-});
-
-// Retrieve the idea document identified by the specified creator, title, and type.
-router.route('/idea/:creator(*):title(*):type(*)')
-  .get((req, res) => {
-    Idea.findIdea(req.query.creator, req.query.title, req.query.type)
-      .then(idea => {
-        res.json(idea)
-      })
-      .catch(err => res.send(err));
-  });
 
 router.route('/ideas')
 // Add or update an idea document
@@ -95,53 +77,6 @@ router.route('/ideas')
   .catch(err => res.send(err));
 });
 
-// Retrieve all unique idea tags that are currently assigned to ideas
-router.route('/ideas/getAllTags')
-.get((req, res) => {
-    Idea.getAllTags()
-      .then(ideaTags => {
-        res.json(ideaTags);
-      })
-      .catch(err => res.send(err));
-  });
-
-// Retrieve the idea documents matching the specified tags and keywords.
-router.route('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)')
-.get((req, res) => {
-  Idea.searchIdeas(req.query.currUser, req.query.searchForTags, req.query.searchForKeywords)
-    .then(ideas => {
-      res.json(ideas);
-    })
-    .catch(err => res.send(err));
-});
-
-// ----------------------------------------------------------------------------
-// Review Routes
-// ----------------------------------------------------------------------------
-
-router.route('/review/:creator(*):title(*):type(*)')
-// Add a new reviewer to an idea document identified by the specified creator, title,
-// and type.
-.put((req, res) => {
-  Idea.addReview(req.query.creator, req.query.title, req.query.type, req.body.reviewer, req.body.comment)
-    .then(idea => {
-      res.json(idea)
-    })
-    .catch(err => {
-      res.send(err)
-    });
-})
-// Update an existing review in an dentified by the specified creator, title,
-// and type.
-.post((req,res) => {
-  Idea.updateReview(req.query.creator, req.query.title, req.query.type, req.body.reviewer, req.body.comment)
-    .then(idea => {
-      res.json(idea)
-    })
-    .catch(err => {
-      res.send(err);
-    });
-});
 */
 
 module.exports = router;

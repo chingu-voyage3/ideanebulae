@@ -113,7 +113,7 @@ export default {
           this.ideaTypeCode = idea.typeCode;
 
           // eslint-disable-next-line no-underscore-dangle
-          this.idea_id = idea._id;
+          this.idea_id = idea.id;
           this.ideaDesc = idea.description;
           this.ideaLinks = idea.documents;
           this.ideaTags = idea.tags;
@@ -130,6 +130,7 @@ export default {
             this.reviewButtonText = 'Add Review';
           } else {
             this.reviewButtonText = 'Update Review';
+            this.reviewerId = this.ideaReviews[this.reviewIndex].reviewer_id;
             this.reviewComments = this.ideaReviews[this.reviewIndex].comments;
           }
         })
@@ -146,7 +147,7 @@ export default {
     updateReview() {
       // Add a new review
       if (this.reviewIndex === this.NEW_REVIEW) {
-        http.put(`/review/?creator=${this.ideaCreator}&title=${this.ideaTitle}&type=${this.ideaType}`, { reviewer: this.currentUser, comment: this.reviewComments })
+        http.put(`/review/?ideaid=${this.idea_id}&reviewerid=${this.currentUser}`, { comment: this.reviewComments })
         .then((response) => {
           if (response.data.ok !== 1) {
             throw new Error('Failed to add a review to idea document. ', response.data);
@@ -158,7 +159,7 @@ export default {
         });
       } else {
       // Update an existing review
-        http.post(`/review/?creator=${this.ideaCreator}&title=${this.ideaTitle}&type=${this.ideaType}`, { reviewer: this.currentUser, comment: this.reviewComments })
+        http.post(`/review/?ideaid=${this.idea_id}&reviewerid=${this.reviewerId}`, { comment: this.reviewComments })
         .then((response) => {
           if (response.data.ok !== 1 && response.data.nModified < 1) {
             throw new Error('Failed to update an idea document. ', response.data);
