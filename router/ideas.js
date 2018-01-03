@@ -42,7 +42,7 @@ router.get('/idea/:creator(*):title(*):type(*)', (req, res) => {
     .then((promiseValues) => {
       let ideaJSON = {};
       ideaJSON.idea = idea[0];
-      ideaJSON.idea.agreement = promiseValues[0];
+      ideaJSON.idea.agreement = promiseValues[0][0];
       ideaJSON.idea.documents = promiseValues[1];
       ideaJSON.idea.reviews = promiseValues[2];
       res.json(ideaJSON);
