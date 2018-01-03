@@ -45,7 +45,6 @@ router.get('/idea/:creator(*):title(*):type(*)', (req, res) => {
       ideaJSON.idea.agreement = promiseValues[0];
       ideaJSON.idea.documents = promiseValues[1];
       ideaJSON.idea.reviews = promiseValues[2];
-      console.log('ideaJSON: ', JSON.stringify(ideaJSON,null,2));
       res.json(ideaJSON);
     });
   })
@@ -110,9 +109,9 @@ router.get('/ideas/getalltags', async (req, res) => {
  * @param {String} currUser The nickname of the currently logged on user
  * @param {String} searchForTabs A list of comma-separated unique tags
  * @param {String} searchForKeywords A list of comma-separated of unique keywords
- * @returns {Object} ideas A JSON object containing the resulting ideas, each described
- * by its title, type, status, and status date. Also included are the associated
- * agreement, supporting documents, and reviews.
+ * @returns {Object} ideas A JSON object containing the resulting ideas. Each
+ * idea is described by its title, type, status, and status date. Also included are
+ * the associated agreement, supporting documents, and reviews.
  */
 router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', async (req, res) => {
   const tagList = req.query.searchForTags.split(',').map((currentTag) => {
@@ -166,12 +165,9 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
       .then((promiseValues) => {
         let ideaJSON = {};
         ideaJSON.idea = idea;
-        const agreement = promiseValues[0];
-        ideaJSON.idea.agreement = agreement[0];
-        const documents = promiseValues[1];
-        ideaJSON.idea.documents = documents;
-        const reviews = promiseValues[2];
-        ideaJSON.idea.reviews = reviews;
+        ideaJSON.idea.agreement = promiseValues[0];
+        ideaJSON.idea.documents = promiseValues[1];
+        ideaJSON.idea.reviews = promiseValues[2];
         allIdeasJSON.push(ideaJSON);
         ideaStatus.resolve(`Completed: ${idea.id}`);
       });

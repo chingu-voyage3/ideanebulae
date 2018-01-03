@@ -15,7 +15,7 @@ CREATE OR REPLACE VIEW public.idea_agreements AS
         agreements.agreement,
         agreements.version
     FROM agreements,
-        profiles
+         profiles
     WHERE agreements.idea_profile_id = profiles.id
     ORDER BY profiles.username;
 
