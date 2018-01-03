@@ -96,7 +96,7 @@
         <h3 slot="header" class="modal-header">Accept Idea Agreement</h3>
         <div slot="body" class="modal-body">
           <label class="explore__label">Type</label>
-          <div class="modal-p modal-proper">{{this.selectedIdea.type}}</div>
+          <div class="modal-p modal-proper">{{this.selectedIdea.idea_type}}</div>
           <label class="explore__label">Agreement</label>
           <div v-if="selectedIdea.agreement !== null">
             <div>{{this.selectedIdea.agreement.agreement}}</div>
@@ -246,6 +246,7 @@ export default {
     searchIdeas() {
       http.get(`/ideas/search/?currUser=${this.currentUser}&searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
       .then((response) => {
+        console.log('response: ', response);
         this.ideas = response.data;
       }).catch((err) => {
         throw new Error(`Error searching ideas on tags/keywords: ${err}`);

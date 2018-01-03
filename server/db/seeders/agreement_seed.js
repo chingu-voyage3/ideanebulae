@@ -57,6 +57,15 @@ module.exports = {
         agreement: "Agree or else!",
         created_at: '2017-12-19 00:00:00',
         updated_at: '2017-12-19 00:00:00'
+      }, {
+        idea_id: 5,
+        version: 1,
+        idea_profile_id: 1,
+        idea_title: "Fortune Empanadas",
+        idea_type: "private",
+        agreement: "This agreement is for the birds!",
+        created_at: '2017-12-19 00:00:00',
+        updated_at: '2017-12-19 00:00:00'
       }
     ], {});
   },
