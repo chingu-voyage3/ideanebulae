@@ -9,7 +9,7 @@
 
         <div class="review__form-element">
           <label class="review__label" for="review__creator">Creator</label>
-          <input class="review__input" id="review__creator" maxlength="100" type="text" name="creator" v-model="ideaCreator" placeholder="Creator" autofocus disabled>
+          <input class="review__input" id="review__creator" maxlength="100" type="text" name="creator" v-model="ideaCreatorName" placeholder="Creator" autofocus disabled>
         </div>
 
         <div class="review__form-element">
@@ -26,7 +26,7 @@
         <IdeaLinks :links="this.ideaLinks"></IdeaLinks>
         <IdeaType :type="this.ideaType"></IdeaType>
 
-        <div class="review__form-element" v-show="this.ideaTypeCode !== this.PUBLIC">
+        <div class="review__form-element" v-show="this.ideaType !== IDEATYPES[PUBLIC].name">
           <label class="review__label" for="review__agreement">Agreement</label>
           <textarea id="review__agreement" name="agreement" class="review__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement" disabled></textarea>
         </div>
@@ -51,7 +51,7 @@
 
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
-import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA } from '@/../../server/db/misc/ideaConstants';
+import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../../../../server/db/misc/ideaConstants';
 import http from '../../api/index';
 import IdeaLinks from '../shared/IdeaLinks';
 import IdeaTags from '../shared/IdeaTags';
@@ -70,9 +70,11 @@ export default {
       currentUser: '',
       userRole: '',
       reviewButtonText: '',
+
       // Idea information
-      idea_id: '',
-      ideaCreator: '',
+      ideaId: '',
+      ideaCreatorName: '',
+      ideaCreatorProfileId: '',
       ideaTitle: '',
       ideaType: '',
       ideaDesc: '',
@@ -80,18 +82,21 @@ export default {
       ideaLinks: [''],
       ideaAgreement: '',
       ideaReviews: [],
-      ideaTypeCode: '',
+
       // Review information
       reviewIndex: this.NEW_REVIEW,
+      reviewerId: '',
       reviewAssigned: '',
       reviewUpdated: '',
       reviewComments: '',
+
       // Constants
       // Note that constants are imported from files to maintain consistency across the app
       // but defined in this fashion so they are available to be referenced from HTML.
       PUBLIC: PUBLIC_IDEA,
       PRIVATE: PRIVATE_IDEA,
       COMMERCIAL: COMMERCIAL_IDEA,
+      IDEATYPES: IDEA_TYPES,
 
       NEW_REVIEW: -1,
     };
@@ -107,13 +112,13 @@ export default {
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
           const idea = response.data.idea;
-          this.ideaCreator = idea.user_id;
+          this.ideaCreatorName = idea.user_id;
+          this.ideaCreatorProfileId = idea.profile_id;
           this.ideaTitle = idea.title;
           this.ideaType = idea.idea_type;
-          this.ideaTypeCode = idea.typeCode;
 
           // eslint-disable-next-line no-underscore-dangle
-          this.idea_id = idea.id;
+          this.ideaId = idea.id;
           this.ideaDesc = idea.description;
           this.ideaLinks = idea.documents;
           this.ideaTags = idea.tags;
@@ -144,11 +149,23 @@ export default {
     }
   },
   methods: {
+    /**
+     * @description Add a new review or update the review if it already exists.
+     */
     updateReview() {
       // Add a new review
       if (this.reviewIndex === this.NEW_REVIEW) {
-        http.put(`/review/?ideaid=${this.idea_id}&reviewerid=${this.currentUser}`, { comment: this.reviewComments })
+        console.log('Adding a new review');
+        http.put(`/review/?ideaid=${this.ideaId}&reviewerid=${this.currentUser}`,
+          {
+            idea_profile_id: this.ideaCreatorProfileId,
+            idea_type: this.ideaType,
+            idea_title: this.ideaTitle,
+            comment: this.reviewComments,
+          },
+        )
         .then((response) => {
+          console.log('response: ', response);
           if (response.data.ok !== 1) {
             throw new Error('Failed to add a review to idea document. ', response.data);
           } else {
@@ -158,11 +175,15 @@ export default {
           throw new Error('Failed to add an idea review: ', err);
         });
       } else {
-      // Update an existing review
-        http.post(`/review/?ideaid=${this.idea_id}&reviewerid=${this.reviewerId}`, { comment: this.reviewComments })
+      // Update an existing review with the new comments
+        http.post(`/review/?ideaid=${this.ideaId}&reviewerid=${this.reviewerId}`,
+          {
+            comment: this.reviewComments,
+          },
+        )
         .then((response) => {
-          if (response.data.ok !== 1 && response.data.nModified < 1) {
-            throw new Error('Failed to update an idea document. ', response.data);
+          if (response.data[0] !== 1) {
+            throw new Error('Failed to update an idea document. response: ', response);
           } else {
             this.$router.push('/dashboard');
           }

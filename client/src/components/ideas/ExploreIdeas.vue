@@ -194,9 +194,10 @@ export default {
       }
     },
     /**
-     * @description Examing the selected idea to determine if agreement acceptance is
-     * required before transferring to the Idea Details page. The following must be
-     * true to transfer without acceptance of the ideas agreement.
+     * @description Examing the selected idea to determine if agreement
+     * acceptance is required before transferring to the Idea Details page.
+     * The following must be true to transfer without acceptance of the ideas
+     * agreement.
      * - The idea must be public
      * - The idea creator and the current user must be one in the same
      * - The current user must have previously accepted the agreement

@@ -28,20 +28,17 @@ router.post('/review/:ideaid(*):reviewerid(*)', (req, res) => {
     res.send(err)
   });
 })
+
 // Update an existing review in an dentified by the specified creator, title,
 // and type.
-/*
-router.post('/review/:creator(*):title(*):type(*)', (req,res) => {
-  models.review.update({
+router.put(':ideaid(*):reviewerid(*)', (req,res) => {
+  models.Review.create({
+    idea_id: req.query.ideaid,
+    idea_profile_id: req.body.idea_profile_id,
+    idea_type: req.body.idea_type,
+    idea_title: req.body.idea_title,
+    reviewer_id: req.query.reviewerid,
     comments: req.body.comment,
-  },
-  {
-    where: {    
-      idea_user_id: req.query.creator, 
-      idea_title: req.query.title, 
-      idea_type: req.query.type, 
-      reviewer_id: req.body.reviewer, 
-    },
   })
   .then(review => {
     res.json(review);
@@ -50,6 +47,5 @@ router.post('/review/:creator(*):title(*):type(*)', (req,res) => {
       res.send(err);
   });
 });
-*/
 
 module.exports = router;
