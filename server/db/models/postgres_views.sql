@@ -5,7 +5,7 @@
 --
 -- This view produces a list of all agreements for an idea
 --
-DROP VIEW public.idea_agreements;
+--DROP VIEW public.idea_agreements;
 CREATE OR REPLACE VIEW public.idea_agreements AS
     SELECT agreements.id,
         profiles.username,
@@ -26,7 +26,7 @@ ALTER TABLE public.idea_agreements
 --
 -- This view produces a list of all documents for an idea
 --
-DROP VIEW public.idea_documents;
+--DROP VIEW public.idea_documents;
 
 CREATE OR REPLACE VIEW public.idea_documents AS
  SELECT documents.id,
@@ -48,7 +48,7 @@ ALTER TABLE public.idea_documents
 --
 -- This view produces a list of all reviews of an idea
 --
-DROP VIEW public.idea_reviews;
+--DROP VIEW public.idea_reviews;
 
 CREATE OR REPLACE VIEW public.idea_reviews AS
  SELECT reviews.id,
@@ -77,7 +77,7 @@ ALTER TABLE public.idea_reviews
 -- This view results in a single row for each idea containing its status and
 -- status date, as well as its most recent review creation date, and update
 --
-DROP VIEW public.review_status;
+--DROP VIEW public.review_status;
 
 CREATE OR REPLACE VIEW public.review_status AS
  SELECT DISTINCT ON (all_reviews.idea_id) all_reviews.idea_id,

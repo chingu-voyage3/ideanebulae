@@ -156,7 +156,7 @@ export default {
       // Add a new review
       if (this.reviewIndex === this.NEW_REVIEW) {
         console.log('Adding a new review');
-        http.put(`/review/?ideaid=${this.ideaId}&reviewerid=${this.currentUser}`,
+        http.post(`/review/?ideaid=${this.ideaId}&reviewername=${this.currentUser}`,
           {
             idea_profile_id: this.ideaCreatorProfileId,
             idea_type: this.ideaType,
@@ -176,7 +176,7 @@ export default {
         });
       } else {
       // Update an existing review with the new comments
-        http.post(`/review/?ideaid=${this.ideaId}&reviewerid=${this.reviewerId}`,
+        http.put(`/review/?ideaid=${this.ideaId}&reviewerid=${this.reviewerId}`,
           {
             comment: this.reviewComments,
           },

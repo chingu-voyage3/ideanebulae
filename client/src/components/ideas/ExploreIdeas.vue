@@ -163,18 +163,22 @@ export default {
   },
   methods: {
     acceptAgreement() {
-      const review = {
-        reviewer: this.currentUser,
-      };
-      http.put(`/review/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}`, review)
+      console.log('Adding new review');
+      http.post(`/review/?ideaid=${this.selectedIdea.id}&reviewername=${this.currentUser}`,
+        {
+          idea_profile_id: this.selectedIdea.profile_id,
+          idea_type: this.selectedIdea.idea_type,
+          idea_title: this.selectedIdea.title,
+          comment: '',
+        },
+      )
       .then((response) => {
-        if (response.ok && response.nModified) {
-          this.showModal = false;
-          this.transferToDetails(this.selectedIdea);
-        }
-        throw new Error(`Error adding reviewer to idea document. ${response}`);
-      }).catch((err) => {
-        throw new Error(`Error adding an idea reviewer: ${err}`);
+        console.log('response: ', response);
+        this.showModal = false;
+        this.transferToDetails(this.selectedIdea);
+      })
+      .catch((err) => {
+        throw new Error('Error adding an idea reviewer: ', err);
       });
     },
     addKeyword() {

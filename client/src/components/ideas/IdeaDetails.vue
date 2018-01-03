@@ -28,7 +28,7 @@
 
         <div class="view__form-element" v-show="this.ideaTypeCode">
           <label class="view__label" for="view__agreement">Agreement</label>
-          <textarea id="view__agreement" name="agreement" class="view__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement" disabled></textarea>
+          <textarea id="view__agreement" name="agreement" class="view__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement.agreement" placeholder="Agreement" disabled></textarea>
         </div>
 
         <div class="view__form-element" v-show="this.ideaReviews.length">
@@ -112,6 +112,7 @@ export default {
         // Retrieve the idea identified by the URL paramaters
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
+          console.log('response: ', response);
           const idea = response.data.idea;
           this.ideaCreator = idea.user_id;
           this.ideaTitle = idea.title;
@@ -131,6 +132,7 @@ export default {
           if (idea.agreement === null) {
             this.ideaAgreement = null;
           } else {
+            console.log('idea.agreement: ', idea.agreement);
             this.ideaAgreement = idea.agreement;
           }
           this.ideaReviews = idea.reviews;
