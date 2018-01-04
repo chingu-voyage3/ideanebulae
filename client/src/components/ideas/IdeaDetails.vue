@@ -112,7 +112,7 @@ export default {
         // Retrieve the idea identified by the URL paramaters
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
-          console.log('response: ', response);
+          console.log('mounted - response: ', response);
           const idea = response.data.idea;
           this.ideaCreator = idea.user_id;
           this.ideaTitle = idea.title;
@@ -131,9 +131,9 @@ export default {
           this.ideaTags = idea.tags;
           if (idea.agreement === null) {
             this.ideaAgreement = null;
-          } else {
-            console.log('idea.agreement: ', idea.agreement);
-            this.ideaAgreement = idea.agreement;
+          } else if (this.ideaTypeCode !== this.PUBLIC) {
+            console.log('...idea.agreement: ', idea.agreement);
+            this.ideaAgreement = idea.agreement.agreement;
           }
           this.ideaReviews = idea.reviews;
           this.userRole = (this.ideaCreator === this.currentUser) ? 'creator' : 'reviewer';

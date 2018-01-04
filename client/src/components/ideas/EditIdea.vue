@@ -71,8 +71,9 @@ export default {
       origTitle: '',
       origType: '',
       // Constants
-      // Note that constants are imported from files to maintain consistency across the app
-      // but defined in this fashion so they are available to be referenced from HTML.
+      // Note that constants are imported from files to maintain consistency
+      // across the app but defined in this fashion so they are available to
+      // be referenced from HTML.
       PUBLIC: PUBLIC_IDEA,
       PRIVATE: PRIVATE_IDEA,
       COMMERCIAL: COMMERCIAL_IDEA,
@@ -92,24 +93,30 @@ export default {
         // Retrieve the idea identified by the URL paramaters
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
-          this.ideaCreator = response.data[0].creator;
-          this.ideaTitle = response.data[0].title;
-          this.origTitle = response.data[0].title;
-          this.ideaType = response.data[0].type;
-          this.origType = response.data[0].type;
-          this.ideaTypeCode = response.data[0].typeCode;
-
+          console.log('response: ', response);
+          const idea = response.data.idea;
+          this.ideaCreator = idea.user_id;
+          this.ideaTitle = idea.title;
+          this.origTitle = idea.title;
+          this.ideaType = idea.idea_type;
+          this.origType = idea.idea_type;
+          this.ideaTypeCode = IDEA_TYPES.findIndex(element =>
+            element.name === this.ideaType,
+          );
+          if (this.ideaTypeCode === -1) {
+            throw new Error(`Invalid idea type encountered displaying idea details. type: ${this.ideaType}`);
+          }
           // eslint-disable-next-line no-underscore-dangle
-          this.idea_id = response.data[0]._id;
-          this.ideaDesc = response.data[0].description;
-          this.ideaDocuments = response.data[0].documents;
-          this.ideaTags = response.data[0].tags;
-          if (response.data[0].agreement === null) {
+          this.idea_id = idea.id;
+          this.ideaDesc = idea.description;
+          this.ideaDocuments = idea.documents;
+          this.ideaTags = idea.tags;
+          if (idea.agreement === null) {
             this.ideaAgreement = null;
           } else if (this.ideaTypeCode !== this.PUBLIC) {
-            this.ideaAgreement = response.data[0].agreement.agreement;
+            this.ideaAgreement = idea.agreement.agreement;
           }
-          this.ideaReviews = response.data[0].reviews;
+          this.ideaReviews = idea.reviews;
         })
         .catch((err) => {
           throw new Error(`Locating idea: ${err}`);

@@ -163,7 +163,6 @@ export default {
   },
   methods: {
     acceptAgreement() {
-      console.log('Adding new review');
       http.post(`/review/?ideaid=${this.selectedIdea.id}&reviewername=${this.currentUser}`,
         {
           idea_profile_id: this.selectedIdea.profile_id,
@@ -173,7 +172,7 @@ export default {
         },
       )
       .then((response) => {
-        console.log('response: ', response);
+        console.log('acceptAgreement - response: ', response);
         this.showModal = false;
         this.transferToDetails(this.selectedIdea);
       })
@@ -250,7 +249,6 @@ export default {
     searchIdeas() {
       http.get(`/ideas/search/?currUser=${this.currentUser}&searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
       .then((response) => {
-        console.log('response: ', response);
         this.ideas = response.data;
       }).catch((err) => {
         throw new Error(`Error searching ideas on tags/keywords: ${err}`);
