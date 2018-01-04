@@ -12,7 +12,9 @@ const Op = Sequelize.Op;
 const router = express.Router();
 
 /**
- * @description Retrieve a specific idea 
+ * @description Retrieve a specific idea. The result set column names are quoted to
+ * preserve camelCase since the Sequelize connection is initialized with the
+ * 'underscore: true' option.
  * @param {String} creator - Username of the ideas creator
  * @param {String} title - Title of the idea
  * @param {String} type - Type classification of the idea
@@ -21,8 +23,15 @@ const router = express.Router();
  */
 router.get('/idea/:creator(*):title(*):type(*)', (req, res) => {
   models.sequelize.query(
-    `SELECT ideas.id, profiles.user_id, ideas.title, ideas.idea_type, \
-            ideas.description, ideas.tags, ideas.created_at, ideas.updated_at \
+    `SELECT ideas.id AS "ideaId", \
+            ideas.profile_id AS "ideaCreatorProfileId", \
+            profiles.user_id AS "ideaCreatorId", \
+            ideas.title AS "ideaTitle", \
+            ideas.idea_type AS "ideaType", \
+            ideas.description AS "ideaDescription", \
+            ideas.tags AS "ideaTags", \
+            ideas.created_at AS "ideaCreatedAt", \
+            ideas.updated_at AS "ideaUpdatedAt" \
        FROM ideas, \
             profiles \
       WHERE profiles.user_id = '${req.query.creator}' \
@@ -35,9 +44,9 @@ router.get('/idea/:creator(*):title(*):type(*)', (req, res) => {
   .then(idea => {
     // Retrieve any agreements, documents, and reviews associated with this idea and 
     // add them to the JSON object
-    const agreementPromise = agreementMethods.findByIdea(idea[0].id);
-    const documentsPromise = documentMethods.findByIdea(idea[0].id);
-    const reviewsPromise = reviewMethods.findByIdea(idea[0].id);
+    const agreementPromise = agreementMethods.findByIdea(idea[0].ideaId);
+    const documentsPromise = documentMethods.findByIdea(idea[0].ideaId);
+    const reviewsPromise = reviewMethods.findByIdea(idea[0].ideaId);
     Promise.all([agreementPromise, documentsPromise, reviewsPromise])
     .then((promiseValues) => {
       let ideaJSON = {};
@@ -165,7 +174,7 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
       .then((promiseValues) => {
         let ideaJSON = {};
         ideaJSON.idea = idea;
-        ideaJSON.idea.agreement = promiseValues[0];
+        ideaJSON.idea.agreement = promiseValues[0][0];
         ideaJSON.idea.documents = promiseValues[1];
         ideaJSON.idea.reviews = promiseValues[2];
         allIdeasJSON.push(ideaJSON);

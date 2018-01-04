@@ -9,7 +9,7 @@
 
         <div class="review__form-element">
           <label class="review__label" for="review__creator">Creator</label>
-          <input class="review__input" id="review__creator" maxlength="100" type="text" name="creator" v-model="ideaCreatorName" placeholder="Creator" autofocus disabled>
+          <input class="review__input" id="review__creator" maxlength="100" type="text" name="creator" v-model="ideaCreatorId" placeholder="Creator" autofocus disabled>
         </div>
 
         <div class="review__form-element">
@@ -19,11 +19,11 @@
 
         <div class="review__form-element">
           <label class="review__label" for="review__desc">Description</label>
-          <div id="review__desc" name="description" class="review__textarea" >{{ideaDesc}}</div>
+          <div id="review__desc" name="description" class="review__textarea" >{{ideaDescription}}</div>
         </div>
 
         <IdeaTags :tags="this.ideaTags"></IdeaTags>
-        <IdeaLinks :links="this.ideaLinks"></IdeaLinks>
+        <IdeaLinks :links="this.ideaDocuments"></IdeaLinks>
         <IdeaType :type="this.ideaType"></IdeaType>
 
         <div class="review__form-element" v-show="this.ideaType !== IDEATYPES[PUBLIC].name">
@@ -73,14 +73,14 @@ export default {
 
       // Idea information
       ideaId: '',
-      ideaCreatorName: '',
+      ideaCreatorId: '',
       ideaCreatorProfileId: '',
       ideaTitle: '',
       ideaType: '',
-      ideaDesc: '',
+      ideaDescription: '',
       ideaTags: [],
-      ideaLinks: [''],
       ideaAgreement: '',
+      ideaDocuments: [],
       ideaReviews: [],
 
       // Review information
@@ -112,22 +112,22 @@ export default {
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
           const idea = response.data.idea;
-          this.ideaCreatorName = idea.user_id;
-          this.ideaCreatorProfileId = idea.profile_id;
-          this.ideaTitle = idea.title;
-          this.ideaType = idea.idea_type;
+          this.ideaId = idea.ideaId;
+          this.ideaCreatorId = idea.ideaCreatorId;
+          this.ideaCreatorProfileId = idea.ideaCreatorProfileId;
+          this.ideaTitle = idea.ideaTitle;
+          this.ideaType = idea.ideaType;
+          this.ideaDescription = idea.ideaDescription;
+          this.ideaTags = idea.ideaTags;
+          this.ideaDocuments = idea.documents;
+          this.ideaReviews = idea.reviews;
 
-          // eslint-disable-next-line no-underscore-dangle
-          this.ideaId = idea.id;
-          this.ideaDesc = idea.description;
-          this.ideaLinks = idea.documents;
-          this.ideaTags = idea.tags;
-          if (idea.agreement === null) {
+          if (idea.agreement === undefined) {
             this.ideaAgreement = null;
           } else {
             this.ideaAgreement = idea.agreement.agreement;
           }
-          this.ideaReviews = idea.reviews;
+
           this.reviewIndex = this.ideaReviews.findIndex(element =>
             element.reviewer === this.currentUser,
           );
@@ -140,7 +140,7 @@ export default {
           }
         })
         .catch((err) => {
-          throw new Error(`Locating idea: ${err}`);
+          throw new Error(`Accessing idea: ${err}`);
         });
       })
       .catch((err) => {
@@ -163,13 +163,11 @@ export default {
             comment: this.reviewComments,
           },
         )
+        // eslint-disable-next-line no-unused-vars
         .then((response) => {
-          if (response.data.ok !== 1) {
-            throw new Error('Failed to add a review to idea document. ', response.data);
-          } else {
-            this.$router.push('/dashboard');
-          }
-        }).catch((err) => {
+          this.$router.push('/dashboard');
+        })
+        .catch((err) => {
           throw new Error('Failed to add an idea review: ', err);
         });
       } else {

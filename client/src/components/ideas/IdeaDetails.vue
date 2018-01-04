@@ -9,7 +9,7 @@
 
         <div class="view__form-element">
           <label class="view__label" for="view__creator">Creator</label>
-          <input class="view__input" id="view__creator" maxlength="100" type="text" name="creator" v-model="ideaCreator" placeholder="Creator" autofocus disabled>
+          <input class="view__input" id="view__creator" maxlength="100" type="text" name="creator" v-model="ideaCreatorId" placeholder="Creator" autofocus disabled>
         </div>
 
         <div class="view__form-element">
@@ -19,11 +19,11 @@
 
         <div class="view__form-element">
           <label class="view__label" for="view__desc">Description</label>
-          <div id="view__desc" name="description" class="view__textarea" >{{ideaDesc}}</div>
+          <div id="view__desc" name="description" class="view__textarea" >{{ideaDescription}}</div>
         </div>
 
         <IdeaTags :tags="this.ideaTags"></IdeaTags>
-        <IdeaLinks :links="this.ideaLinks"></IdeaLinks>
+        <IdeaLinks :links="this.ideaDocuments"></IdeaLinks>
         <IdeaType :type="this.ideaType"></IdeaType>
 
         <div class="view__form-element" v-show="this.ideaTypeCode">
@@ -79,21 +79,23 @@ export default {
   },
   data() {
     return {
-      // Session information
+      // Idea information
+      ideaId: '',
+      ideaCreatorId: '',
+      ideaTitle: '',
+      ideaType: '',
+      ideaDescription: '',
+      ideaTags: [],
+      ideaDocuments: [''],
+      ideaAgreement: '',
+      ideaReviews: [],
+
+      // Page work variables
       currentUser: '',
       userRole: '',
       editButtonText: '',
-      // Idea information
-      idea_id: '',
-      ideaCreator: '',
-      ideaTitle: '',
-      ideaType: '',
-      ideaDesc: '',
-      ideaTags: [],
-      ideaLinks: [''],
-      ideaAgreement: '',
-      ideaReviews: [],
       ideaTypeCode: '',
+
       // Constants
       // Note that constants are imported from files to maintain consistency across the app
       // but defined in this fashion so they are available to be referenced from HTML.
@@ -109,13 +111,19 @@ export default {
       .then((profile) => {
         this.currentUser = profile.sub;
 
-        // Retrieve the idea identified by the URL paramaters
+        // Retrieve the idea identified by the URL paramaters.
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
           const idea = response.data.idea;
-          this.ideaCreator = idea.user_id;
-          this.ideaTitle = idea.title;
-          this.ideaType = idea.idea_type;
+          this.ideaId = idea.ideaId;
+          this.ideaCreatorId = idea.ideaCreatorId;
+          this.ideaTitle = idea.ideaTitle;
+          this.ideaType = idea.ideaType;
+          this.ideaDescription = idea.ideaDescription;
+          this.ideaTags = idea.ideaTags;
+          this.ideaDocuments = idea.documents;
+          this.ideaReviews = idea.reviews;
+
           this.ideaTypeCode = IDEA_TYPES.findIndex(element =>
             element.name === this.ideaType,
           );
@@ -124,17 +132,12 @@ export default {
           }
 
           // eslint-disable-next-line no-underscore-dangle
-          this.idea_id = idea._id;
-          this.ideaDesc = idea.description;
-          this.ideaLinks = idea.documents;
-          this.ideaTags = idea.tags;
           if (idea.agreement === null) {
             this.ideaAgreement = null;
           } else if (this.ideaTypeCode !== this.PUBLIC) {
             this.ideaAgreement = idea.agreement.agreement;
           }
-          this.ideaReviews = idea.reviews;
-          this.userRole = (this.ideaCreator === this.currentUser) ? 'creator' : 'reviewer';
+          this.userRole = (this.ideaCreatorId === this.currentUser) ? 'creator' : 'reviewer';
           this.editButtonText = (this.userRole === 'creator') ? 'Edit Idea' : 'Add/Update Review';
         })
         .catch((err) => {
@@ -153,9 +156,9 @@ export default {
      */
     editIdea() {
       if (this.userRole === 'creator') {
-        this.$router.push({ path: `/edit/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
+        this.$router.push({ path: `/edit/${this.ideaCreatorId}/${this.ideaTitle}/${this.ideaType}` });
       } else {
-        this.$router.push({ path: `/review/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
+        this.$router.push({ path: `/review/${this.ideaCreatorId}/${this.ideaTitle}/${this.ideaType}` });
       }
     },
   },
