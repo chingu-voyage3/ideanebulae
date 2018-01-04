@@ -93,7 +93,6 @@ export default {
         // Retrieve the idea identified by the URL paramaters
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
-          console.log('response: ', response);
           const idea = response.data.idea;
           this.ideaCreator = idea.user_id;
           this.ideaTitle = idea.title;

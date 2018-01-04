@@ -155,7 +155,6 @@ export default {
     updateReview() {
       // Add a new review
       if (this.reviewIndex === this.NEW_REVIEW) {
-        console.log('Adding a new review');
         http.post(`/review/?ideaid=${this.ideaId}&reviewername=${this.currentUser}`,
           {
             idea_profile_id: this.ideaCreatorProfileId,
@@ -165,7 +164,6 @@ export default {
           },
         )
         .then((response) => {
-          console.log('response: ', response);
           if (response.data.ok !== 1) {
             throw new Error('Failed to add a review to idea document. ', response.data);
           } else {

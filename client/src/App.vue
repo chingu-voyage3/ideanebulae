@@ -29,8 +29,9 @@ export default {
           http.put(`/profile/${profile.sub}`, {
             profile,
           })
+          // eslint-disable-next-line no-unused-vars
           .then((res) => {
-            console.log(res);
+            // Profile successfully retrieved
           })
           .catch((err) => {
             throw new Error(`Error routing to user profile page: ${err}`);

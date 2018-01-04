@@ -171,8 +171,8 @@ export default {
           comment: '',
         },
       )
+      // eslint-disable-next-line no-unused-vars
       .then((response) => {
-        console.log('acceptAgreement - response: ', response);
         this.showModal = false;
         this.transferToDetails(this.selectedIdea);
       })

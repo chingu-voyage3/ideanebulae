@@ -112,7 +112,6 @@ export default {
         // Retrieve the idea identified by the URL paramaters
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
-          console.log('mounted - response: ', response);
           const idea = response.data.idea;
           this.ideaCreator = idea.user_id;
           this.ideaTitle = idea.title;
@@ -132,7 +131,6 @@ export default {
           if (idea.agreement === null) {
             this.ideaAgreement = null;
           } else if (this.ideaTypeCode !== this.PUBLIC) {
-            console.log('...idea.agreement: ', idea.agreement);
             this.ideaAgreement = idea.agreement.agreement;
           }
           this.ideaReviews = idea.reviews;
