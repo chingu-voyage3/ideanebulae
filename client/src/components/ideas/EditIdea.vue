@@ -132,11 +132,7 @@ export default {
   },
   methods: {
     deleteIdea() {
-      http.delete('/ideas', {
-        params: {
-          ideaId: this.ideaId,
-        },
-      })
+      http.delete(`/idea/?ideaid=${this.ideaId}`)
       .then((response) => {
         if (response === null) {
           throw new Error(`Deleting idea: ${response}`);
