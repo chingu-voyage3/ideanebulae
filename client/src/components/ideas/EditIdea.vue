@@ -162,27 +162,6 @@ export default {
     },
     updateIdea() {
       localStorage.removeItem('edit-idea-save');
-      /*
-      const newIdea = {
-        creator: this.ideaCreatorId,
-        title: this.ideaTitle,
-        type: this.ideaType,
-        description: this.ideaDescription,
-      };
-
-      if (this.ideaTags.length > 0) {
-        newIdea.tags = this.ideaTags;
-      }
-      if (this.ideaDocuments.length > 0) {
-        newIdea.documents = this.ideaDocuments;
-      }
-      if (this.ideaAgreement !== null && this.ideaAgreement.length > 0) {
-        newIdea.agreement = this.ideaAgreement.trim();
-      }
-      if (this.ideaReviews.length > 0) {
-        newIdea.reviews = this.ideaReviews;
-      }
-      */
       http.put(`/idea/?ideaid=${this.ideaId}`, {
         ideaTitle: this.ideaTitle,
         ideaType: this.ideaType,
@@ -190,8 +169,8 @@ export default {
         ideaTags: JSON.stringify(this.ideaTags),
       })
       .then((response) => {
-        if (response === null) {
-          throw new Error('Updating idea: ', response);
+        if (response.data[0] !== 1) {
+          throw new Error(`${response.data[0]} idea(s) were updated, but expected exactly one update. response: `, response);
         }
       })
       .catch((err) => {
