@@ -10,13 +10,15 @@ CREATE OR REPLACE VIEW public.idea_agreements AS
     SELECT agreements.id,
         profiles.username,
         agreements.idea_id,
-        agreements.idea_title,
-        agreements.idea_type,
+        ideas.title,
+        ideas.idea_type,
         agreements.agreement,
         agreements.version
     FROM agreements,
+         ideas,
          profiles
-    WHERE agreements.idea_profile_id = profiles.id
+    WHERE ideas.id = agreements.idea_id
+      AND ideas.profile_id = profiles.id
     ORDER BY profiles.username;
 
 ALTER TABLE public.idea_agreements
@@ -27,18 +29,19 @@ ALTER TABLE public.idea_agreements
 -- This view produces a list of all documents for an idea
 --
 --DROP VIEW public.idea_documents;
-
 CREATE OR REPLACE VIEW public.idea_documents AS
  SELECT documents.id,
     profiles.username,
     documents.idea_id,
-    documents.idea_title,
-    documents.idea_type,
+    ideas.title,
+    ideas.idea_type,
     documents.url,
     documents.description
-   FROM documents,
-    profiles
-  WHERE documents.idea_profile_id = profiles.id
+   FROM ideas,
+        documents,
+        profiles
+  WHERE ideas.id = documents.idea_id
+    AND ideas.profile_id = profiles.id
   ORDER BY profiles.username;
 
 ALTER TABLE public.idea_documents
@@ -49,22 +52,24 @@ ALTER TABLE public.idea_documents
 -- This view produces a list of all reviews of an idea
 --
 --DROP VIEW public.idea_reviews;
-
 CREATE OR REPLACE VIEW public.idea_reviews AS
  SELECT reviews.id,
     reviews.idea_id,
     ideaowners.username AS idea_creator,
-    reviews.idea_title,
-    reviews.idea_type,
+    ideas.title,
+    ideas.idea_type,
     reviews.reviewer_id,
     reviewers.user_id AS reviewer,
     reviews.comments,
     reviews.created_at,
     reviews.updated_at
-   FROM reviews,
-    profiles ideaowners,
-    profiles reviewers
-  WHERE reviews.idea_profile_id = ideaowners.id AND reviews.reviewer_id = reviewers.id
+   FROM ideas,
+        reviews,
+        profiles ideaowners,
+        profiles reviewers
+  WHERE ideas.id = reviews.idea_id
+    AND ideas.profile_id = ideaowners.id
+    AND reviews.reviewer_id = reviewers.id
   ORDER BY reviews.idea_id, reviews.id, reviewers.username;
 
 ALTER TABLE public.idea_reviews
@@ -78,7 +83,6 @@ ALTER TABLE public.idea_reviews
 -- status date, as well as its most recent review creation date, and update
 --
 --DROP VIEW public.review_status;
-
 CREATE OR REPLACE VIEW public.review_status AS
  SELECT DISTINCT ON (all_reviews.idea_id) all_reviews.idea_id,
     dated_reviews.maxcreated,
@@ -93,8 +97,8 @@ CREATE OR REPLACE VIEW public.review_status AS
         END AS status_dt
    FROM reviews all_reviews,
     ( SELECT this_review.idea_id,
-            max(this_review.created_at) AS maxcreated,
-            max(this_review.updated_at) AS maxupdated
+            MAX(this_review.created_at) AS maxcreated,
+            MAX(this_review.updated_at) AS maxupdated
            FROM reviews this_review
           WHERE this_review.idea_id = this_review.idea_id
           GROUP BY this_review.idea_id) dated_reviews
