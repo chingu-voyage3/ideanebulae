@@ -61,6 +61,53 @@ router.get('/idea/:creator(*):title(*):type(*)', (req, res) => {
 });
 
 /**
+ * @description Update an idea. 
+ * - Null values in req.data fields indicate that the cooresponding column
+ *   should not be updated.
+ * - The owner of the idea (i.e. idea.profile_id column) may not be modified.
+ * - If the ideas title or type values are to be changed also change their
+ *   values in any associated Agreement, Document, or Review table rows.
+ * @param {Integer} req.query.ideaid - The unique id of the idea to update
+ * @param {String} req.data.ideaTitle - The new title column value 
+ * @param {String} req.data.ideaType - The new type column value 
+ * @param {String} req.data.ideaDescription - The new description column value 
+ * @param {String[]} req.data.ideaTags - The new tag column array entries 
+ * @return {Object} The updated idea
+ */
+router.put('/idea/:ideaid(*)', async (req, res) => {
+  const columnsToUpdate = {};
+  if (req.body.ideaTitle !== undefined && req.body.ideaTitle !== null) {
+    columnsToUpdate.title = req.body.ideaTitle;
+  }
+  if (req.body.ideaType !== undefined && req.body.ideaType !== null) {
+    columnsToUpdate.idea_type = req.body.ideaType;
+  }
+  if (req.body.ideaDescription !== undefined && req.body.ideaDescription !== null) {
+    columnsToUpdate.description = req.body.ideaDescription;
+  }
+  if (req.body.ideaTags !== undefined && req.body.ideaTags !== null) {
+    columnsToUpdate.tags = req.body.tags;
+  }
+
+  // TODO: Update any associated Agreement, Document, and Review tables if
+  // the idea type or title has changed
+
+  models.Idea.update(columnsToUpdate,
+  {
+    where: {    
+      id: Number.parseInt(req.query.ideaid), 
+    },
+  })
+  .then(result => {
+    console.log('...result: ', result);
+    res.json(result);
+  })
+  .catch(err => {
+    res.send(err)
+  });
+});
+
+/**
  * @description List all ideas
  * @param {Object} req - The request object
  * @param {Object} res - The response object
