@@ -18,28 +18,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
 
-    idea_profile_id: {
-      type: DataTypes.INTEGER,
-      onDelete: 'CASCADE',
-      references: {
-        model: 'profiles',
-        key: 'id',
-      },
-      allowNull: false,
-    },
-
-    idea_title: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-
-    idea_type: {
-      type: DataTypes.ENUM,
-      values: ['public', 'private', 'commercial'],
-      defaultValue: 'public',
-      allowNull: false,
-    },
-
     reviewer_id: {
       type: DataTypes.INTEGER,
       onDelete: 'CASCADE',

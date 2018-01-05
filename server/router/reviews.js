@@ -23,9 +23,6 @@ router.post(':ideaid(*):reviewername(*)', (req,res) => {
   .then((profile) => {
     models.Review.create({
       idea_id: req.query.ideaid,
-      idea_profile_id: req.body.idea_profile_id,
-      idea_type: req.body.idea_type,
-      idea_title: req.body.idea_title,
       reviewer_id: profile.id,
       comments: req.body.comment,
     })

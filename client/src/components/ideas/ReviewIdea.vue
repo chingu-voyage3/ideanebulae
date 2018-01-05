@@ -157,9 +157,6 @@ export default {
       if (this.reviewIndex === this.NEW_REVIEW) {
         http.post(`/review/?ideaid=${this.ideaId}&reviewername=${this.currentUser}`,
           {
-            idea_profile_id: this.ideaCreatorProfileId,
-            idea_type: this.ideaType,
-            idea_title: this.ideaTitle,
             comment: this.reviewComments,
           },
         )

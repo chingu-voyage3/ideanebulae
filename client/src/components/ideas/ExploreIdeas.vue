@@ -165,9 +165,6 @@ export default {
     acceptAgreement() {
       http.post(`/review/?ideaid=${this.selectedIdea.id}&reviewername=${this.currentUser}`,
         {
-          idea_profile_id: this.selectedIdea.profile_id,
-          idea_type: this.selectedIdea.idea_type,
-          idea_title: this.selectedIdea.title,
           comment: '',
         },
       )
