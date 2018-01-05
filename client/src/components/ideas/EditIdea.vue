@@ -97,7 +97,7 @@ export default {
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
           const idea = response.data.idea;
-          this.idea_id = idea.ideaId;
+          this.ideaId = idea.ideaId;
           this.ideaCreatorId = idea.ideaCreatorId;
           this.ideaTitle = idea.ideaTitle;
           this.origTitle = idea.ideaTitle;
@@ -162,6 +162,7 @@ export default {
     },
     updateIdea() {
       localStorage.removeItem('edit-idea-save');
+      /*
       const newIdea = {
         creator: this.ideaCreatorId,
         title: this.ideaTitle,
@@ -181,15 +182,16 @@ export default {
       if (this.ideaReviews.length > 0) {
         newIdea.reviews = this.ideaReviews;
       }
-      http.put('/idea/', {
-        origCreator: this.ideaCreatorId,
-        origTitle: this.origTitle,
-        origType: this.origType,
-        newIdea,
+      */
+      http.put(`/idea/?ideaid=${this.ideaId}`, {
+        ideaTitle: this.ideaTitle,
+        ideaType: this.ideaType,
+        ideaDescription: this.ideaDescription,
+        ideaTags: JSON.stringify(this.ideaTags),
       })
       .then((response) => {
         if (response === null) {
-          throw new Error(`Updating idea: ${response}`);
+          throw new Error('Updating idea: ', response);
         }
       })
       .catch((err) => {
