@@ -12,6 +12,28 @@ const Op = Sequelize.Op;
 const router = express.Router();
 
 /**
+ * @description Delete a specific idea. It is assumed that DBMS cascading
+ * will delete any child rows associated with the idea being deleted.
+ * @param {Integer} ideaid - Unique identifier of the idea to be deleted.
+ * @returns {String} A string of the format 'Deleted: n', where 'n' is the
+ * identifier of the deleted idea.
+ */
+router.delete('/idea/:ideaid(*)', (req, res) => {
+  models.Idea.destroy(
+   {
+    where: {    
+      id: Number.parseInt(req.query.ideaid), 
+    },
+  })
+  .then(() => {
+    res.json(`Deleted: ${idea.id}`);
+  })
+  .catch(err => {
+    res.send(err)
+  });
+});
+
+/**
  * @description Retrieve a specific idea. The result set column names are quoted to
  * preserve camelCase since the Sequelize connection is initialized with the
  * 'underscore: true' option.
