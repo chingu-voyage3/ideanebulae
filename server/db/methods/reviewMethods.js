@@ -13,7 +13,7 @@ export default class reviewMethods {
         `SELECT id, \
                 idea_id, \
                 idea_creator, \
-                idea_title, \
+                title, \
                 idea_type, \
                 reviewer_id, \
                 reviewer, \

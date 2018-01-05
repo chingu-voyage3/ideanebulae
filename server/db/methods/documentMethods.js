@@ -13,7 +13,7 @@ export default class documentMethods {
         `SELECT id,
                 username,
                 idea_id,
-                idea_title,
+                title,
                 idea_type,
                 url,
                 description

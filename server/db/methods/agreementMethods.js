@@ -42,7 +42,7 @@ export default class agreementMethods {
       `SELECT id, \
               username, \
               idea_id, \
-              idea_title, \
+              title, \
               idea_type, \
               agreement, \
               version \
