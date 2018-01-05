@@ -17,25 +17,6 @@ module.exports = {
         },
         allowNull: false,
       },
-      idea_profile_id: {
-        type: Sequelize.INTEGER,
-        onDelete: 'CASCADE',
-        references: {
-          model: 'profiles',
-          key: 'id',
-        },
-        allowNull: false,
-      },
-      idea_title: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      idea_type: {
-        type: Sequelize.ENUM,
-        values: ['public', 'private', 'commercial'],
-        defaultValue: 'public',
-        allowNull: false,
-      },
       agreement: {
         type: Sequelize.STRING,
         allowNull: false,
