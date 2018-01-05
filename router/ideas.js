@@ -86,13 +86,14 @@ router.put('/idea/:ideaid(*)', async (req, res) => {
     columnsToUpdate.description = req.body.ideaDescription;
   }
   if (req.body.ideaTags !== undefined && req.body.ideaTags !== null) {
-    columnsToUpdate.tags = req.body.tags;
+    columnsToUpdate.tags = JSON.parse(req.body.ideaTags);
   }
 
   // TODO: Update any associated Agreement, Document, and Review tables if
   // the idea type or title has changed
 
-  models.Idea.update(columnsToUpdate,
+  models.Idea.update(
+    columnsToUpdate,
   {
     where: {    
       id: Number.parseInt(req.query.ideaid), 
