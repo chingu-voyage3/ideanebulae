@@ -87,8 +87,6 @@ router.get('/idea/:creator(*):title(*):type(*)', (req, res) => {
  * - Null values in req.data fields indicate that the cooresponding column
  *   should not be updated.
  * - The owner of the idea (i.e. idea.profile_id column) may not be modified.
- * - If the ideas title or type values are to be changed also change their
- *   values in any associated Agreement, Document, or Review table rows.
  * @param {Integer} req.query.ideaid - The unique id of the idea to update
  * @param {String} req.data.ideaTitle - The new title column value 
  * @param {String} req.data.ideaType - The new type column value 
@@ -110,9 +108,6 @@ router.put('/idea/:ideaid(*)', async (req, res) => {
   if (req.body.ideaTags !== undefined && req.body.ideaTags !== null) {
     columnsToUpdate.tags = JSON.parse(req.body.ideaTags);
   }
-
-  // TODO: Update any associated Agreement, Document, and Review tables if
-  // the idea type or title has changed
 
   models.Idea.update(
     columnsToUpdate,
