@@ -1,6 +1,8 @@
-import Agreement from '../agreement';
-import User from '../user';
-import {PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES} from '../ideaConstants';
+import config from '../../services/config';
+import { getDbConnection } from '../../services/db';
+import Agreement from '../models/agreement';
+import models from '../models/';
+import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../misc/ideaConstants';
 
 export default class ideaMethods {
 
@@ -145,7 +147,6 @@ export default class ideaMethods {
   /**
    * @description Retrieve an idea document based on the value of its creator_id,
    * title, and type fields
-   * @static
    * @param {String} creator The creator of the idea
    * @param {String} title The ideas title
    * @param {String} type The ideas type value
@@ -169,10 +170,14 @@ export default class ideaMethods {
    * @memberof ideaMethods
    */
   static async getAllTags() {
-    return await this.find({})
-    .distinct('tags')
-    .exec();
+    console.log('ideaMethods - getAllTags - No parameters');
+    return await models.Idea.findAll({
+      attributes: { include: [[sequelize.fn('UNNEST', sequelize.col('tags')),'tag']], },
+      distinct: true,
+      order: [['tag', 'ASC']],
+    });
   }
+  
 
   /**
    * @description Retrieve all idea documents

@@ -5,6 +5,13 @@
   "main": "server.js",
   "scripts": {
     "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files",
+    "createdb": "sequelize db:drop && sequelize db:create && sequelize db:migrate",
+    "loadprof": "sequelize db:seed --seed profile_seed",
+    "loadidea": "sequelize db:seed --seed idea_seed",
+    "loadagre": "sequelize db:seed --seed agreement_seed",
+    "loaddoc": "sequelize db:seed --seed document_seed",
+    "loadrev": "sequelize db:seed --seed review_seed",
+    "initdb": "npm run createdb && npm run loadprof && npm run loadidea && npm run loadagre && npm run loaddoc && npm run loadrev",
     "deploy": "git subtree push — prefix dist heroku master",
     "start": "npm run build && node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -19,6 +26,9 @@
   "author": "Bears-27",
   "license": "MIT",
   "dependencies": {
+    "babel": "^6.23.0",
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "dotenv": "^4.0.0",
@@ -28,9 +38,9 @@
     "jwt-decode": "^2.2.0",
     "mongodb": "^2.2.33",
     "mongoose": "^4.12.3",
-    "babel": "^6.23.0",
-    "babel-cli": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
-    "rimraf": "^2.6.2"
+    "pg": "^6.4.2",
+    "pg-hstore": "^2.3.2",
+    "rimraf": "^2.6.2",
+    "sequelize": "^4.27.0"
   }
 }

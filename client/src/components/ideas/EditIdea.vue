@@ -14,7 +14,7 @@
 
         <div class="edit__form-element">
           <label class="edit__label" for="edit__desc">Description</label>
-          <textarea id="edit__desc" name="description" class="edit__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaDesc" placeholder="Description" ></textarea>
+          <textarea id="edit__desc" name="description" class="edit__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaDescription" placeholder="Description" ></textarea>
         </div>
 
         <IdeaTags :mode="'update'" :tags="this.ideaTags" v-on:tagschanged="tagsChanged"></IdeaTags>
@@ -40,12 +40,12 @@
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
 import localstorage from '@/utils/localstorage';
+// eslint-disable-next-line no-unused-vars
+import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '@/../../server/db/misc/ideaConstants';
 import http from '../../api/index';
 import IdeaLinks from '../shared/IdeaLinks';
 import IdeaTags from '../shared/IdeaTags';
 import IdeaType from '../shared/IdeaType';
-// eslint-disable-next-line no-unused-vars
-import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../../../../server/models/ideaConstants';
 
 export default {
   name: 'EditIdea',
@@ -57,25 +57,29 @@ export default {
   data() {
     return {
       // Idea information
-      idea_id: '',
-      ideaCreator: '',
+      ideaId: '',
+      ideaCreatorId: '',
       ideaTitle: '',
       ideaType: '',
-      ideaTypeCode: '',
-      ideaDesc: '',
+      ideaDescription: '',
       ideaTags: [],
       ideaDocuments: [],
       ideaAgreement: '',
       ideaReviews: [],
+
       // Page work variables
+      ideaTypeCode: '',
       origTitle: '',
       origType: '',
+
       // Constants
-      // Note that constants are imported from files to maintain consistency across the app
-      // but defined in this fashion so they are available to be referenced from HTML.
+      // Note that constants are imported from files to maintain consistency
+      // across the app but defined in this fashion so they are available to
+      // be referenced from HTML.
       PUBLIC: PUBLIC_IDEA,
       PRIVATE: PRIVATE_IDEA,
       COMMERCIAL: COMMERCIAL_IDEA,
+      IDEATYPES: IDEA_TYPES,
     };
   },
   mounted() {
@@ -92,24 +96,30 @@ export default {
         // Retrieve the idea identified by the URL paramaters
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
-          this.ideaCreator = response.data[0].creator;
-          this.ideaTitle = response.data[0].title;
-          this.origTitle = response.data[0].title;
-          this.ideaType = response.data[0].type;
-          this.origType = response.data[0].type;
-          this.ideaTypeCode = response.data[0].typeCode;
-
-          // eslint-disable-next-line no-underscore-dangle
-          this.idea_id = response.data[0]._id;
-          this.ideaDesc = response.data[0].description;
-          this.ideaDocuments = response.data[0].documents;
-          this.ideaTags = response.data[0].tags;
-          if (response.data[0].agreement === null) {
+          const idea = response.data.idea;
+          this.ideaId = idea.ideaId;
+          this.ideaCreatorId = idea.ideaCreatorId;
+          this.ideaTitle = idea.ideaTitle;
+          this.origTitle = idea.ideaTitle;
+          this.ideaType = idea.ideaType;
+          this.origType = idea.ideaType;
+          this.ideaDescription = idea.ideaDescription;
+          this.ideaTags = idea.ideaTags;
+          this.ideaDocuments = idea.documents;
+          this.ideaReviews = idea.reviews;
+          // Determine the numeric value of the idea type string
+          this.ideaTypeCode = IDEA_TYPES.findIndex(element =>
+            element.name === this.ideaType,
+          );
+          if (this.ideaTypeCode === -1) {
+            throw new Error(`Invalid idea type encountered displaying idea details. type: ${this.ideaType}`);
+          }
+          // Determine the value of the agreement string based on the idea type
+          if (idea.agreement === null) {
             this.ideaAgreement = null;
           } else if (this.ideaTypeCode !== this.PUBLIC) {
-            this.ideaAgreement = response.data[0].agreement.agreement;
+            this.ideaAgreement = idea.agreement.agreement;
           }
-          this.ideaReviews = response.data[0].reviews;
         })
         .catch((err) => {
           throw new Error(`Locating idea: ${err}`);
@@ -122,11 +132,7 @@ export default {
   },
   methods: {
     deleteIdea() {
-      http.delete('/ideas', {
-        params: {
-          ideaId: this.idea_id,
-        },
-      })
+      http.delete(`/idea/?ideaid=${this.ideaId}`)
       .then((response) => {
         if (response === null) {
           throw new Error(`Deleting idea: ${response}`);
@@ -151,35 +157,17 @@ export default {
       localstorage.setObject('edit-idea-save', this.$data);
     },
     updateIdea() {
+      // TODO: Add logic to update user modifications to idea agreement.
       localStorage.removeItem('edit-idea-save');
-      const newIdea = {
-        creator: this.ideaCreator,
-        title: this.ideaTitle,
-        type: this.ideaType,
-        description: this.ideaDesc,
-      };
-
-      if (this.ideaTags.length > 0) {
-        newIdea.tags = this.ideaTags;
-      }
-      if (this.ideaDocuments.length > 0) {
-        newIdea.documents = this.ideaDocuments;
-      }
-      if (this.ideaAgreement !== null && this.ideaAgreement.length > 0) {
-        newIdea.agreement = this.ideaAgreement.trim();
-      }
-      if (this.ideaReviews.length > 0) {
-        newIdea.reviews = this.ideaReviews;
-      }
-      http.put('/ideas', {
-        origCreator: this.ideaCreator,
-        origTitle: this.origTitle,
-        origType: this.origType,
-        newIdea,
+      http.put(`/idea/?ideaid=${this.ideaId}`, {
+        ideaTitle: this.ideaTitle,
+        ideaType: this.ideaType,
+        ideaDescription: this.ideaDescription,
+        ideaTags: JSON.stringify(this.ideaTags),
       })
       .then((response) => {
-        if (response === null) {
-          throw new Error(`Updating idea: ${response}`);
+        if (response.data[0] !== 1) {
+          throw new Error(`${response.data[0]} idea(s) were updated, but expected exactly one update. response: `, response);
         }
       })
       .catch((err) => {
