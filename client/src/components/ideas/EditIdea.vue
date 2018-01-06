@@ -157,6 +157,7 @@ export default {
       localstorage.setObject('edit-idea-save', this.$data);
     },
     updateIdea() {
+      // TODO: Add logic to update user modifications to idea agreement.
       localStorage.removeItem('edit-idea-save');
       http.put(`/idea/?ideaid=${this.ideaId}`, {
         ideaTitle: this.ideaTitle,

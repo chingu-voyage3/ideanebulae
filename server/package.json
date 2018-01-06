@@ -5,6 +5,13 @@
   "main": "server.js",
   "scripts": {
     "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files",
+    "createdb": "sequelize db:drop && sequelize db:create && sequelize db:migrate",
+    "loadprof": "sequelize db:seed --seed profile_seed",
+    "loadidea": "sequelize db:seed --seed idea_seed",
+    "loadagre": "sequelize db:seed --seed agreement_seed",
+    "loaddoc": "sequelize db:seed --seed document_seed",
+    "loadrev": "sequelize db:seed --seed review_seed",
+    "initdb": "npm run createdb && npm run loadprof && npm run loadidea && npm run loadagre && npm run loaddoc && npm run loadrev",
     "deploy": "git subtree push — prefix dist heroku master",
     "start": "npm run build && node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
