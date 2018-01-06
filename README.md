@@ -47,7 +47,8 @@ file.
 | [Karma](https://karma-runner.github.io )       | Test Runner                  |
 | [Mocha](https://mochajs.org)                   | Test Framework               |
 | [Nightwatch](https://nightwatchjs.org)         | Browser Testing Framework    |
-| [Mongo](https://mongodb.com )                  | Server DBMS                  |
+| [Postgres](https://postgres.com )              | Server DBMS                  |
+| [Sequelize](https://http://docs.sequelizejs.com/) | SQL ORM                     |
 | [Stylus](https://stylus-lang.com )             | CSS preprocessor             |
 | [Vue](https://vuejs.org)                       | Frontend framework           |
 | [Vue-Router](https://router.vuejs.org)         | Renderer                     |
@@ -69,17 +70,18 @@ the wiki for more details and examples.
 
 ### Usage
 
-| Command                       | Purpose                           |
-|:------------------------------|:----------------------------------|
-| `npm run-script start`        | Start                             |
-| `npm run-script build`        | Build application                 |
-| `npm run-script build:client` | Build client                      |
-| `npm run-script build:server` | Build server                      |
-| `npm run-script dev`          | Start development client & server |
-| `npm run-script dev:server`   | Start development client          |
-| `npm run-script dev:client`   | Start development server          |
-| `npm run-script analyzesize`  | Analyze bundle sizes              |
-| `npm run-script test`         | Initiate tests and validations    |
+| Command                | Purpose                                      |
+|:-----------------------|:---------------------------------------------|
+| `npm run start`        | Start                                        |
+| `npm run build`        | Build application                            |
+| `npm run build:client` | Build client                                 |
+| `npm run build:server` | Build server                                 |
+| `npm run dev`          | Start development client & server            |
+| `npm run dev:server`   | Start development client                     |
+| `npm run dev:client`   | Start development server                     |
+| `npm run analyzesize`  | Analyze bundle sizes                         |
+| `npm run initdb`       | Create the database and seed with test data. |
+| `npm run test`         | Initiate tests and validations               |
 
 ### Configuration
 
@@ -102,9 +104,15 @@ The IdeaNebulae project folder is organized in the following manner:
 | `../../static`     | Static files                              |
 | `../../test`       | Test scripts                              |
 | `/server`          | API Server component                      |
+| `../db`            | Database components and support files     |
+| `../../methods`    | Database access methods                   |
+| `../../migrations` | Sequelize database migration files        |
+| `../../misc`       | Miscellaneus database support files       |
+| `../../models`     | Sequelize database table/view models      |
+| `../../seeders`    | Sequelize test data seed files            |
 | `../documentation` | Documentation files including images      |
-| `../models`        | DB schemas and manipulation functions (Mongoose/Mongo) |
 | `../router`        | API route definitions                     |
+| `../services`      | Common services files                     |
 | `../utils`         | Utility functions                         |
 
 ## Development Environment
@@ -112,10 +120,15 @@ The IdeaNebulae project folder is organized in the following manner:
 Before starting the server in your local development environment the following
 environment variables should be defined:
 
-| Variable Name  | Description                          |
-|:---------------|:-------------------------------------|
-| `DBUSERID`       | User id of the MongoDB instance containing the application data |
-| `DBPASSWD`       | Associated password for the database user id |
+| Variable Name  | Description                                        |
+|:---------------|:---------------------------------------------------|
+| `DBUSERID`     | User id of the MongoDB instance containing the application data |
+| `DBPASSWD`     | Associated password for the database user id       |
+| `DBNAME`       | Postgres database name (e.g. `ideanebulae_dev`)    |
+| `DBHOST`       | Postgres database host name (e.g. `localhost`)     |
+| `DBPORT`       | Postgres database server port number (e.g. `5432`) |
+| `DBURL`        | Postgres server URL (e.g. `DBURL=postgres://<userid>:<password>@localhost:5432/ideanebulae_dev`) |
+
 
 This is accomplished by including the following in the `.env` files located in
 the root of the server directory. The `.env` file must never be
@@ -127,6 +140,10 @@ The `/server/.env` file must contain the following:
 # MongoDB Authentication 
 DBUSERID=userid
 DBPASSWD=password
+DBNAME=datbase-name
+DBHOST=host-name
+DBPORT=port
+DBURL=postgres://<userid>:<password>@localhost:5432/ideanebulae_dev
 ```
 
 ## Runtime
