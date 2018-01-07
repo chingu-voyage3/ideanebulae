@@ -170,21 +170,6 @@ router.get('/ideas/getalltags', async (req, res) => {
   .catch((err) => {
     console.log('Error encountered in /ideas/getalltags route. ', err);
   });
-  /*
-  models.sequelize.query(
-    `SELECT DISTINCT UNNEST(tags) as tag \
-       FROM ideas \
-       ORDER BY tag`,
-    { 
-      type: models.sequelize.QueryTypes.SELECT,
-    })
-  .then((tags) => {
-    res.json(tags.map((tagName) => { return tagName.tag }));
-  })
-  .catch((err) => {
-    console.log('Error encountered in /ideas/getalltags route. ', err);
-  });
-  */
 });
 
 /**
