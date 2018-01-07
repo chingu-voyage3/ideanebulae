@@ -3,7 +3,6 @@ const Sequelize = require('sequelize');
 const models = require('../db/models');
 const decodeToken = require('../utils/decodeToken');
 const authCheck = require('../utils/authCheck');
-import ideaMethods from '../db/methods/ideaMethods';
 import agreementMethods from '../db/methods/agreementMethods';
 import documentMethods from '../db/methods/documentMethods';
 import reviewMethods from '../db/methods/reviewMethods';
@@ -122,22 +121,6 @@ router.put('/idea/:ideaid(*)', async (req, res) => {
   .catch(err => {
     res.send(err)
   });
-});
-
-/**
- * @description List all ideas
- * @param {Object} req - The request object
- * @param {Object} res - The response object
- * @return {Object} ideas The array of ideas
- */
-router.get('/ideas', (req, res) => {
-  ideaMethods.findAll()
-    .then((ideas) => {
-      res.json(ideas);
-    })
-    .catch((err) => {
-      res.json(err);
-    });
 });
 
 /**
