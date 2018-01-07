@@ -3,7 +3,6 @@ const Sequelize = require('sequelize');
 const models = require('../db/models');
 const decodeToken = require('../utils/decodeToken');
 const authCheck = require('../utils/authCheck');
-import ideaMethods from '../db/methods/ideaMethods';
 import agreementMethods from '../db/methods/agreementMethods';
 import documentMethods from '../db/methods/documentMethods';
 import reviewMethods from '../db/methods/reviewMethods';
@@ -117,7 +116,6 @@ router.put('/idea/:ideaid(*)', async (req, res) => {
     },
   })
   .then(result => {
-    console.log('...result: ', result);
     res.json(result);
   })
   .catch(err => {
@@ -126,47 +124,31 @@ router.put('/idea/:ideaid(*)', async (req, res) => {
 });
 
 /**
- * @description List all ideas
- * @param {Object} req - The request object
- * @param {Object} res - The response object
- * @return {Object} ideas The array of ideas
- */
-router.get('/ideas', (req, res) => {
-  ideaMethods.findAll()
-    .then((ideas) => {
-      res.json(ideas);
-    })
-    .catch((err) => {
-      res.json(err);
-    });
-});
-
-/**
  * @description Retrieve all unique idea tags across all ideas
  * @returns {Object} tags A JSON object containing the unique tags in ascending sequence
  */
 router.get('/ideas/getalltags', async (req, res) => {
   // TODO: The following Sequelize findAll results in an error of "TypeError: Cannot read property 'type' of undefined". 
-  /*
-  const tags = models.Idea.findAll({
+  console.log('Entered /ideas/getalltags route...');
+  models.Idea.findAll({
     attributes: [
-      [models.sequelize.fn('UNNEST', models.sequelize.col('tags')),'tagList'],
+      [models.sequelize.fn('UNNEST', models.sequelize.col('tags')), 'onetag']
     ],
-    distinct: true,
-    order: [
-      ['ideas.tagList', 'ASC']
-    ],
+    raw: true,
+    order: models.sequelize.literal('1'),
   })
-  */
-  models.sequelize.query(
-    `SELECT DISTINCT UNNEST(tags) as tag \
-       FROM ideas \
-       ORDER BY tag`,
-    { 
-      type: models.sequelize.QueryTypes.SELECT,
-    })
   .then((tags) => {
-    res.json(tags.map((tagName) => { return tagName.tag }));
+    // Since Sequelize doesn't support applying DISTINCT against a computed
+    // column (like UNNEST) in it's aggregate function we have to filter the
+    // result set to eliminate duplicate tag names.
+    res.json(tags.reduce((tagList, tagName, currentIndex, tagArray) => {
+      if (currentIndex === 0) {
+        tagList.push(tagName.onetag.trim());
+      } else if (tagList.length > 0 && tagList[tagList.length-1] !== tagName.onetag.trim()) {
+        tagList.push(tagName.onetag.trim());
+      }
+      return tagList;
+    }, []));
   })
   .catch((err) => {
     console.log('Error encountered in /ideas/getalltags route. ', err);

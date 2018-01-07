@@ -6,13 +6,13 @@
     <section class="dashboard__idealist" >
       <ul class="dashboard__idealist-wrapper">
         <li class="dashboard__idealist-item" v-bind:key="index" v-for="(idea, index) in ideas">
-          <router-link :to="`/ideas/${idea.creator}/${idea.title}/${idea.type}`">
+          <router-link :to="`/ideas/${idea.idea.creator}/${idea.title}/${idea.idea.type}`">
             <div class="dashboard__idealist-item-left">
-              <div class="dashboard__idealist-item-title">{{ idea.title }}</div>
+              <div class="dashboard__idealist-item-title">{{ idea.idea.title }}</div>
             </div>
             <div class="dashboard__idealist-item-right">
-              <div class="dashboard__idealist-item-status">{{ idea.status }}</div>
-              <div class="dashboard__idealist-item-reviewcount">{{ idea.reviews.length }}</div>
+              <div class="dashboard__idealist-item-status">{{ idea.idea.status }}</div>
+              <div class="dashboard__idealist-item-reviewcount">{{ idea.idea.reviews.length }}</div>
               <div class="dashboard__idealist-item-quicklook" @mouseover="hoverOver=index" @mouseout="hoverOver=-1">
                 <img src="../../assets/eye-sym.svg" height="10" width="10">
               </div>
@@ -46,7 +46,10 @@ export default {
   },
   filters,
   mounted() {
-    http.get('/ideas')
+    const currUser = '';
+    const searchForTags = [];
+    const searchForKeywords = [];
+    http.get(`/ideas/search/?currUser=${currUser}&searchForTags=${searchForTags}&searchForKeywords=${searchForKeywords}`)
     .then((response) => {
       if (response.statusText !== 'OK') {
         throw new Error(`Error fetching ideas. ${response}`);
