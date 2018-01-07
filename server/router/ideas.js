@@ -117,7 +117,6 @@ router.put('/idea/:ideaid(*)', async (req, res) => {
     },
   })
   .then(result => {
-    console.log('...result: ', result);
     res.json(result);
   })
   .catch(err => {
@@ -147,17 +146,31 @@ router.get('/ideas', (req, res) => {
  */
 router.get('/ideas/getalltags', async (req, res) => {
   // TODO: The following Sequelize findAll results in an error of "TypeError: Cannot read property 'type' of undefined". 
-  /*
-  const tags = models.Idea.findAll({
+  console.log('Entered /ideas/getalltags route...');
+  models.Idea.findAll({
     attributes: [
-      [models.sequelize.fn('UNNEST', models.sequelize.col('tags')),'tagList'],
+      [models.sequelize.fn('UNNEST', models.sequelize.col('tags')), 'onetag']
     ],
-    distinct: true,
-    order: [
-      ['ideas.tagList', 'ASC']
-    ],
+    raw: true,
+    order: models.sequelize.literal('1'),
   })
-  */
+  .then((tags) => {
+    // Since Sequelize doesn't support applying DISTINCT against a computed
+    // column (like UNNEST) in it's aggregate function we have to filter the
+    // result set to eliminate duplicate tag names.
+    res.json(tags.reduce((tagList, tagName, currentIndex, tagArray) => {
+      if (currentIndex === 0) {
+        tagList.push(tagName.onetag.trim());
+      } else if (tagList.length > 0 && tagList[tagList.length-1] !== tagName.onetag.trim()) {
+        tagList.push(tagName.onetag.trim());
+      }
+      return tagList;
+    }, []));
+  })
+  .catch((err) => {
+    console.log('Error encountered in /ideas/getalltags route. ', err);
+  });
+  /*
   models.sequelize.query(
     `SELECT DISTINCT UNNEST(tags) as tag \
        FROM ideas \
@@ -171,6 +184,7 @@ router.get('/ideas/getalltags', async (req, res) => {
   .catch((err) => {
     console.log('Error encountered in /ideas/getalltags route. ', err);
   });
+  */
 });
 
 /**
