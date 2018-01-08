@@ -5,7 +5,7 @@
       <span id="links__links" v-for="(link, index) in ideaLinks" v-bind:key="index">
         <span class="links__link">
           <div v-if="mode === 'update'">
-            <a class="links__link-text" :href="link.url" target="_blank">{{link.url_description}}</a>
+            <a class="links__link-text" :href="link.url" target="_blank">{{link.description}}</a>
             <button class="create__remove-link" id="remove__link" @click="removeLink(index)"> &times; </button>
           </div>
           <div v-else>

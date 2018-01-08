@@ -39,11 +39,11 @@ import debounce from 'lodash.debounce';
 import marked from 'marked';
 import AutosizeTextarea from '@/components/misc/AutosizeTextarea';
 import localstorage from '@/utils/localstorage';
+import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA } from '@/../../server/db/misc/ideaConstants';
 import http from '../../api/index';
 import IdeaLinks from '../shared/IdeaLinks';
 import IdeaTags from '../shared/IdeaTags';
 import IdeaType from '../shared/IdeaType';
-import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA } from '../../../../server/models/ideaConstants';
 
 export default {
   name: 'CreateIdea',
