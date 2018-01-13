@@ -1,6 +1,6 @@
 {
   "name": "ideabox",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A webapp to post and get feedback on your ideas",
   "author": "Parminder Singh <parmsingh129@gmail.com>",
   "private": true,
@@ -17,6 +17,7 @@
     "auth0-js": "^8.10.1",
     "autosize": "^4.0.0",
     "axios": "^0.16.2",
+    "json-stable-stringify": "^1.0.1",
     "jwt-decode": "^2.2.0",
     "lodash.debounce": "^4.0.8",
     "marked": "^0.3.6",
@@ -27,9 +28,7 @@
     "vee-validate": "^2.0.0-rc.19",
     "vue": "^2.4.2",
     "vue-router": "^2.7.0",
-    "vuex": "^2.4.1"
-  },
-  "devDependencies": {
+    "vuex": "^2.4.1",
     "autoprefixer": "^7.1.2",
     "avoriaz": "^6.0.1",
     "babel-core": "^6.22.1",
@@ -97,8 +96,8 @@
     "webpack-merge": "^4.1.0"
   },
   "engines": {
-    "node": ">= 4.0.0",
-    "npm": ">= 3.0.0"
+    "node": "^8.0.0",
+    "npm": "^5.0.0"
   },
   "browserslist": [
     "> 1%",

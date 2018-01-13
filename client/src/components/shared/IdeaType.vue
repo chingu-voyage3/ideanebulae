@@ -1,70 +1,41 @@
-<template>
-  <div class="container create">
-    <header class="create__header">
-      <h1 class="create__title">Create Idea</h1>
-    </header>
-
-    <section class="create__form-wrapper">
-      <div class="create__form-group">
-
-        <div class="create__form-element">
-          <label class="create__label" for="create__title">Title</label>
-          <input class="create__input" id="create__title" maxlength="100" type="text" name="title" v-model="ideaTitle" placeholder="Title" autofocus>
+<template id="idea-type">
+  <div class="view__form-element">
+    <label class="view__label" for="create__type">Type</label>
+    <div class="view__radio-group">
+      <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === PUBLIC }" @mouseover="upHere = PUBLIC" @mouseleave="upHere = -1" @click="typeToggle(PUBLIC)">
+        <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC" v-model="ideaTypeCode" disable>
+        <div class="view__type-title tooltip">Public
+          <span class="view__type-desc tooltiptext" v-if="upHere == PUBLIC">Anyone can read and give feedback</span>
         </div>
-
-        <div class="create__form-element">
-          <label class="create__label" for="create__desc">Description</label>
-          <AutosizeTextarea id="create__desc" name="description" class="create__textarea" maxlength="1000" v-if="!previewDesc" :value="ideaDesc" @update="updateIdeaDesc" placeholder="Idea Description (Accepts Markdown)" ></AutosizeTextarea>
-          <div class="create__preview" v-else v-html="ideaDescMarked"></div>
-          <div class="create__button-wrap create__button-wrap-preview">
-            <button class="btn btn__primary profile__button create__button--btm" @click="previewDesc = !previewDesc">Toggle Preview</button>
-          </div>
+      </div>
+      <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === PRIVATE }" @mouseover="upHere = PRIVATE" @mouseleave="upHere = -1" @click="typeToggle(PRIVATE)">
+        <input type="radio" name="ideatype" :value="PRIVATE" v-model="ideaTypeCode" disable>
+        <div class="view__type-title tooltip">Private
+          <span class="view__type-desc tooltiptext" v-if="upHere == PRIVATE">Only visible to people who agree to the license</span>
         </div>
-
-        <IdeaTags :mode="'update'" :tags="this.ideaTags" v-on:tagschanged="tagsChanged"></IdeaTags>
-        <IdeaLinks :mode="'update'" :links="this.ideaDocuments" v-on:linkschanged="linksChanged"></IdeaLinks>
-        <IdeaType :mode="'update'" :type="this.ideaType" v-on:typechanged="typeChanged"></IdeaType>
-
       </div>
-      <div class="create__button-wrap">
-        <a class="btn btn__primary profile__button create__button--btm" href="/dashboard">Cancel</a>
-        <button class="btn btn__primary profile__button create__button--btm" @click="submitIdea">Submit</button>
+      <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL }" @mouseover="upHere = COMMERCIAL" @mouseleave="upHere = -1" @click="typeToggle(COMMERCIAL)">
+        <input type="radio" name="ideatype" :value="COMMERCIAL" v-model="ideaTypeCode" disable>
+        <div class="view__type-title tooltip">Custom
+          <span class="view__type-desc tooltiptext" v-if="upHere == COMMERCIAL">Customise the license and choose who can see the idea</span>
+        </div>
       </div>
-    </section>
+    </div>
   </div>
 </template>
 
 <script>
-import debounce from 'lodash.debounce';
-import marked from 'marked';
-import AutosizeTextarea from '@/components/misc/AutosizeTextarea';
-import localstorage from '@/utils/localstorage';
-import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA } from '@/../../server/db/misc/ideaConstants';
-import http from '../../api/index';
-import IdeaLinks from '../shared/IdeaLinks';
-import IdeaTags from '../shared/IdeaTags';
-import IdeaType from '../shared/IdeaType';
+import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '@/../../server/db/misc/ideaConstants';
 
 export default {
-  name: 'CreateIdea',
-  components: {
-    AutosizeTextarea,
-    IdeaLinks,
-    IdeaTags,
-    IdeaType,
+  name: 'IdeaType',
+  props: {
+    type: { type: String, required: true },
+    mode: { type: String, required: false },
   },
   data() {
     return {
-      // Idea Document Fields
-      ideaTitle: '',
-      ideaType: '',
-      ideaDesc: '',
-      ideaTags: [],
-      ideaDocuments: [],
-      // Session Work Fields
-      ideaTypeCode: this.PUBLIC_IDEA,
-      ideaDescMarked: '',
-      previewDesc: false,
+      upHere: '-1',
       // Constants
       // Note that constants are imported from files to maintain consistency across the app
       // but defined in this fashion so they are available to be referenced from HTML.
@@ -73,55 +44,28 @@ export default {
       COMMERCIAL: COMMERCIAL_IDEA,
     };
   },
-  mounted() {
-    const savedState = localstorage.getObject('create-idea-save');
-    if (savedState != null) {
-      Object.assign(this.$data, savedState);
-    }
-    this.$watch('$data',
-      debounce(this.saveIdea, 1500, { trailing: true }),
-      { deep: true },
-    );
+  computed: {
+    ideaType() {
+      return this.type;
+    },
+    ideaTypeCode() {
+      return IDEA_TYPES.findIndex(element =>
+        element.name === this.type,
+      );
+    },
   },
   methods: {
-    linksChanged(updatedLinks) {
-      this.ideaDocuments = updatedLinks;
-    },
-    saveIdea() {
-      localstorage.setObject('create-idea-save', this.$data);
-      this.ideaDescMarked = marked(this.ideaDesc, {
-        sanitize: true,
-      });
-    },
-    submitIdea() {
-      localStorage.removeItem('create-idea-save');
-      const payload = {
-        title: this.ideaTitle,
-        typeCode: this.ideaTypeCode,
-        description: this.ideaDesc,
-        documents: this.ideaDocuments,
-        tags: this.ideaTags,
-      };
-      http.post('/ideas', payload)
-      .then((response) => {
-        if (response.statusText !== 'OK') {
-          throw new Error(`Error adding new idea document. ${response}`);
-        } else {
-          this.$router.push('/dashboard');
+    /* Process a user click to change the idea type only if we've been called in 'update' mode.
+     * Return an literal indicating that the type was changed along with the new type code and
+     * the name that's associated with it.
+     */
+    typeToggle(typeCode) {
+      if (this.mode === 'update') {
+        if (typeCode === -1) {
+          throw new Error(`Invalid idea type encountered editing idea details. type: ${typeCode}`);
         }
-      }).catch((err) => {
-        throw new Error(`Error adding new idea document: ${err}`);
-      });
-    },
-    tagsChanged(updatedTags) {
-      this.ideaTags = updatedTags;
-    },
-    typeChanged(typeCode, typeName) {
-      this.ideaTypeCode = typeCode;
-      this.ideaType = typeName;
-    },
-    updateIdeaDesc(v) {
-      this.ideaDesc = v;
+        this.$emit('typechanged', typeCode, IDEA_TYPES[typeCode].name);
+      }
     },
   },
 };
@@ -130,13 +74,7 @@ export default {
 <style lang="stylus" scoped>
 @import '~stylus_var'
 
-.create
-
-  &__form-element
-    margin-top 10px
-
-  &__preview
-    padding 20px 0
+.view
 
   &__form-wrapper
     width 100%
@@ -166,28 +104,41 @@ export default {
     font-weight 700
     display block
 
+  &__table
+    margin 0 auto
+    width 100%
+
+  &__th
+    padding 10px
+    text-transform uppercase
+    border-bottom 1px dotted $purple
+    &:first-child
+      text-align left
+      padding-left 0
+    &:last-child
+      text-align right
+      padding-right 0
+
+  &__tr
+    padding 10px
+
+  &__td
+    padding 10px
+    border-bottom 1px dotted $purple
+    &:first-child
+      padding-left 0
+    &:nth-child(2),
+    &:nth-child(3)
+      text-align center
+    &:last-child
+      text-align right
+      max-width 25px
+      padding-right 0
+
   &__input-wrap
     width 100%
     display flex
     margin-bottom 10px
-
-  &__add-button
-    width 40px
-    margin-left 10px
-    -webkit-appearance: none;
-    appearance: none;
-    background: transparent;
-    text-align: center;
-    font-family: inherit;
-    font-weight: inherit;
-    font-size: inherit;
-    padding 6px 12px
-    border 1px solid $purple
-    letter-spacing 1.5px
-    color $purple
-    position: relative;
-    overflow: hidden;
-    transition all 300ms ease-in-out
 
     &:hover, &:active, &:focus
       -webkit-appearance: none;
@@ -204,11 +155,11 @@ export default {
 
 
   &__input
-    padding 10px
+    padding 0 0 20px
     width 100%
-    font-size 1em
-    border 1px solid $purple
-    color $gray_text
+    font-size 1.5em
+    color $purple
+    border 0px transparent
 
     &:focus
       -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
@@ -217,13 +168,12 @@ export default {
 
   &__textarea
     width 100%
-    padding 10px
-    font-size 1em
+    padding 10px 0 20px
     font-family: 'Titillium Web', Helvetica, Arial, sans-serif
-    color: $gray_text
+    font-size 1.2em
+    color $purple
+    border 0px transparent
     letter-spacing: 1px
-    line-height: 1.5em
-    border 1px solid $purple
     margin-bottom 10px
 
     &:focus
@@ -235,18 +185,29 @@ export default {
     display inline-block
     width 33%
 
-  &__link
-    display inline-block
-    margin 10px 0
+  &__link-wrap
+    display flex
+    flex-wrap wrap
+    margin-bottom 20px
 
-  &__link-text
-    text-decoration none
+  &__links
+    margin 10px
+
+    &:first-child
+      margin-left 0
+
+    &:last-child
+      margin-right 0
+
+  &__link a
     color $purple
+    text-decoration none
     border-bottom 1px dotted $purple
-    &:hover, &:focus, &:active
+
+    &:hover, &:focus
       color $aqua
+      text-decoration none
       border-bottom 1px dotted $aqua
-      transition color 300ms linear
 
 
   &__radio-group
@@ -257,10 +218,6 @@ export default {
     display flex
     justify-content center
     margin 20px auto
-
-  &__button-wrap-preview
-    justify-content flex-end
-    margin 0 auto
 
   &__button
 
@@ -298,7 +255,7 @@ export default {
       border-bottom-right-radius: 2px;
       border-top-right-radius: 2px;
       cursor: default;
-      padding: 1px 5px 4px 5px;
+      padding: 2px 3px 3px 9px;
       display: inline-block;
       vertical-align: middle;
 
@@ -314,25 +271,11 @@ export default {
       cursor: pointer;
       border-bottom-left-radius: 2px;
       border-top-left-radius: 2px;
-      border-right: 1px solid rgba(124,72,194, 0.25);
+      border-right: 1px solid rgba(0, 126, 255, 0.24);
       padding: 1px 5px 3px;
 
       &:hover
         // color: red;
-
-  &__remove-link
-    -webkit-appearance: none;
-    appearance: none;
-    background: transparent;
-    color: inherit;
-    cursor: pointer;
-    font-size: 1em;
-    border: 1px solid rgba(124,72,194, 0.25);
-    padding: 0 4px 2px;
-    margin-left 10px
-
-    &:hover
-      border: 1px solid rgb(124,72,194);
 
   &__option
       -webkit-appearance: none;
@@ -380,6 +323,7 @@ export default {
         content: '';
         display: inline-block;
         border-radius: 100%;
+        background-color: white;
 
         &:focus
           border-radius: 50%;
@@ -420,14 +364,9 @@ export default {
     border-radius: 50%;
     display block
     text-align center
-    height 21px
-    width 21px
 
     &::after
       border-radius: 50%;
-
-      &:hover
-        background: $pink;
 
     &:focus
       border-radius: 50%;
@@ -438,18 +377,6 @@ export default {
 
   &__radio-wrap
     display: inline-block;
-
-.active::before
-  height: 19px;
-  width: 19px;
-  position: absolute;
-  top: -1px;
-  left: -1px;
-  border: 3px solid white
-  content: '';
-  display: inline-block;
-  border-radius: 100%;
-  background-color: $purple
 
 .tooltip {
     position: relative;
@@ -484,6 +411,15 @@ export default {
     visibility: visible;
 }
 
-
+.active::before
+  height: 12px;
+  width: 12px;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  content: '';
+  display: inline-block;
+  border-radius: 100%;
+  background-color: purple;
 
 </style>

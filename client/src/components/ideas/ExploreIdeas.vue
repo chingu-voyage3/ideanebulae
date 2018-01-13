@@ -83,20 +83,20 @@
           <th class="explore__th">Status</th>
           <th class="explore__th">Status Date</th>
         </tr>
-        <tr class="explore__tr" v-for="idea in ideas" v-bind:key="idea.title">
+        <tr class="explore__tr" v-for="idea in ideas" v-bind:key="idea.idea.title">
           <td class="explore__td">
-            <a class="explore__link" v-on:click="checkForAgreement(idea)">{{idea.title}}</a>
+            <a class="explore__link" v-on:click="checkForAgreement(idea.idea)">{{idea.idea.title}}</a>
           </td>
-          <td class="explore__td">{{idea.type}}</td>
-          <td class="explore__td">{{idea.status}}</td>
-          <td class="explore__td">{{new Date(idea.status_dt).toLocaleDateString()}}</td>
+          <td class="explore__td">{{idea.idea.idea_type}}</td>
+          <td class="explore__td">{{idea.idea.status}}</td>
+          <td class="explore__td">{{new Date(idea.idea.status_dt).toLocaleDateString()}}</td>
         </tr>
       </table>
       <ModalDialog v-if="showModal" @cancel="showModal = false" @accept="acceptAgreement">
         <h3 slot="header" class="modal-header">Accept Idea Agreement</h3>
         <div slot="body" class="modal-body">
           <label class="explore__label">Type</label>
-          <div class="modal-p modal-proper">{{this.selectedIdea.type}}</div>
+          <div class="modal-p modal-proper">{{this.selectedIdea.idea_type}}</div>
           <label class="explore__label">Agreement</label>
           <div v-if="selectedIdea.agreement !== null">
             <div>{{this.selectedIdea.agreement.agreement}}</div>
@@ -163,18 +163,18 @@ export default {
   },
   methods: {
     acceptAgreement() {
-      const review = {
-        reviewer: this.currentUser,
-      };
-      http.put(`/review/?creator=${this.selectedIdea.creator}&title=${this.selectedIdea.title}&type=${this.selectedIdea.type}`, review)
+      http.post(`/review/?ideaid=${this.selectedIdea.id}&reviewername=${this.currentUser}`,
+        {
+          comment: '',
+        },
+      )
+      // eslint-disable-next-line no-unused-vars
       .then((response) => {
-        if (response.ok && response.nModified) {
-          this.showModal = false;
-          this.transferToDetails(this.selectedIdea);
-        }
-        throw new Error(`Error adding reviewer to idea document. ${response}`);
-      }).catch((err) => {
-        throw new Error(`Error adding an idea reviewer: ${err}`);
+        this.showModal = false;
+        this.transferToDetails(this.selectedIdea);
+      })
+      .catch((err) => {
+        throw new Error('Error adding an idea reviewer: ', err);
       });
     },
     addKeyword() {
@@ -194,16 +194,17 @@ export default {
       }
     },
     /**
-     * @description Examing the selected idea to determine if agreement acceptance is
-     * required before transferring to the Idea Details page. The following must be
-     * true to transfer without acceptance of the ideas agreement.
+     * @description Examing the selected idea to determine if agreement
+     * acceptance is required before transferring to the Idea Details page.
+     * The following must be true to transfer without acceptance of the ideas
+     * agreement.
      * - The idea must be public
      * - The idea creator and the current user must be one in the same
      * - The current user must have previously accepted the agreement
      * @param {Object} idea The idea selected by the user from the displayed list
      */
     checkForAgreement(idea) {
-      if (idea.type === 'public') {
+      if (idea.idea_type === 'public') {
         this.transferToDetails(idea);
         return;
       }
@@ -237,6 +238,11 @@ export default {
     removeTag(index) {
       this.searchForTags.splice(index, 1);
     },
+    /**
+     * @description Search for ideas matching whose tags match one or more of
+     * the tags selected by the user or whose title and description contain
+     * one or more of the keywords provided by the user.
+     */
     searchIdeas() {
       http.get(`/ideas/search/?currUser=${this.currentUser}&searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
       .then((response) => {
@@ -258,7 +264,7 @@ export default {
     },
     transferToDetails(idea) {
       localstorage.setObject('explore-ideas-save', this.$data);
-      this.$router.push(`ideas/${idea.creator}/${idea.title}/${idea.type}`);
+      this.$router.push(`ideas/${idea.user_id}/${idea.title}/${idea.idea_type}`);
     },
     typeToggle(type) {
       this.ideaType = type;

@@ -1,6 +1,8 @@
-import Idea from '../idea';
+const models = require('../models');
+import Idea from '../models/idea';
 
 export default class agreementMethods {
+
   /**
    * @description Delete an agreement document. Note that it is the responsibility of the
    * caller to clear the agreement id from the owning idea document.
@@ -26,8 +28,29 @@ export default class agreementMethods {
    * @memberof agreementMethods
    */
   static async findAgreement(agreementID) {
-      return await this.findById(agreementID);
-    }
+    return await this.findById(agreementID);
+  }
+
+  /**
+   * @description Retrieve all agreements associated with a given idea.
+   * @param {any} ideaId The id value of the owning idea
+   * @returns {Object} An object containing all agreements realated to the idea id
+   * @memberof agreementMethods
+   */
+  static async findByIdea(ideaId) {
+    return await models.sequelize.query(
+      `SELECT id, \
+              username, \
+              idea_id, \
+              title, \
+              idea_type, \
+              agreement, \
+              version \
+          FROM idea_agreements \
+          WHERE idea_id = ${ideaId}`,
+      { type: models.sequelize.QueryTypes.SELECT}
+    );
+  }
 
   /**
    * @description Add an agreement document to the database. It is expected that the

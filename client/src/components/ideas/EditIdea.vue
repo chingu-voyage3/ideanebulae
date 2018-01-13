@@ -14,83 +14,16 @@
 
         <div class="edit__form-element">
           <label class="edit__label" for="edit__desc">Description</label>
-          <textarea id="edit__desc" name="description" class="edit__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaDesc" placeholder="Description" ></textarea>
+          <textarea id="edit__desc" name="description" class="edit__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaDescription" placeholder="Description" ></textarea>
         </div>
 
-        <div class="edit__form-tags">
-          <div class="edit__tag-wrap">
-            <span class="edit__form-tag" v-for="(tag, index) in ideaTags" v-bind:key="index">
-              <span class="edit__tag" >
-                <span class="edit__tag__icon" aria-hidden="true">
-                  <button
-                    class="edit__tag__button"
-                    @click="removeTag(index)">
-                      &times;
-                  </button>
-                </span>
-                <span class="edit__tag__label" role="option" aria-selected="true">
-                    {{tag}}
-                  <span class="tag-aria-only">&nbsp;</span>
-                </span>
-              </span>
-            </span>
-          </div>
+        <IdeaTags :mode="'update'" :tags="this.ideaTags" v-on:tagschanged="tagsChanged"></IdeaTags>
+        <IdeaLinks :mode="'update'" :links="this.ideaDocuments" v-on:linkschanged="linksChanged"></IdeaLinks>
+        <IdeaType :mode="'update'" :type="this.ideaType" v-on:typechanged="typeChanged"></IdeaType>
 
-          <div class="edit__addtag">
-            <label class="edit__label" for="newTag">Add Tag</label>
-            <div class="edit__input-wrap">
-              <input class="edit__input" name="newTag" type="text" v-model="tagText" @keyup.enter="addTag" @keyup.188="addTag" @keyup.tab="addTag" placeholder="Add tags to help other users find your idea">
-              <button class="edit__add-button"
-            @click="addTag"> + </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="edit__form-element">
-          <div id="edit__links" class="edit__form__link" v-for="(link, index) in ideaDocuments" v-bind:key="index">
-            <div class="edit__link">
-              <a class="edit__link-text" :href="link.url" target="_blank">{{link.url_description}}</a>
-              <button class="edit__remove-link" id="remove__link" @click="removeLink(index)"> &times; </button>
-            </div>
-          </div>
-
-          <div class="edit__addlink">
-            <div v-show="errors.has('newlink')">Invalid link</div>
-            <label class="edit__label" for="newlink">Add link</label>
-            <div class="edit__input-wrap">
-              <input class="edit__input" name="newlink" v-validate="'url'" data-vv-delay="1000" type="text" v-model="linkText" @keyup.enter="addLink" placeholder="Links to more information about your idea">
-              <button class="edit__add-button"
-            @click="addLink"> + </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="edit__form-element">
-          <label class="edit__label" for="create__type">Type</label>
-          <div class="edit__radio-group">
-            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === PUBLIC_IDEA }" @mouseover="upHere = 0" @mouseleave="upHere = -1" @click="typeToggle(0)">
-              <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC_IDEA" v-model="ideaTypeCode">
-              <div class="edit__type-title tooltip">Public
-                <span class="edit__type-desc tooltiptext" v-if="upHere == 0">Anyone can read and give feedback</span>
-              </div>
-            </div>
-            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === PRIVATE_IDEA }" @mouseover="upHere = 1" @mouseleave="upHere = -1" @click="typeToggle(1)">
-              <input type="radio" name="ideatype" :value="PRIVATE_IDEA" v-model="ideaTypeCode">
-              <div class="edit__type-title tooltip">Private
-                <span class="edit__type-desc tooltiptext" v-if="upHere == 1">Only visible to people who agree to the license</span>
-              </div>
-            </div>
-            <div class="edit__radio edit__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL_IDEA }" @mouseover="upHere = 2" @mouseleave="upHere = -1" @click="typeToggle(2)">
-              <input type="radio" name="ideatype" :value="COMMERCIAL_IDEA" v-model="ideaTypeCode">
-              <div class="edit__type-title tooltip">Custom
-                <span class="edit__type-desc tooltiptext" v-if="upHere == 2">Customise the license and choose who can see the idea</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
-      <div class="edit__form-element" v-show="this.ideaAgreement !== ''">
+      <div class="edit__form-element" v-show="this.ideaAgreement">
         <label class="edit__label" for="edit__agreement">Agreement</label>
         <textarea id="edit__agreement" name="agreement" class="edit__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement"></textarea>
       </div>
@@ -107,34 +40,46 @@
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
 import localstorage from '@/utils/localstorage';
+// eslint-disable-next-line no-unused-vars
+import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '@/../../server/db/misc/ideaConstants';
 import http from '../../api/index';
+import IdeaLinks from '../shared/IdeaLinks';
+import IdeaTags from '../shared/IdeaTags';
+import IdeaType from '../shared/IdeaType';
 
 export default {
   name: 'EditIdea',
+  components: {
+    IdeaLinks,
+    IdeaTags,
+    IdeaType,
+  },
   data() {
     return {
       // Idea information
-      idea_id: '',
-      ideaCreator: '',
+      ideaId: '',
+      ideaCreatorId: '',
       ideaTitle: '',
       ideaType: '',
-      ideaDesc: '',
+      ideaDescription: '',
       ideaTags: [],
-      ideaDocuments: [''],
+      ideaDocuments: [],
       ideaAgreement: '',
       ideaReviews: [],
+
       // Page work variables
+      ideaTypeCode: '',
       origTitle: '',
       origType: '',
-      linkText: '',
-      tagText: '',
-      ideaTypeCode: this.PUBLIC_IDEA,
-      upHere: '-1',
-      addLinkError: false,
+
       // Constants
-      PUBLIC_IDEA: 0,
-      PRIVATE_IDEA: 1,
-      COMMERCIAL_IDEA: 2,
+      // Note that constants are imported from files to maintain consistency
+      // across the app but defined in this fashion so they are available to
+      // be referenced from HTML.
+      PUBLIC: PUBLIC_IDEA,
+      PRIVATE: PRIVATE_IDEA,
+      COMMERCIAL: COMMERCIAL_IDEA,
+      IDEATYPES: IDEA_TYPES,
     };
   },
   mounted() {
@@ -151,40 +96,30 @@ export default {
         // Retrieve the idea identified by the URL paramaters
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
-          this.ideaCreator = response.data[0].creator;
-          this.ideaTitle = response.data[0].title;
-          this.origTitle = response.data[0].title;
-          // TODO: Calculate this as a virtual database field in Mongoose
-          this.ideaType = response.data[0].type;
-          this.origType = response.data[0].type;
-          switch (response.data[0].type) {
-            case 'public':
-              this.ideaTypeCode = this.PUBLIC_IDEA;
-              this.ideaAgreement = '';
-              break;
-            case 'private':
-              this.ideaTypeCode = this.PRIVATE_IDEA;
-              this.ideaAgreement = ' ';
-              break;
-            case 'commercial':
-              this.ideaTypeCode = this.COMMERCIAL_IDEA;
-              this.ideaAgreement = ' ';
-              break;
-            default:
-              throw new Error(`Invalid idea type field value: ${response.data[0].type}`);
+          const idea = response.data.idea;
+          this.ideaId = idea.ideaId;
+          this.ideaCreatorId = idea.ideaCreatorId;
+          this.ideaTitle = idea.ideaTitle;
+          this.origTitle = idea.ideaTitle;
+          this.ideaType = idea.ideaType;
+          this.origType = idea.ideaType;
+          this.ideaDescription = idea.ideaDescription;
+          this.ideaTags = idea.ideaTags;
+          this.ideaDocuments = idea.documents;
+          this.ideaReviews = idea.reviews;
+          // Determine the numeric value of the idea type string
+          this.ideaTypeCode = IDEA_TYPES.findIndex(element =>
+            element.name === this.ideaType,
+          );
+          if (this.ideaTypeCode === -1) {
+            throw new Error(`Invalid idea type encountered displaying idea details. type: ${this.ideaType}`);
           }
-
-          // eslint-disable-next-line no-underscore-dangle
-          this.idea_id = response.data[0]._id;
-          this.ideaDesc = response.data[0].description;
-          this.ideaDocuments = response.data[0].documents;
-          this.ideaTags = response.data[0].tags;
-          if (response.data[0].agreement === null) {
+          // Determine the value of the agreement string based on the idea type
+          if (idea.agreement === null) {
             this.ideaAgreement = null;
-          } else {
-            this.ideaAgreement = response.data[0].agreement.agreement;
+          } else if (this.ideaTypeCode !== this.PUBLIC) {
+            this.ideaAgreement = idea.agreement.agreement;
           }
-          this.ideaReviews = response.data[0].reviews;
         })
         .catch((err) => {
           throw new Error(`Locating idea: ${err}`);
@@ -196,97 +131,43 @@ export default {
     }
   },
   methods: {
-    addLink() {
-      let newVal = this.linkText.trim();
-
-      if (newVal.length === 0) {
-        return;
-      }
-
-      this.$validator.validate('newlink', newVal)
-      .then((result) => {
-        if (result) {
-          if (!/^http[s]?:\/\/.+/.test(newVal)) {
-            newVal = `https://${newVal}`;
-          }
-
-          this.ideaDocuments.url.push(newVal);
-          this.linkText = '';
+    deleteIdea() {
+      http.delete(`/idea/?ideaid=${this.ideaId}`)
+      .then((response) => {
+        if (response === null) {
+          throw new Error(`Deleting idea: ${response}`);
         }
+      })
+      .catch((err) => {
+        throw new Error('Deleting idea: ', err);
       });
     },
-    addTag() {
-      let newVal = this.tagText.trim();
-      if (newVal[newVal.length - 1] === ',') {
-        newVal = newVal.slice(0, -1);
-      }
-      if (newVal.length !== 0) {
-        this.ideaTags.push(newVal);
-        this.tagText = '';
-      }
+    linksChanged(updatedLinks) {
+      this.ideaDocuments = updatedLinks;
     },
-    deleteIdea() {
-      // TODO: Remove the idea from the database
+    tagsChanged(updatedTags) {
+      this.ideaTags = updatedTags;
     },
-    removeLink(index) {
-      this.ideaDocuments.splice(index, 1);
-    },
-    removeTag(index) {
-      this.ideaTags.splice(index, 1);
-    },
-    typeToggle(type) {
-      this.ideaTypeCode = type;
-      switch (this.ideaTypeCode) {
-        case this.PUBLIC_IDEA:
-          this.ideaType = 'public';
-          this.ideaAgreement = '';
-          break;
-        case this.PRIVATE_IDEA:
-          this.ideaType = 'private';
-          this.ideaAgreement = ' ';
-          break;
-        case this.COMMERCIAL_IDEA:
-          this.ideaType = 'commercial';
-          this.ideaAgreement = ' ';
-          break;
-        default:
-          throw new Error(`Invalid ideaTypeCode encountered: ${this.ideaTypeCode}`);
-      }
-      this.ideaAgreement = (this.ideaTypeCode === this.PUBLIC_IDEA) ? '' : ' ';
+    typeChanged(typeCode, typeName) {
+      this.ideaTypeCode = typeCode;
+      this.ideaType = typeName;
+      this.ideaAgreement = (this.ideaTypeCode === this.PUBLIC) ? '' : ' ';
     },
     saveIdea() {
       localstorage.setObject('edit-idea-save', this.$data);
     },
     updateIdea() {
+      // TODO: Add logic to update user modifications to idea agreement.
       localStorage.removeItem('edit-idea-save');
-      const newIdea = {
-        creator: this.ideaCreator,
-        title: this.ideaTitle,
-        type: this.ideaType,
-        description: this.ideaDesc,
-      };
-
-      if (this.ideaTags.length > 0) {
-        newIdea.tags = this.ideaTags;
-      }
-      if (this.ideaDocuments.length > 0) {
-        newIdea.documents = this.ideaDocuments;
-      }
-      if (this.ideaAgreement !== null && this.ideaAgreement.length > 0) {
-        newIdea.agreement = this.ideaAgreement.trim();
-      }
-      if (this.ideaReviews.length > 0) {
-        newIdea.reviews = this.ideaReviews;
-      }
-      http.put('/ideas', {
-        origCreator: this.ideaCreator,
-        origTitle: this.origTitle,
-        origType: this.origType,
-        newIdea,
+      http.put(`/idea/?ideaid=${this.ideaId}`, {
+        ideaTitle: this.ideaTitle,
+        ideaType: this.ideaType,
+        ideaDescription: this.ideaDescription,
+        ideaTags: JSON.stringify(this.ideaTags),
       })
       .then((response) => {
-        if (response === null) {
-          throw new Error(`Updating idea: ${response}`);
+        if (response.data[0] !== 1) {
+          throw new Error(`${response.data[0]} idea(s) were updated, but expected exactly one update. response: `, response);
         }
       })
       .catch((err) => {

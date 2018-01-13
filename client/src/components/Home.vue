@@ -10,6 +10,13 @@
       <div class="splash__button-wrap">
         <router-link to="create" class="btn btn__primary splash__button">Start Ideation</router-link>
       </div>
+      <div class="splash__scroll-wrap">
+        <button
+          class="btn splash__scroller"
+          aria-label="scroll down"
+          @click="()=>{scroll('features')}"
+        ></button>
+      </div>
     </header>
 
     <section id="features" class="splash__features">
@@ -54,12 +61,25 @@
           </div>
         </div>
       </div>
+      <div class="splash__button-wrap">
+        <div class="splash__scroll-wrap">
+          <button
+            class="btn splash__scroller"
+            aria-label="scroll down"
+            @click="()=>{scroll('idea-count')}"
+          ></button>
+        </div>
+      </div>
     </section>
 
-    <section id="idea-count" class="splash__counter">
-      <span class="splash__number">140,257</span>
-      <div class="splash__counter-text">Ideas born so far</div>
-      <router-link to="create" class="btn btn__primary splash__button splash__button--btm">What's <strong>your</strong> idea?</router-link>
+    <section id="idea-count">
+      <div class="splash__counter">
+        <span class="splash__number">140,257</span>
+        <div class="splash__counter-text">Ideas born so far</div>
+        <div class="splash__button-wrap">
+          <router-link to="create" class="btn btn__primary splash__button splash__button--btm">What's <strong>your</strong> idea?</router-link>
+        </div>
+      </div>
     </section>
 
   </div>
@@ -77,6 +97,10 @@ export default {
       e.target.children[0].classList.remove('flip');
       e.target.children[1].classList.remove('flip');
     },
+    scroll: (id) => {
+      const el = document.getElementById(id);
+      el.scrollIntoView({ behavior: 'smooth' });
+    },
   },
 };
 </script>
@@ -85,6 +109,27 @@ export default {
 @import '~stylus_var'
 
 .splash
+
+  &__scroll-wrap
+    display none
+
+    @media (min-width: 1000px)
+      display flex
+      flex-direction column
+      justify-content flex-end
+      width 100%
+
+  &__scroller
+    width: 24px;
+    height: 24px;
+    margin-left: -12px;
+    border-left: 1px solid $purple;
+    border-bottom: 1px solid $purple;
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    box-sizing: border-box;
+    border-radius: 0 !important;
+    margin: auto;
 
   &__header
     height calc(100vh - 84px)
@@ -101,7 +146,6 @@ export default {
     display flex
     flex-direction column
     text-align center
-    margin 4vw auto
 
   &__tagline
     text-transform uppercase
@@ -119,7 +163,7 @@ export default {
   &__button-wrap
     display flex
     justify-content center
-    margin 6vw auto
+    margin 20vh auto
 
   &__button
     text-decoration none
@@ -152,6 +196,9 @@ export default {
   &__counter
     text-align center
     height 100vh
+    display flex
+    flex-direction column
+    justify-content center
 
   &__card
     text-align center
@@ -226,7 +273,7 @@ export default {
 
   &__number
     margin 10vh auto 20px auto
-    font-size 6em
+    font-size 5em
     line-height 1em
     font-weight 700
     background $purple
@@ -234,6 +281,10 @@ export default {
     background -webkit-linear-gradient(-134deg, $dkblue 0%, $pink 100%)
     -webkit-background-clip: text
     -webkit-text-fill-color: transparent
+
+    @media (min-width: 620px)
+      font-size 6em
+
 
   &__counter-text
     color $purple

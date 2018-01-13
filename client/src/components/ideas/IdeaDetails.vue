@@ -9,7 +9,7 @@
 
         <div class="view__form-element">
           <label class="view__label" for="view__creator">Creator</label>
-          <input class="view__input" id="view__creator" maxlength="100" type="text" name="creator" v-model="ideaCreator" placeholder="Creator" autofocus disabled>
+          <input class="view__input" id="view__creator" maxlength="100" type="text" name="creator" v-model="ideaCreatorId" placeholder="Creator" autofocus disabled>
         </div>
 
         <div class="view__form-element">
@@ -19,80 +19,37 @@
 
         <div class="view__form-element">
           <label class="view__label" for="view__desc">Description</label>
-          <div id="view__desc" name="description" class="view__textarea" >{{ideaDesc}}</div>
+          <div id="view__desc" name="description" class="view__textarea" >{{ideaDescription}}</div>
         </div>
 
-        <div class="view__form-tags">
-          <label class="view__label" for="view__tags">Tags</label>
-          <div class="view__tag-wrap" id="view__tags">
-            <span class="view__form-tag" v-for="(tag, index) in ideaTags" v-bind:key="index">
-              <span class="view__tag" >
-                <span class="view__tag__label" role="option" aria-selected="true">
-                  {{tag}}
-                  <span class="tag-aria-only">&nbsp;</span>
-                </span>
-              </span>
-            </span>
-          </div>
-        </div>
-
-        <div class="view__form-element">
-          <label class="view__label" for="view__links">Links</label>
-          <div class="view__link-wrap">
-            <span id="view__links" class="view__links" v-for="(link, index) in ideaLinks" v-bind:key="index">
-              <span class="view__link">
-                <a :href="link.url" target="_blank">{{link.url_description}}</a>
-              </span>
-            </span>
-        </div>
-        </div>
-
-        <div class="view__form-element">
-          <label class="view__label" for="create__type">Type</label>
-          <div class="view__radio-group">
-            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === PUBLIC_IDEA }" @mouseover="upHere = 0" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC_IDEA" v-model="ideaTypeCode" disable>
-              <div class="view__type-title tooltip">Public
-                <span class="view__type-desc tooltiptext" v-if="upHere == PUBLIC_IDEA">Anyone can read and give feedback</span>
-              </div>
-            </div>
-            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === PRIVATE_IDEA }" @mouseover="upHere = 1" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" :value="PRIVATE_IDEA" v-model="ideaTypeCode" disable>
-              <div class="view__type-title tooltip">Private
-                <span class="view__type-desc tooltiptext" v-if="upHere == PRIVATE_IDEA">Only visible to people who agree to the license</span>
-              </div>
-            </div>
-            <div class="view__radio view__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL_IDEA }" @mouseover="upHere = 2" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" :value="COMMERCIAL_IDEA" v-model="ideaTypeCode" disable>
-              <div class="view__type-title tooltip">Custom
-                <span class="view__type-desc tooltiptext" v-if="upHere == COMMERCIAL_IDEA">Customise the license and choose who can see the idea</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <IdeaTags :tags="this.ideaTags"></IdeaTags>
+        <IdeaLinks :links="this.ideaDocuments"></IdeaLinks>
+        <IdeaType :type="this.ideaType"></IdeaType>
 
         <div class="view__form-element" v-show="this.ideaTypeCode">
           <label class="view__label" for="view__agreement">Agreement</label>
-          <textarea id="view__agreement" name="agreement" class="view__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement" disabled></textarea>
+          <textarea id="view__agreement" name="agreement" class="view__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement.agreement" placeholder="Agreement" disabled></textarea>
         </div>
 
         <div class="view__form-element" v-show="this.ideaReviews.length">
-          <label class="view__label" for="view__reviews">Reviews</label>
+          <h3 class="view__subhead">Reviews</h3>
           <section class="view__results">
-            <table class="view__table">
-              <tr class="view__tr">
-                <th class="view__th">Reviewer</th>
-                <th class="view__th">Assigned</th>
-                <th class="view__th">Updated</th>
-                <th class="view__th">Comments</th>
-              </tr>
-              <tr class="view__tr" v-for="review in ideaReviews" v-bind:key="review.reviewer">
-                <td class="view__td">{{review.reviewer}}</td>
-                <td class="view__td">{{new Date(review.assigned_ts).toLocaleDateString()}}</td>
-                <td class="view__td">{{new Date(review.updated_ts).toLocaleDateString()}}</td>
-                <td class="view__td">{{review.comments}}</td>
-              </tr>
-            </table>
+            <div class="view__table">
+              <div class="view__tr view__tr--space-between">
+                <span class="view__th">Reviewer</span>
+                <span class="view__th">Assigned</span>
+                <span class="view__th">Updated</span>
+              </div>
+              <div class="view__tr view__tr--col" v-for="review in ideaReviews" v-bind:key="review.reviewer">
+                <div class="view__td--wrap">
+                  <div class="view__td">{{review.reviewer}}</div>
+                  <div class="view__td">{{new Date(review.created_at).toLocaleDateString()}}</div>
+                  <div class="view__td">{{new Date(review.updated_at).toLocaleDateString()}}</div>
+                </div>
+                <div class="view__td--full">{{review.comments}}</div>
+              </div>
+
+              </div>
           </section>
         </div>
 
@@ -107,32 +64,44 @@
 
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
+import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '@/../../server/db/misc/ideaConstants';
 import http from '../../api/index';
+import IdeaLinks from '../shared/IdeaLinks';
+import IdeaTags from '../shared/IdeaTags';
+import IdeaType from '../shared/IdeaType';
 
 export default {
   name: 'IdeaDetails',
+  components: {
+    IdeaLinks,
+    IdeaTags,
+    IdeaType,
+  },
   data() {
     return {
-      // Session information
+      // Idea information
+      ideaId: '',
+      ideaCreatorId: '',
+      ideaTitle: '',
+      ideaType: '',
+      ideaDescription: '',
+      ideaTags: [],
+      ideaDocuments: [''],
+      ideaAgreement: '',
+      ideaReviews: [],
+
+      // Page work variables
       currentUser: '',
       userRole: '',
       editButtonText: '',
-      // Idea information
-      idea_id: '',
-      ideaCreator: '',
-      ideaTitle: '',
-      ideaType: '',
-      ideaDesc: '',
-      ideaTags: [],
-      ideaLinks: [''],
-      ideaAgreement: '',
-      ideaReviews: [],
-      ideaTypeCode: '0',
-      upHere: '-1',
+      ideaTypeCode: '',
+
       // Constants
-      PUBLIC_IDEA: 0,
-      PRIVATE_IDEA: 1,
-      COMMERCIAL_IDEA: 2,
+      // Note that constants are imported from files to maintain consistency across the app
+      // but defined in this fashion so they are available to be referenced from HTML.
+      PUBLIC: PUBLIC_IDEA,
+      PRIVATE: PRIVATE_IDEA,
+      COMMERCIAL: COMMERCIAL_IDEA,
     };
   },
   mounted() {
@@ -142,39 +111,33 @@ export default {
       .then((profile) => {
         this.currentUser = profile.sub;
 
-        // Retrieve the idea identified by the URL paramaters
+        // Retrieve the idea identified by the URL paramaters.
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
-          this.ideaCreator = response.data[0].creator;
-          this.ideaTitle = response.data[0].title;
-          // TODO: Calculate this as a virtual database field in Mongoose
-          this.ideaType = response.data[0].type;
-          switch (response.data[0].type) {
-            case 'public':
-              this.ideaTypeCode = this.PUBLIC_IDEA;
-              break;
-            case 'private':
-              this.ideaTypeCode = this.PRIVATE_IDEA;
-              break;
-            case 'commercial':
-              this.ideaTypeCode = this.COMMERCIAL_IDEA;
-              break;
-            default:
-              throw new Error(`Invalid idea type field value: ${response.data[0].type}`);
+          const idea = response.data.idea;
+          this.ideaId = idea.ideaId;
+          this.ideaCreatorId = idea.ideaCreatorId;
+          this.ideaTitle = idea.ideaTitle;
+          this.ideaType = idea.ideaType;
+          this.ideaDescription = idea.ideaDescription;
+          this.ideaTags = idea.ideaTags;
+          this.ideaDocuments = idea.documents;
+          this.ideaReviews = idea.reviews;
+
+          this.ideaTypeCode = IDEA_TYPES.findIndex(element =>
+            element.name === this.ideaType,
+          );
+          if (this.ideaTypeCode === -1) {
+            throw new Error(`Invalid idea type encountered displaying idea details. type: ${this.ideaType}`);
           }
 
           // eslint-disable-next-line no-underscore-dangle
-          this.idea_id = response.data[0]._id;
-          this.ideaDesc = response.data[0].description;
-          this.ideaLinks = response.data[0].documents;
-          this.ideaTags = response.data[0].tags;
-          if (response.data[0].agreement === null) {
+          if (idea.agreement === null) {
             this.ideaAgreement = null;
-          } else {
-            this.ideaAgreement = response.data[0].agreement.agreement;
+          } else if (this.ideaTypeCode !== this.PUBLIC) {
+            this.ideaAgreement = idea.agreement.agreement;
           }
-          this.ideaReviews = response.data[0].reviews;
-          this.userRole = (this.ideaCreator === this.currentUser) ? 'creator' : 'reviewer';
+          this.userRole = (this.ideaCreatorId === this.currentUser) ? 'creator' : 'reviewer';
           this.editButtonText = (this.userRole === 'creator') ? 'Edit Idea' : 'Add/Update Review';
         })
         .catch((err) => {
@@ -187,11 +150,15 @@ export default {
     }
   },
   methods: {
+    /**
+     * @description If the user is the creator of the idea transfer to the Edit Idea page.
+     * Otherwise, transfer to the Review Idea page
+     */
     editIdea() {
       if (this.userRole === 'creator') {
-        this.$router.push({ path: `/edit/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
+        this.$router.push({ path: `/edit/${this.ideaCreatorId}/${this.ideaTitle}/${this.ideaType}` });
       } else {
-        this.$router.push({ path: `/review/${this.ideaCreator}/${this.ideaTitle}/${this.ideaType}` });
+        this.$router.push({ path: `/review/${this.ideaCreatorId}/${this.ideaTitle}/${this.ideaType}` });
       }
     },
   },
@@ -224,6 +191,16 @@ export default {
     & h1
       font-weight 200 !important
 
+  &__subhead
+    color $purple
+    font-size 1.2em
+    margin 20px 0
+    padding-bottom: 10px;
+    border-bottom: 1px dotted $purple;
+    font-weight 200 !important
+    @media (min-width: 600px)
+      font-size 30px
+
   &__label
     text-transform uppercase
     font-size .8em
@@ -238,29 +215,51 @@ export default {
   &__th
     padding 10px
     text-transform uppercase
-    border-bottom 1px dotted $purple
     &:first-child
+      width 50%
+      text-align left
+      padding-left 0
+    &:nth-child(2)
+      width 25%
       text-align left
       padding-left 0
     &:last-child
+      width 25%
       text-align right
       padding-right 0
 
   &__tr
     padding 10px
+    display flex
+    border-bottom 1px solid $purple
+    &--col
+      flex-direction column
+      padding 0
+    &--space-between
+      justify-content space-between
+      padding 0
 
   &__td
-    padding 10px
-    border-bottom 1px dotted $purple
+    padding 10px 0
     &:first-child
+      width 50%
       padding-left 0
-    &:nth-child(2),
-    &:nth-child(3)
-      text-align center
+      color $purple
+    &:nth-child(2)
+      width 25%
+      text-align left
+      justify-self start
     &:last-child
+      width 25%
       text-align right
-      max-width 25px
       padding-right 0
+
+    &--wrap
+      display flex
+      justify-content space-between
+      width: 100%
+    &--full
+      padding 0 0 5px
 
   &__input-wrap
     width 100%

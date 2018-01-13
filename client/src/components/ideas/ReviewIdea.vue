@@ -9,7 +9,7 @@
 
         <div class="review__form-element">
           <label class="review__label" for="review__creator">Creator</label>
-          <input class="review__input" id="review__creator" maxlength="100" type="text" name="creator" v-model="ideaCreator" placeholder="Creator" autofocus disabled>
+          <input class="review__input" id="review__creator" maxlength="100" type="text" name="creator" v-model="ideaCreatorId" placeholder="Creator" autofocus disabled>
         </div>
 
         <div class="review__form-element">
@@ -19,70 +19,23 @@
 
         <div class="review__form-element">
           <label class="review__label" for="review__desc">Description</label>
-          <textarea id="review__desc" name="description" class="review__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaDesc" placeholder="Description" disabled></textarea>
+          <div id="review__desc" name="description" class="review__textarea" >{{ideaDescription}}</div>
         </div>
 
-        <div class="review__form-tags">
-          <label class="review__label" for="review__tags">Tags</label>
-          <div class="review__tag-wrap" id="review__tags">
-            <span class="review__form-tag" v-for="(tag, index) in ideaTags" v-bind:key="index">
-              <span class="review__tag" >
-                <span class="review__tag__label" role="option" aria-selected="true">
-                  {{tag}}
-                  <span class="tag-aria-only">&nbsp;</span>
-                </span>
-              </span>
-            </span>
-          </div>
-        </div>
+        <IdeaTags :tags="this.ideaTags"></IdeaTags>
+        <IdeaLinks :links="this.ideaDocuments"></IdeaLinks>
+        <IdeaType :type="this.ideaType"></IdeaType>
 
-        <div class="review__form-element">
-          <label class="review__label" for="review__links">Links</label>
-          <div id="review__links" class="create__form__link" v-for="(link, index) in ideaLinks" v-bind:key="index">
-            <div class="review__link">
-              <a :href="link.url" target="_blank">{{link.url_description}}</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="review__form-element">
-          <label class="review__label" for="create__type">Type</label>
-          <div class="review__radio-group">
-            <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === PUBLIC_IDEA }" @mouseover="upHere = PUBLIC_IDEA" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" v-validate="'required'" :value="PUBLIC_IDEA" v-model="ideaTypeCode" disable>
-              <div class="review__type-title tooltip">Public
-                <span class="review__type-desc tooltiptext" v-if="upHere == PUBLIC_IDEA">Anyone can read and give feedback</span>
-              </div>
-            </div>
-            <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === PRIVATE_IDEA }" @mouseover="upHere = PRIVATE_IDEA" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" :value="PRIVATE_IDEA" v-model="ideaTypeCode" disable>
-              <div class="review__type-title tooltip">Private
-                <span class="review__type-desc tooltiptext" v-if="upHere == PRIVATE_IDEA">Only visible to people who agree to the license</span>
-              </div>
-            </div>
-            <div class="review__radio review__option" v-bind:class="{ active: ideaTypeCode === COMMERCIAL_IDEA }" @mouseover="upHere = COMMERCIAL_IDEA" @mouseleave="upHere = -1">
-              <input type="radio" name="ideatype" :value="COMMERCIAL_IDEA" v-model="ideaTypeCode" disable>
-              <div class="review__type-title tooltip">Commercial
-                <span class="review__type-desc tooltiptext" v-if="upHere == COMMERCIAL_IDEA">Customise the license and choose who can see the idea</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="review__form-element" v-show="this.ideaTypeCode !== this.PUBLIC_IDEA">
+        <div class="review__form-element" v-show="this.ideaType !== IDEATYPES[PUBLIC].name">
           <label class="review__label" for="review__agreement">Agreement</label>
           <textarea id="review__agreement" name="agreement" class="review__textarea" cols="80" rows="13" maxlength="1000" v-model="ideaAgreement" placeholder="Agreement" disabled></textarea>
         </div>
 
         <div class="review__form-element">
-          <label class="review__label" for="review__reviews">Reviews</label>
+          <h3 class="review__subhead" for="review__reviews">Reviews</h3>
           <section class="review__results">
-            <label class="review__label" for="review__assigned">Date Assigned</label>
-            <input class="review__input" id="review__assigned" maxlength="10" type="text" name="assigned" v-model="reviewAssigned" placeholder="Assigned" autofocus disabled>
-            <label class="review__label" for="review__updated">Date Last Updated</label>
-            <input class="review__input" id="review__updated" maxlength="10" type="text" name="updated" v-model="reviewUpdated" placeholder="Updated" autofocus disabled>
             <label class="review__label" for="review__comments">Comments</label>
-            <textarea id="review__comments" name="comments" class="review__textarea" cols="80" rows="13" maxlength="1000" v-model="reviewComments" placeholder="Comments"></textarea>
+            <textarea id="review__comments" name="comments" class="review__textarea review__textarea--editable" cols="80" rows="13" maxlength="1000" v-model="reviewComments" placeholder="Your review here..."></textarea>
           </section>
         </div>
 
@@ -98,43 +51,54 @@
 
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
+import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../../../../server/db/misc/ideaConstants';
 import http from '../../api/index';
+import IdeaLinks from '../shared/IdeaLinks';
+import IdeaTags from '../shared/IdeaTags';
+import IdeaType from '../shared/IdeaType';
 
 export default {
   name: 'ReviewIdea',
+  components: {
+    IdeaLinks,
+    IdeaTags,
+    IdeaType,
+  },
   data() {
     return {
       // Session information
       currentUser: '',
       userRole: '',
       reviewButtonText: '',
+
       // Idea information
-      idea_id: '',
-      ideaCreator: '',
+      ideaId: '',
+      ideaCreatorId: '',
+      ideaCreatorProfileId: '',
       ideaTitle: '',
       ideaType: '',
-      ideaDesc: '',
+      ideaDescription: '',
       ideaTags: [],
-      ideaLinks: [''],
       ideaAgreement: '',
+      ideaDocuments: [],
       ideaReviews: [],
-      ideaTypeCode: this.PUBLIC_IDEA,
-      upHere: '-1',
+
       // Review information
       reviewIndex: this.NEW_REVIEW,
+      reviewerId: '',
       reviewAssigned: '',
       reviewUpdated: '',
       reviewComments: '',
+
       // Constants
-      PUBLIC_IDEA: 0,
-      PRIVATE_IDEA: 1,
-      COMMERCIAL_IDEA: 2,
+      // Note that constants are imported from files to maintain consistency across the app
+      // but defined in this fashion so they are available to be referenced from HTML.
+      PUBLIC: PUBLIC_IDEA,
+      PRIVATE: PRIVATE_IDEA,
+      COMMERCIAL: COMMERCIAL_IDEA,
+      IDEATYPES: IDEA_TYPES,
+
       NEW_REVIEW: -1,
-      IDEA_TYPES: [
-        { type: this.PUBLIC_IDEA, name: 'public' },
-        { type: this.PRIVATE_IDEA, name: 'private' },
-        { type: this.COMMERCIAL_IDEA, name: 'commercial' },
-      ],
     };
   },
   mounted() {
@@ -144,40 +108,39 @@ export default {
       .then((profile) => {
         this.currentUser = profile.sub;
 
-        // Retrieve the idea identified by the URL paramaters
+        // Retrieve the idea identified by the URL parameters
         http.get(`/idea/?creator=${this.$route.params.creatorId}&title=${this.$route.params.title}&type=${this.$route.params.type}`)
         .then((response) => {
-          this.ideaCreator = response.data[0].creator;
-          this.ideaTitle = response.data[0].title;
-          // TODO: Calculate this as a virtual database field in Mongoose
-          this.ideaType = response.data[0].type;
-          this.ideaTypeCode = this.IDEA_TYPES.findIndex(element =>
-            element.name === this.ideaType,
-          );
+          const idea = response.data.idea;
+          this.ideaId = idea.ideaId;
+          this.ideaCreatorId = idea.ideaCreatorId;
+          this.ideaCreatorProfileId = idea.ideaCreatorProfileId;
+          this.ideaTitle = idea.ideaTitle;
+          this.ideaType = idea.ideaType;
+          this.ideaDescription = idea.ideaDescription;
+          this.ideaTags = idea.ideaTags;
+          this.ideaDocuments = idea.documents;
+          this.ideaReviews = idea.reviews;
 
-          // eslint-disable-next-line no-underscore-dangle
-          this.idea_id = response.data[0]._id;
-          this.ideaDesc = response.data[0].description;
-          this.ideaLinks = response.data[0].documents;
-          this.ideaTags = response.data[0].tags;
-          if (response.data[0].agreement === null) {
+          if (idea.agreement === undefined) {
             this.ideaAgreement = null;
           } else {
-            this.ideaAgreement = response.data[0].agreement.agreement;
+            this.ideaAgreement = idea.agreement.agreement;
           }
-          this.ideaReviews = response.data[0].reviews;
+
           this.reviewIndex = this.ideaReviews.findIndex(element =>
             element.reviewer === this.currentUser,
           );
-          if (this.reviewIndex === -1) {
+          if (this.reviewIndex === this.NEW_REVIEW) {
             this.reviewButtonText = 'Add Review';
           } else {
             this.reviewButtonText = 'Update Review';
+            this.reviewerId = this.ideaReviews[this.reviewIndex].reviewer_id;
             this.reviewComments = this.ideaReviews[this.reviewIndex].comments;
           }
         })
         .catch((err) => {
-          throw new Error(`Locating idea: ${err}`);
+          throw new Error(`Accessing idea: ${err}`);
         });
       })
       .catch((err) => {
@@ -186,23 +149,36 @@ export default {
     }
   },
   methods: {
+    /**
+     * @description Add a new review or update the review if it already exists.
+     */
     updateReview() {
       // Add a new review
       if (this.reviewIndex === this.NEW_REVIEW) {
-        http.put(`/review/?creator=${this.ideaCreator}&title=${this.ideaTitle}&type=${this.ideaType}`, { reviewer: this.currentUser, comment: this.reviewComments })
+        http.post(`/review/?ideaid=${this.ideaId}&reviewername=${this.currentUser}`,
+          {
+            comment: this.reviewComments,
+          },
+        )
+        // eslint-disable-next-line no-unused-vars
         .then((response) => {
-          if (response.data.ok !== 1) {
-            throw new Error('Failed to add a review to idea document. ', response.data);
-          }
-        }).catch((err) => {
+          this.$router.push('/dashboard');
+        })
+        .catch((err) => {
           throw new Error('Failed to add an idea review: ', err);
         });
       } else {
-      // Update and existing review
-        http.post(`/review/?creator=${this.ideaCreator}&title=${this.ideaTitle}&type=${this.ideaType}`, { reviewer: this.currentUser, comment: this.reviewComments })
+      // Update an existing review with the new comments
+        http.put(`/review/?ideaid=${this.ideaId}&reviewerid=${this.reviewerId}`,
+          {
+            comment: this.reviewComments,
+          },
+        )
         .then((response) => {
-          if (response.data.ok !== 1 && response.data.nModified < 1) {
-            throw new Error('Failed to update an idea document. ', response.data);
+          if (response.data[0] !== 1) {
+            throw new Error('Failed to update an idea document. response: ', response);
+          } else {
+            this.$router.push('/dashboard');
           }
         }).catch((err) => {
           throw new Error('Failed to update an idea review: ', err);
@@ -239,6 +215,21 @@ export default {
     & h1
       font-weight 200 !important
 
+  &__subhead
+    color $purple
+    font-size 1.2em
+    margin 20px 0
+    padding-bottom: 10px;
+    border-bottom: 1px dotted $purple;
+    font-weight 200 !important
+    @media (min-width: 600px)
+      font-size 30px
+
+  &__date-wrap
+    display flex
+    justify-content space-between
+    margin-bottom: 20px
+
   &__label
     text-transform uppercase
     font-size .8em
@@ -266,31 +257,45 @@ export default {
 
 
   &__input
-    padding 10px
+    padding 10px 0
     width 100%
-    font-size 1em
-    border 1px solid $purple
+    font-size 1.5em
+    border 0px transparent
+    color $purple
 
-    &:focus
-      -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
-      -moz-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
-      box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+    &--editable
+      padding 0 0 20px
+      width 100%
+      font-size 1em
+      color $gray_text
+      border 1px solid $purple
+
+      &:focus
+        -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+        -moz-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+        box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
 
   &__textarea
     width 100%
-    padding 10px
+    padding 10px 0 20px
     font-size 1em
     font-family: 'Titillium Web', Helvetica, Arial, sans-serif
-    color: $gray_text
+    color: $purple
     letter-spacing: 1px
     line-height: 1.5em
-    border 1px solid $purple
+    border 0px transparent
     margin-bottom 10px
 
-    &:focus
-      -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
-      -moz-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
-      box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+    &--editable
+      padding 20px
+      font-size 1.2em
+      color $gray_text
+      border 1px solid $purple
+
+      &:focus
+        -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+        -moz-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+        box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
 
   &__type
     display inline-block
