@@ -6,7 +6,9 @@ let config = {};
 config.app = {};
 config.db = {};
 
-config.app.debuglog = process.env.DEBUGLOG.toUpperCase() === 'TRUE' ? true : false;
+config.app.debuglog = process.env.DEBUGLOG === undefined
+  ? false
+  : process.env.DEBUGLOG.toUpperCase() === 'TRUE' ? true : false;
 
 config.db.dbuserid = `${process.env.DBUSERID}`;
 config.db.dbpasswd = `${process.env.DBPASSWD}`;
