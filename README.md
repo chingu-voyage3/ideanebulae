@@ -200,6 +200,16 @@ deployed from.
 | `heroku config:set DBPORT=5432 --app ideanebulaeas` | |
 | `heroku config:set DATABASE_URL=postgres://<userid>:<password>@<postgres-instance>:5432/<dbname> --app ideanebulaeas` | Replace bracketed ('`<...>`') values with `ideanebulaedb` settings |
 | `heroku config --app ideanebulaeas` | Verify the config variables have been set |
+| **_Configure Heroku `ideanebulaeas` Dyno for Sequelize_** | From the Heroku Dashboard open a bash console |
+| `npm i` | Install packages named in the `package.json` file |
+| `npm install -g sequelize-cli` | Install the sequelize-cli package |
+| `npm run createdb` | Create the database and run Sequelize migrate |
+| `npm run loadprof` | Populate the profile table with test data | 
+| `npm run loadidea` | Populate the idea table with test data | 
+| `npm run loadagre` | Populate the agreement table with test data | 
+| `npm run loaddoc`  | Populate the document table with test data | 
+| `npm run loadrev`  | Populate the review table with test data | 
+| `Create Postgres views` | **_At this time creating Postgres views is a manual process._** <br>1. Open a `pgAdmin` session that is connected to the Heroku `ideanebulaedb` dyno <br>2. Open a query window <br>3. Paste the contents of `/server/db/models/postgres_views.sql` <br>4. Change all occurrances of `OWNER TO postgres;` to `OWNER TO wrirfbkaorsary;` <br>5. Execute the CREATE VIEW DDL. | 
 
 #### Deployment Steps
 
