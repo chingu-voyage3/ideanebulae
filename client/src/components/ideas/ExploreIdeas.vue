@@ -98,7 +98,7 @@
           <label class="explore__label">Type</label>
           <div class="modal-p modal-proper">{{this.selectedIdea.idea_type}}</div>
           <label class="explore__label">Agreement</label>
-          <div v-if="selectedIdea.agreement !== null">
+          <div v-if="selectedIdea.agreement !== undefined">
             <div>{{this.selectedIdea.agreement.agreement}}</div>
           </div>
           <div v-else>
