@@ -51,7 +51,7 @@
 
 <script>
 import { getUserProfile, getAccessToken } from '@/auth';
-import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../../../../server/db/misc/ideaConstants';
+import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../misc/ideaConstants';
 import http from '../../api/index';
 import IdeaLinks from '../shared/IdeaLinks';
 import IdeaTags from '../shared/IdeaTags';

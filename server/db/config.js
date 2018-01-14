@@ -1,10 +1,10 @@
 module.exports = {
   development: {
-    username: process.env.DBUSERID,
-    password: process.env.DBPASSWD,
-    database: process.env.DBNAME,
-    host: process.env.DBHOST,
-    port: process.env.DBPORT,
+    username: process.env.DBUSERID || 'postgres',
+    password: process.env.DBPASSWD || 'postgres',
+    database: process.env.DBNAME || 'ideanebulae_dev',
+    host: process.env.DBHOST || 'localhost',
+    port: process.env.DBPORT || '5432',
     dialect: 'postgres',
     logging: console.log,
     define: {
