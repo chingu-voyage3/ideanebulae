@@ -13,7 +13,7 @@
         </tr>
         <tr class="dashboard__tr" v-bind:key="index" v-for="(idea, index) in ideas">   
           <td class="dashboard__td">
-            <router-link :to="`/ideas/${idea.idea.creator}/${idea.idea.title}/${idea.idea.idea_type}`">
+            <router-link :to="`/ideas/${currUser}/${idea.idea.title}/${idea.idea.idea_type}`">
               {{ idea.idea.title }}
             </router-link>
           </td>
@@ -45,6 +45,9 @@ export default {
     return {
       ideas: [],
       hoverOver: -1,
+      currUser: '',
+      searchForTags: [],
+      searchForKeywords: [],
     };
   },
   filters,
@@ -52,11 +55,9 @@ export default {
     if (getAccessToken()) {
       getUserProfile()
       .then((profile) => {
-        const currUser = profile.sub;
-        const searchForTags = [];
-        const searchForKeywords = [];
+        this.currUser = profile.sub;
         // Get the profile for the currently logged in (i.e. session) user
-        http.get(`/ideas/search/?currUser=${currUser}&searchForTags=${searchForTags}&searchForKeywords=${searchForKeywords}`)
+        http.get(`/ideas/search/?currUser=${this.currUser}&searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
         .then((response) => {
           if (response.statusText !== 'OK') {
             throw new Error(`Error fetching ideas. ${response}`);
