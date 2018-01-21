@@ -10,21 +10,16 @@
           <th class="dashboard__th">Type</th>
           <th class="dashboard__th">Status</th>
           <th class="dashboard__th">Reviews</th>
-          <th class="dashboard__th">QuickLook</th>
         </tr>
-        <tr class="dashboard__tr" v-bind:key="index" v-for="(idea, index) in ideas">
-          
-            <td class="dashboard__td">
-              <router-link :to="`/ideas/${idea.idea.creator}/${idea.title}/${idea.idea.type}`">
-                {{ idea.idea.title }}
-              </router-link>
-            </td>
-            <td class="dashboard__td">{{ idea.idea.idea_type }}</td>
-            <td class="dashboard__td">{{ idea.idea.status }}</td>
-            <td class="dashboard__td">{{ idea.idea.reviews.length }}</td>
-            <td class="dashboard__td" @mouseover="hoverOver=index" @mouseout="hoverOver=-1">
-              <img src="../../assets/eye-sym.svg" height="10" width="10">
-            </td>
+        <tr class="dashboard__tr" v-bind:key="index" v-for="(idea, index) in ideas">   
+          <td class="dashboard__td">
+            <router-link :to="`/ideas/${idea.idea.creator}/${idea.idea.title}/${idea.idea.idea_type}`">
+              {{ idea.idea.title }}
+            </router-link>
+          </td>
+          <td class="dashboard__td">{{ idea.idea.idea_type }}</td>
+          <td class="dashboard__td">{{ idea.idea.status }}</td>
+          <td class="dashboard__td">{{ idea.idea.reviews.length }}</td>
         </tr>
       </table>
       <div class="dashboard__idealist-hover" v-if="hoverOver!=-1">
@@ -40,6 +35,7 @@
 </template>
 
 <script>
+import { getUserProfile, getAccessToken } from '@/auth';
 import http from '../../api/index';
 import filters from '../../filters';
 
@@ -53,18 +49,24 @@ export default {
   },
   filters,
   mounted() {
-    const currUser = '';
-    const searchForTags = [];
-    const searchForKeywords = [];
-    http.get(`/ideas/search/?currUser=${currUser}&searchForTags=${searchForTags}&searchForKeywords=${searchForKeywords}`)
-    .then((response) => {
-      if (response.statusText !== 'OK') {
-        throw new Error(`Error fetching ideas. ${response}`);
-      }
-      this.$data.ideas = response.data;
-    }).catch((err) => {
-      throw new Error(`Error fetching ideas: ${err}`);
-    });
+    if (getAccessToken()) {
+      getUserProfile()
+      .then((profile) => {
+        const currUser = profile.sub;
+        const searchForTags = [];
+        const searchForKeywords = [];
+        // Get the profile for the currently logged in (i.e. session) user
+        http.get(`/ideas/search/?currUser=${currUser}&searchForTags=${searchForTags}&searchForKeywords=${searchForKeywords}`)
+        .then((response) => {
+          if (response.statusText !== 'OK') {
+            throw new Error(`Error fetching ideas. ${response}`);
+          }
+          this.$data.ideas = response.data;
+        }).catch((err) => {
+          throw new Error(`Error fetching ideas: ${err}`);
+        });
+      });
+    }
   },
 };
 </script>
