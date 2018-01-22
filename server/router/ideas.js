@@ -156,6 +156,61 @@ router.get('/ideas/getalltags', async (req, res) => {
 });
 
 /**
+ * @description Find all ideas for a given user id
+ *
+ * @param {String} currUser The nickname of the currently logged on user
+ * @returns {Object} ideas A JSON object containing the resulting ideas. Each
+ * idea is described by its title, type, status, and status date. Also included are
+ * the associated agreement, supporting documents, and reviews.
+ */
+router.get('/ideas/list/:currUser(*)', async (req, res) => {
+  let ideaPromises = [];
+  let allIdeasJSON = [];
+  
+  // TODO: Due to the complexity of the Postgres fulltext indexing and search
+  // option (FTS) a simpler solution employing the 'SIMILAR' operator is used 
+  // until the FTS solution can be researched.
+  models.sequelize.query(
+    `SELECT DISTINCT ideas.id, profiles.user_id, ideas.title, ideas.description, \
+            ideas.idea_type, ideas.profile_id, ideas.tags, ideas.created_at, \
+            ideas.updated_at \
+       FROM profiles, \
+            ideas \
+      WHERE profiles.user_id = '${req.query.currUser}' \
+        AND ideas.profile_id = profiles.id  \
+      ORDER BY updated_at DESC`,
+    { type: models.sequelize.QueryTypes.SELECT })
+  .then(ideas => {
+    ideas.forEach((idea) => {
+      let ideaStatus = null;
+      let ideaPromise = new Promise((resolve, reject) => {
+        ideaStatus = ({resolve: resolve, reject: reject});
+      });
+      ideaPromises.push(ideaPromise);
+      // Retrieve any agreements, documents, and reviews associated with this idea and 
+      // add them to the JSON object
+      const agreementPromise = agreementMethods.findByIdea(idea.id);
+      const documentsPromise = documentMethods.findByIdea(idea.id);
+      const reviewsPromise = reviewMethods.findByIdea(idea.id);
+      Promise.all([agreementPromise, documentsPromise, reviewsPromise])
+      .then((promiseValues) => {
+        let ideaJSON = {};
+        ideaJSON.idea = idea;
+        ideaJSON.idea.agreement = promiseValues[0][0];
+        ideaJSON.idea.documents = promiseValues[1];
+        ideaJSON.idea.reviews = promiseValues[2];
+        allIdeasJSON.push(ideaJSON);
+        ideaStatus.resolve(`Completed: ${idea.id}`);
+      });
+    });
+    Promise.all(ideaPromises)
+    .then(() => {
+      res.json(allIdeasJSON);
+    });
+  });
+});
+
+/**
  * @description Find ideas based on a list of tags and keywords. Each idea
  * to be returned to the caller must be categorized with at least one tag or
  * contain at least one keyword in either the title or description field.
@@ -170,13 +225,14 @@ router.get('/ideas/getalltags', async (req, res) => {
  * the associated agreement, supporting documents, and reviews.
  */
 router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', async (req, res) => {
+  console.log('GOT HERE!!!');
   const tagList = req.query.searchForTags.split(',').map((currentTag) => {
     return `'${currentTag}'`;
   }).join(',');
   console.log('tagList: ', tagList);
 
   const keywordList = '\'%('.concat(req.query.searchForKeywords.split(',').map((currentKeyword) => {
-    return `${currentKeyword}`;
+    return `${" "+currentKeyword+" "}`;
   }).join('|'), ')%\'');
   console.log('keywordList: ', keywordList);
   
