@@ -232,7 +232,7 @@ router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', a
   console.log('tagList: ', tagList);
 
   const keywordList = '\'%('.concat(req.query.searchForKeywords.split(',').map((currentKeyword) => {
-    return `${currentKeyword}`;
+    return `${" "+currentKeyword+" "}`;
   }).join('|'), ')%\'');
   console.log('keywordList: ', keywordList);
   
