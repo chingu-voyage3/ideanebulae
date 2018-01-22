@@ -57,9 +57,8 @@ export default {
       .then((profile) => {
         this.currUser = profile.sub;
         // Get all ideas owned by the currently logged in (i.e. session) user
-        http.get(`/ideas/search/?currUser=${this.currUser}`)
+        http.get(`/ideas/list/?currUser=${this.currUser}`)
         .then((response) => {
-          console.log('response.statusText: ', response.statusText);
           if (response.statusText !== 'OK') {
             throw new Error(`Error fetching ideas. ${response}`);
           }

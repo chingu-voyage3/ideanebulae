@@ -163,7 +163,7 @@ router.get('/ideas/getalltags', async (req, res) => {
  * idea is described by its title, type, status, and status date. Also included are
  * the associated agreement, supporting documents, and reviews.
  */
-router.get('/ideas/search/:currUser(*)', async (req, res) => {
+router.get('/ideas/list/:currUser(*)', async (req, res) => {
   let ideaPromises = [];
   let allIdeasJSON = [];
   
@@ -225,6 +225,7 @@ router.get('/ideas/search/:currUser(*)', async (req, res) => {
  * the associated agreement, supporting documents, and reviews.
  */
 router.get('/ideas/search/:currUser(*):searchForTags(*):searchForKeywords(*)', async (req, res) => {
+  console.log('GOT HERE!!!');
   const tagList = req.query.searchForTags.split(',').map((currentTag) => {
     return `'${currentTag}'`;
   }).join(',');

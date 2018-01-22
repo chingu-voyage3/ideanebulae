@@ -246,6 +246,7 @@ export default {
     searchIdeas() {
       http.get(`/ideas/search/?currUser=${this.currentUser}&searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
       .then((response) => {
+        console.log('searchIdeas response.data: \n', response.data);
         this.ideas = response.data;
       }).catch((err) => {
         throw new Error(`Error searching ideas on tags/keywords: ${err}`);
