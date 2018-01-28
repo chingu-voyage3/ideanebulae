@@ -1,0 +1,49 @@
+/**
+ * CSS Label and Text Area Style
+ *
+ * Define the shared styling for Idea Keywords.
+ * 
+ * Usage: '@import ideakeyword.styl' following the default class definition for the page.
+ *        For example,
+ *          .Dashboard
+ *          @import 'ideakeyword.styl'
+ */
+&__label
+    text-transform uppercase
+    font-size .8em
+    letter-spacing 2.5px
+    font-weight 700
+    display block
+
+&__input-wrap
+  width 100%
+  display flex
+  margin-bottom 10px
+
+&__input
+  padding 10px
+  width 100%
+  font-size 1em
+  border 1px solid $purple
+  color $gray_text
+
+  &:focus
+    -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+    -moz-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+    box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+
+&__textarea
+  width 100%
+  padding 10px
+  font-size 1em
+  font-family: 'Titillium Web', Helvetica, Arial, sans-serif
+  color: $gray_text
+  letter-spacing: 1px
+  line-height: 1.5em
+  border 1px solid $purple
+  margin-bottom 10px
+
+  &:focus
+    -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+    -moz-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+    box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);

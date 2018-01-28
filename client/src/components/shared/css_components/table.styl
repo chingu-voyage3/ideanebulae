@@ -1,0 +1,41 @@
+/**
+ * CSS Table Style
+ *
+ * Define the shared styling for HTML tables and their elements.
+ * 
+ * Usage: '@import table.styl' following the default class definition for the page.
+ *        For example,
+ *          .Dashboard
+ *          @import 'table.styl'
+ */
+
+&__table
+  margin 0 auto
+  width 100%
+
+&__th
+  padding 10px
+  text-transform uppercase
+  border-bottom 1px dotted $purple
+  &:first-child
+    text-align left
+    padding-left 0
+  &:last-child
+    text-align right
+    padding-right 0
+
+&__tr
+  padding 10px
+
+&__td
+  padding 10px
+  border-bottom 1px dotted $purple
+  &:first-child
+    padding-left 0
+  &:nth-child(2),
+  &:nth-child(3)
+    text-align center
+  &:last-child
+    text-align right
+    max-width 25px
+    padding-right 0

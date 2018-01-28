@@ -1,0 +1,56 @@
+/**
+ * CSS Idea Tags Style
+ *
+ * Define the shared styling for Idea Tags.
+ * 
+ * Usage: '@import ideatags.styl' following the default class definition for the page.
+ *        For example,
+ *          .Dashboard
+ *          @import 'ideatags.styl'
+ */
+&__form-tags
+
+&__tag-wrap
+  margin-bottom 20px
+
+
+&__tag
+  color: $gray_text;
+  display: inline-block;
+  font-size: 0.9em;
+  line-height: 1.4;
+  background-color: transparent;
+  border-radius: 2px;
+  border: 1px solid $gray_bkgrd;
+  margin-right: 10px;
+  margin-top: 5px;
+  vertical-align: top;
+
+  &:hover
+    border: 1px solid $aqua;
+
+  &__label
+    border-bottom-right-radius: 2px;
+    border-top-right-radius: 2px;
+    cursor: default;
+    padding: 1px 5px 4px 5px;
+    display: inline-block;
+    vertical-align: middle;
+
+  &__button
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: inherit;
+
+  &__icon
+    display: inline-block;
+    cursor: pointer;
+    border-bottom-left-radius: 2px;
+    border-top-left-radius: 2px;
+    border-right: 1px solid rgba(124,72,194, 0.25);
+    padding: 1px 5px 3px;
+
+    &:hover
+      // color: red;

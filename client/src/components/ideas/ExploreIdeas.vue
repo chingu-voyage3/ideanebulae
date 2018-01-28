@@ -280,6 +280,10 @@ export default {
 @import '~stylus_var'
 
 .explore
+  @import '../shared/css_components/headings.styl'
+  @import '../shared/css_components/table.styl'
+  @import '../shared/css_components/link.styl'
+  @import '../shared/css_components/ideatags.styl'
 
   &__form-wrapper,
   &__results
@@ -297,6 +301,7 @@ export default {
     @media (min-width: 600px)
       border 0
 
+  /*
   &__table
     margin 0 auto
     width 100%
@@ -327,7 +332,9 @@ export default {
       text-align right
       max-width 25px
       padding-right 0
+  */
 
+  /*
   &__link
     text-decoration none
     color $purple
@@ -337,7 +344,9 @@ export default {
       color $aqua
       border-bottom 1px dotted $aqua
       transition color 300ms linear
+  */
 
+  /*
   &__header
     text-align center
     color $purple
@@ -349,7 +358,9 @@ export default {
 
     & h1
       font-weight 200 !important
+  */
 
+  /*
   &__label
     text-transform uppercase
     font-size .8em
@@ -361,6 +372,7 @@ export default {
     width 100%
     display flex
     margin-bottom 10px
+  */
 
   &__add-button
     width 40px
@@ -393,7 +405,7 @@ export default {
       -moz-box-shadow: 2px 2px 10px 0 rgba(110, 28, 233, 0.8);
       box-shadow: 2px 2px 10px 0 rgba(110, 28, 233, 0.8);
 
-
+  /*
   &__input
     padding 10px
     width 100%
@@ -421,6 +433,7 @@ export default {
       -webkit-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
       -moz-box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
       box-shadow: 0 0 2px 0 rgba(110, 28, 233, 0.8);
+  */
 
   &__type
     display inline-block
@@ -443,12 +456,12 @@ export default {
     background-repeat no-repeat
     background-size 20px
 
-
-
   &__select-option
 
+  /*
   &__keyword
     margin 10px 0
+  */
 
   &__button-wrap
     display flex
@@ -463,7 +476,8 @@ export default {
 
       &:last-child
         margin-left 20px
-
+  
+  /*
   &__form-tags
 
 
@@ -472,6 +486,50 @@ export default {
 
 
   &__tag,
+  &__keyword
+    color: $gray_text;
+    display: inline-block;
+    font-size: 0.9em;
+    line-height: 1.4;
+    background-color: transparent;
+    border-radius: 2px;
+    border: 1px solid $gray_bkgrd;
+    margin-right: 10px;
+    margin-top: 5px;
+    vertical-align: top;
+
+    &:hover
+      border: 1px solid $aqua;
+
+
+    &__label
+      border-bottom-right-radius: 2px;
+      border-top-right-radius: 2px;
+      cursor: default;
+      padding: 1px 5px 4px 5px;
+      display: inline-block;
+      vertical-align: middle;
+
+    &__button
+      -webkit-appearance: none;
+      appearance: none;
+      border: none;
+      background: transparent;
+      color: inherit;
+
+    &__icon
+      display: inline-block;
+      cursor: pointer;
+      border-bottom-left-radius: 2px;
+      border-top-left-radius: 2px;
+      border-right: 1px solid rgba(124,72,194, 0.25);
+      padding: 1px 5px 3px;
+
+      &:hover
+        // color: red;
+  */
+  
+  /*
   &__keyword
     color: $gray_text;
     display: inline-block;
@@ -527,6 +585,7 @@ export default {
 
     &:hover
       border: 1px solid $gray_bkgrd;
+  */
 
 </style>
 
