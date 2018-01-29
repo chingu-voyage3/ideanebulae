@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '@/../../server/db/misc/ideaConstants';
+import { PUBLIC_IDEA, PRIVATE_IDEA, COMMERCIAL_IDEA, IDEA_TYPES } from '../misc/ideaConstants';
 
 export default {
   name: 'IdeaType',

@@ -98,7 +98,7 @@
           <label class="explore__label">Type</label>
           <div class="modal-p modal-proper">{{this.selectedIdea.idea_type}}</div>
           <label class="explore__label">Agreement</label>
-          <div v-if="selectedIdea.agreement !== null">
+          <div v-if="selectedIdea.agreement !== undefined">
             <div>{{this.selectedIdea.agreement.agreement}}</div>
           </div>
           <div v-else>
@@ -246,6 +246,7 @@ export default {
     searchIdeas() {
       http.get(`/ideas/search/?currUser=${this.currentUser}&searchForTags=${this.searchForTags}&searchForKeywords=${this.searchForKeywords}`)
       .then((response) => {
+        console.log('searchIdeas response.data: \n', response.data);
         this.ideas = response.data;
       }).catch((err) => {
         throw new Error(`Error searching ideas on tags/keywords: ${err}`);
