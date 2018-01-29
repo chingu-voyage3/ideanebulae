@@ -1,0 +1,21 @@
+/**
+ * CSS Header Style
+ *
+ * Define the shared styling for HTML Headings.
+ * 
+ * Usage: '@import table.styl' following the default class definition for the page.
+ *        For example,
+ *          .Dashboard
+ *          @import 'table.styl'
+ */
+&__header
+  text-align center
+  color $purple
+  font-size 1.5em
+  line-height 1.2em
+  @media (min-width: 600px)
+    font-size 36px
+    margin-bottom 60px
+
+  & h1
+    font-weight 200 !important

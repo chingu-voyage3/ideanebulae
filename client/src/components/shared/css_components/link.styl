@@ -1,0 +1,19 @@
+/**
+ * CSS Link Style
+ *
+ * Define the shared styling for HTML links.
+ * 
+ * Usage: '@import table.styl' following the default class definition for the page.
+ *        For example,
+ *          .Dashboard
+ *          @import 'link.styl'
+ */
+  &__link
+    text-decoration none
+    color $purple
+    border-bottom 1px dotted $purple
+    cursor pointer
+    &:hover, &:focus, &:active
+      color $aqua
+      border-bottom 1px dotted $aqua
+      transition color 300ms linear
